@@ -88,6 +88,12 @@ class SchoolController extends Controller
                 'school_id' => $school->id,
                 'is_active' => true,
             ]);
+
+            // The school-admin role is granted every module permission at seed
+            // time and bypasses all permission gates — so a freshly onboarded
+            // client has full access to every module out of the box and can
+            // then carve out narrower policies/roles for their own sub-admins
+            // and incharges via Team Management.
             $user->assignRole('school-admin');
 
             DB::commit();

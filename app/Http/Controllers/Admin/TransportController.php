@@ -126,6 +126,10 @@ class TransportController extends Controller
             'vehicle_number' => 'required|string|max:20|unique:vehicles,vehicle_number',
             'capacity' => 'required|integer|min:1',
             'vehicle_type' => 'required|in:bus,van,auto',
+            'driver_name' => 'nullable|string|max:100',
+            'driver_phone' => 'nullable|string|max:15',
+            'conductor_name' => 'nullable|string|max:100',
+            'conductor_phone' => 'nullable|string|max:15',
             'insurance_expiry' => 'nullable|date',
             'fitness_expiry' => 'nullable|date',
         ]);
@@ -138,6 +142,29 @@ class TransportController extends Controller
         ]);
 
         return back()->with('success', 'Vehicle added.');
+    }
+
+    public function updateVehicle(Request $request, $id)
+    {
+        $schoolId = $this->requireSchoolId();
+        $vehicle = DB::table('vehicles')->where('id', $id)->where('school_id', $schoolId)->first();
+        abort_unless($vehicle, 404, 'Vehicle not found.');
+
+        $validated = $request->validate([
+            'vehicle_number' => 'required|string|max:20|unique:vehicles,vehicle_number,' . $id,
+            'capacity' => 'required|integer|min:1',
+            'vehicle_type' => 'required|in:bus,van,auto',
+            'driver_name' => 'nullable|string|max:100',
+            'driver_phone' => 'nullable|string|max:15',
+            'conductor_name' => 'nullable|string|max:100',
+            'conductor_phone' => 'nullable|string|max:15',
+            'insurance_expiry' => 'nullable|date',
+            'fitness_expiry' => 'nullable|date',
+        ]);
+
+        DB::table('vehicles')->where('id', $id)->update($validated + ['updated_at' => now()]);
+
+        return back()->with('success', 'Vehicle updated.');
     }
 
     public function assignStudent(Request $request)

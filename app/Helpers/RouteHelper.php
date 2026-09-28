@@ -25,3 +25,16 @@ if (!function_exists('panel_route')) {
         return '#';
     }
 }
+
+if (!function_exists('panel_prefix')) {
+    /**
+     * The URL prefix for the current user's panel: 'admin' for super-admin,
+     * otherwise 'user'. Useful for building dynamic (JS) form actions.
+     */
+    function panel_prefix(): string
+    {
+        $user = auth()->user();
+
+        return ($user && $user->hasRole('super-admin')) ? 'admin' : 'user';
+    }
+}

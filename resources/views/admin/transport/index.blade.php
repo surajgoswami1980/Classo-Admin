@@ -125,6 +125,8 @@
                         <th class="px-4 py-3 text-left font-medium text-gray-600">Vehicle No.</th>
                         <th class="px-4 py-3 text-left font-medium text-gray-600">Type</th>
                         <th class="px-4 py-3 text-center font-medium text-gray-600">Capacity</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-600">Driver</th>
+                        <th class="px-4 py-3 text-left font-medium text-gray-600">Conductor</th>
                         <th class="px-4 py-3 text-left font-medium text-gray-600">Insurance Expiry</th>
                         <th class="px-4 py-3 text-left font-medium text-gray-600">Fitness Expiry</th>
                     </tr>
@@ -139,11 +141,13 @@
                         <td class="px-4 py-3 font-medium text-gray-900">{{ $vehicle->vehicle_number }}</td>
                         <td class="px-4 py-3 text-gray-600">{{ ucfirst($vehicle->vehicle_type) }}</td>
                         <td class="px-4 py-3 text-center text-gray-600">{{ $vehicle->capacity }}</td>
+                        <td class="px-4 py-3 text-gray-600">{{ $vehicle->driver_name ?? '—' }} @if($vehicle->driver_phone) <span class="text-xs text-gray-400">{{ $vehicle->driver_phone }}</span> @endif</td>
+                        <td class="px-4 py-3 text-gray-600">{{ $vehicle->conductor_name ?? '—' }} @if($vehicle->conductor_phone) <span class="text-xs text-gray-400">{{ $vehicle->conductor_phone }}</span> @endif</td>
                         <td class="px-4 py-3 {{ $insuranceSoon ? 'text-red-600 font-medium' : 'text-gray-600' }}">{{ $vehicle->insurance_expiry ?? '—' }} @if($insuranceSoon) <span class="text-xs">(expiring soon)</span> @endif</td>
                         <td class="px-4 py-3 {{ $fitnessSoon ? 'text-red-600 font-medium' : 'text-gray-600' }}">{{ $vehicle->fitness_expiry ?? '—' }} @if($fitnessSoon) <span class="text-xs">(expiring soon)</span> @endif</td>
                     </tr>
                     @empty
-                    <tr><td colspan="5" class="px-4 py-12 text-center text-gray-400">No vehicles yet.</td></tr>
+                    <tr><td colspan="7" class="px-4 py-12 text-center text-gray-400">No vehicles yet.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -210,6 +214,26 @@
                         <option value="van">Van</option>
                         <option value="auto">Auto</option>
                     </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Driver Name</label>
+                        <input type="text" name="driver_name" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Driver Phone</label>
+                        <input type="text" name="driver_phone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Conductor Name</label>
+                        <input type="text" name="conductor_name" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Conductor Phone</label>
+                        <input type="text" name="conductor_phone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>

@@ -18,6 +18,11 @@ use App\Http\Controllers\SuperAdmin\SchoolSwitchController;
 use App\Http\Controllers\Admin\ManageTeamsController;
 use App\Http\Controllers\Admin\AccessControlController;
 use App\Http\Controllers\Admin\TransportController;
+use App\Http\Controllers\Admin\LibraryController;
+use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\HostelController;
+use App\Http\Controllers\Admin\InventoryController;
+use App\Http\Controllers\Admin\PayrollController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,10 +60,14 @@ Route::middleware(['auth', 'super.admin'])
         // Subscriptions & Revenue
         Route::resource('subscriptions', SubscriptionController::class);
         Route::get('/revenue', [SubscriptionController::class, 'revenue'])->name('revenue');
+        Route::get('/revenue/export', [SubscriptionController::class, 'exportRevenue'])->name('revenue.export');
 
         // All module management (super admin can do everything)
         Route::resource('students', StudentController::class);
         Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
+        Route::get('/students/{id}/books', [StudentController::class, 'books'])->name('students.books');
+        Route::get('/students/{id}/transport', [StudentController::class, 'transport'])->name('students.transport');
+        Route::get('/students/{id}/attendance', [StudentController::class, 'attendance'])->name('students.attendance');
         Route::resource('teachers', TeacherController::class);
 
         // Attendance
@@ -106,8 +115,59 @@ Route::middleware(['auth', 'super.admin'])
             Route::post('/stops', [TransportController::class, 'storeStop'])->name('stops.store');
             Route::delete('/stops/{id}', [TransportController::class, 'destroyStop'])->name('stops.destroy');
             Route::post('/vehicles', [TransportController::class, 'storeVehicle'])->name('vehicles.store');
+            Route::put('/vehicles/{id}', [TransportController::class, 'updateVehicle'])->name('vehicles.update');
             Route::post('/assign', [TransportController::class, 'assignStudent'])->name('assign');
             Route::delete('/assign/{id}', [TransportController::class, 'unassignStudent'])->name('unassign');
+        });
+
+        // Library
+        Route::prefix('library')->name('library.')->group(function () {
+            Route::get('/', [LibraryController::class, 'index'])->name('index');
+            Route::post('/books', [LibraryController::class, 'store'])->name('books.store');
+            Route::put('/books/{id}', [LibraryController::class, 'update'])->name('books.update');
+            Route::delete('/books/{id}', [LibraryController::class, 'destroy'])->name('books.destroy');
+            Route::post('/assign', [LibraryController::class, 'assign'])->name('assign');
+            Route::get('/issues', [LibraryController::class, 'issues'])->name('issues');
+            Route::post('/issues/{id}/return', [LibraryController::class, 'returnBook'])->name('issues.return');
+            Route::post('/issues/{id}/fine-paid', [LibraryController::class, 'markFinePaid'])->name('issues.fine-paid');
+        });
+
+        // Events
+        Route::prefix('events')->name('events.')->group(function () {
+            Route::get('/', [EventController::class, 'index'])->name('index');
+            Route::post('/', [EventController::class, 'store'])->name('store');
+            Route::put('/{id}', [EventController::class, 'update'])->name('update');
+            Route::delete('/{id}', [EventController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/publish', [EventController::class, 'publish'])->name('publish');
+            Route::post('/{id}/cancel', [EventController::class, 'cancel'])->name('cancel');
+            Route::get('/{id}/registrations', [EventController::class, 'registrations'])->name('registrations');
+        });
+
+        // Hostel
+        Route::prefix('hostel')->name('hostel.')->group(function () {
+            Route::get('/', [HostelController::class, 'index'])->name('index');
+            Route::post('/blocks', [HostelController::class, 'storeBlock'])->name('blocks.store');
+            Route::post('/rooms', [HostelController::class, 'storeRoom'])->name('rooms.store');
+            Route::post('/allocate', [HostelController::class, 'allocate'])->name('allocate');
+            Route::delete('/allocations/{id}', [HostelController::class, 'vacate'])->name('vacate');
+        });
+
+        // Inventory
+        Route::prefix('inventory')->name('inventory.')->group(function () {
+            Route::get('/', [InventoryController::class, 'index'])->name('index');
+            Route::post('/categories', [InventoryController::class, 'storeCategory'])->name('categories.store');
+            Route::post('/items', [InventoryController::class, 'storeItem'])->name('items.store');
+            Route::put('/items/{id}', [InventoryController::class, 'updateItem'])->name('items.update');
+            Route::post('/stock', [InventoryController::class, 'stock'])->name('stock');
+            Route::get('/transactions', [InventoryController::class, 'transactions'])->name('transactions');
+        });
+
+        // Payroll
+        Route::prefix('payroll')->name('payroll.')->group(function () {
+            Route::get('/', [PayrollController::class, 'index'])->name('index');
+            Route::post('/structure', [PayrollController::class, 'storeStructure'])->name('structure.store');
+            Route::post('/payslip', [PayrollController::class, 'generatePayslip'])->name('payslip.generate');
+            Route::post('/payslip/{id}/paid', [PayrollController::class, 'markPaid'])->name('payslip.paid');
         });
 
         // Academic Structure (Sessions, Classes, Sections)
@@ -172,6 +232,9 @@ Route::middleware(['auth', 'school.tenant', 'resource.permission'])
         // Students — full CRUD
         Route::resource('students', StudentController::class);
         Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
+        Route::get('/students/{id}/books', [StudentController::class, 'books'])->name('students.books');
+        Route::get('/students/{id}/transport', [StudentController::class, 'transport'])->name('students.transport');
+        Route::get('/students/{id}/attendance', [StudentController::class, 'attendance'])->name('students.attendance');
 
         // Teachers — full CRUD
         Route::resource('teachers', TeacherController::class);
@@ -221,8 +284,59 @@ Route::middleware(['auth', 'school.tenant', 'resource.permission'])
             Route::post('/stops', [TransportController::class, 'storeStop'])->name('stops.store');
             Route::delete('/stops/{id}', [TransportController::class, 'destroyStop'])->name('stops.destroy');
             Route::post('/vehicles', [TransportController::class, 'storeVehicle'])->name('vehicles.store');
+            Route::put('/vehicles/{id}', [TransportController::class, 'updateVehicle'])->name('vehicles.update');
             Route::post('/assign', [TransportController::class, 'assignStudent'])->name('assign');
             Route::delete('/assign/{id}', [TransportController::class, 'unassignStudent'])->name('unassign');
+        });
+
+        // Library
+        Route::prefix('library')->name('library.')->group(function () {
+            Route::get('/', [LibraryController::class, 'index'])->name('index');
+            Route::post('/books', [LibraryController::class, 'store'])->name('books.store');
+            Route::put('/books/{id}', [LibraryController::class, 'update'])->name('books.update');
+            Route::delete('/books/{id}', [LibraryController::class, 'destroy'])->name('books.destroy');
+            Route::post('/assign', [LibraryController::class, 'assign'])->name('assign');
+            Route::get('/issues', [LibraryController::class, 'issues'])->name('issues');
+            Route::post('/issues/{id}/return', [LibraryController::class, 'returnBook'])->name('issues.return');
+            Route::post('/issues/{id}/fine-paid', [LibraryController::class, 'markFinePaid'])->name('issues.fine-paid');
+        });
+
+        // Events
+        Route::prefix('events')->name('events.')->group(function () {
+            Route::get('/', [EventController::class, 'index'])->name('index');
+            Route::post('/', [EventController::class, 'store'])->name('store');
+            Route::put('/{id}', [EventController::class, 'update'])->name('update');
+            Route::delete('/{id}', [EventController::class, 'destroy'])->name('destroy');
+            Route::post('/{id}/publish', [EventController::class, 'publish'])->name('publish');
+            Route::post('/{id}/cancel', [EventController::class, 'cancel'])->name('cancel');
+            Route::get('/{id}/registrations', [EventController::class, 'registrations'])->name('registrations');
+        });
+
+        // Hostel
+        Route::prefix('hostel')->name('hostel.')->group(function () {
+            Route::get('/', [HostelController::class, 'index'])->name('index');
+            Route::post('/blocks', [HostelController::class, 'storeBlock'])->name('blocks.store');
+            Route::post('/rooms', [HostelController::class, 'storeRoom'])->name('rooms.store');
+            Route::post('/allocate', [HostelController::class, 'allocate'])->name('allocate');
+            Route::delete('/allocations/{id}', [HostelController::class, 'vacate'])->name('vacate');
+        });
+
+        // Inventory
+        Route::prefix('inventory')->name('inventory.')->group(function () {
+            Route::get('/', [InventoryController::class, 'index'])->name('index');
+            Route::post('/categories', [InventoryController::class, 'storeCategory'])->name('categories.store');
+            Route::post('/items', [InventoryController::class, 'storeItem'])->name('items.store');
+            Route::put('/items/{id}', [InventoryController::class, 'updateItem'])->name('items.update');
+            Route::post('/stock', [InventoryController::class, 'stock'])->name('stock');
+            Route::get('/transactions', [InventoryController::class, 'transactions'])->name('transactions');
+        });
+
+        // Payroll
+        Route::prefix('payroll')->name('payroll.')->group(function () {
+            Route::get('/', [PayrollController::class, 'index'])->name('index');
+            Route::post('/structure', [PayrollController::class, 'storeStructure'])->name('structure.store');
+            Route::post('/payslip', [PayrollController::class, 'generatePayslip'])->name('payslip.generate');
+            Route::post('/payslip/{id}/paid', [PayrollController::class, 'markPaid'])->name('payslip.paid');
         });
 
         // Academic Structure

@@ -285,4 +285,127 @@ class StudentController extends Controller
         // TODO: CSV import
         return back()->with('info', 'Import feature coming soon');
     }
+
+    // ─── Per-student detail views (books / transport / attendance) ────────
+
+    private function findStudent($id)
+    {
+        $student = DB::table('students')
+            ->join('users', 'students.user_id', '=', 'users.id')
+            ->leftJoin('classes', 'students.class_id', '=', 'classes.id')
+            ->leftJoin('sections', 'students.section_id', '=', 'sections.id')
+            ->select(['students.*', 'users.name as user_name', 'users.email', 'users.phone', 'classes.name as class_name', 'sections.name as section_name'])
+            ->where('students.id', $id)
+            ->first();
+
+        if (!$student) abort(404, 'Student not found');
+
+        // Scope check: a school user can only view their own school's students.
+        $schoolId = current_school_id();
+        if ($schoolId) {
+            abort_unless($student->school_id == $schoolId, 403);
+        }
+
+        return $student;
+    }
+
+    /**
+     * All library books issued to a student, with running fine + days-to-expire.
+     */
+    public function books($id)
+    {
+        $student = $this->findStudent($id);
+        $finePerDay = $this->libraryFinePerDay($student->school_id);
+
+        $issues = DB::table('library_book_issues as i')
+            ->join('library_books as b', 'b.id', '=', 'i.book_id')
+            ->where('i.student_id', $id)
+            ->select(['i.*', 'b.title as book_title', 'b.author as book_author',
+                DB::raw('DATEDIFF(i.due_date, CURDATE()) as days_to_expire')])
+            ->orderByRaw("i.status = 'issued' DESC")
+            ->orderBy('i.due_date')
+            ->get()
+            ->map(function ($row) use ($finePerDay) {
+                $days = $row->days_to_expire !== null ? (int) $row->days_to_expire : null;
+                $row->current_fine = (float) $row->fine_amount;
+                if ($row->status === 'issued' && $days !== null && $days < 0) {
+                    $row->current_fine = abs($days) * $finePerDay;
+                }
+                $row->is_overdue = $row->status === 'issued' && $days !== null && $days < 0;
+                return $row;
+            });
+
+        return view('admin.students.books', compact('student', 'issues'));
+    }
+
+    /**
+     * A student's current transport assignment (route, stop, vehicle, crew).
+     */
+    public function transport($id)
+    {
+        $student = $this->findStudent($id);
+
+        $assignment = DB::table('student_transport as st')
+            ->join('transport_routes as r', 'r.id', '=', 'st.route_id')
+            ->join('transport_stops as ts', 'ts.id', '=', 'st.stop_id')
+            ->leftJoin('vehicles as v', 'v.id', '=', 'r.vehicle_id')
+            ->leftJoin('academic_sessions as sess', 'sess.id', '=', 'st.academic_session_id')
+            ->where('st.student_id', $id)
+            ->select([
+                'st.*', 'r.name as route_name',
+                DB::raw('COALESCE(v.driver_name, r.driver_name) as driver_name'),
+                DB::raw('COALESCE(v.driver_phone, r.driver_phone) as driver_phone'),
+                'v.conductor_name', 'v.conductor_phone',
+                'v.vehicle_number', 'v.vehicle_type', 'v.capacity',
+                'ts.name as stop_name', 'ts.pickup_time', 'ts.drop_time',
+                'sess.name as session_name',
+            ])
+            ->orderByDesc('st.id')
+            ->first();
+
+        return view('admin.students.transport', compact('student', 'assignment'));
+    }
+
+    /**
+     * A student's attendance with a range filter (last 7 days / this month /
+     * last month / this session-year) and present/absent/late counts.
+     */
+    public function attendance(Request $request, $id)
+    {
+        $student = $this->findStudent($id);
+        $range = $request->get('range', 'this_month');
+
+        [$from, $to, $label] = match ($range) {
+            'last_7'     => [now()->subDays(6)->startOfDay(), now()->endOfDay(), 'Last 7 Days'],
+            'last_30'    => [now()->subDays(29)->startOfDay(), now()->endOfDay(), 'Last 30 Days'],
+            'last_month' => [now()->subMonthNoOverflow()->startOfMonth(), now()->subMonthNoOverflow()->endOfMonth(), 'Last Month'],
+            'this_year'  => [now()->startOfYear(), now()->endOfDay(), 'This Year'],
+            default      => [now()->startOfMonth(), now()->endOfMonth(), 'This Month'],
+        };
+
+        $records = DB::table('student_attendance')
+            ->where('student_id', $id)
+            ->whereBetween('date', [$from->toDateString(), $to->toDateString()])
+            ->orderByDesc('date')
+            ->get();
+
+        $counts = [
+            'present'  => $records->where('status', 'present')->count(),
+            'absent'   => $records->where('status', 'absent')->count(),
+            'late'     => $records->where('status', 'late')->count(),
+            'half_day' => $records->where('status', 'half_day')->count(),
+        ];
+        $total = $records->count();
+        $percentage = $total > 0 ? round(($counts['present'] / $total) * 100) : 0;
+
+        return view('admin.students.attendance', compact('student', 'records', 'counts', 'total', 'percentage', 'range', 'label'));
+    }
+
+    private function libraryFinePerDay($schoolId): float
+    {
+        $settings = DB::table('schools')->where('id', $schoolId)->value('settings');
+        $settings = $settings ? json_decode($settings, true) : [];
+
+        return (float) ($settings['library_fine_per_day'] ?? 2);
+    }
 }

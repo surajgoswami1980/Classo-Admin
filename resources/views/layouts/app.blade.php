@@ -88,6 +88,8 @@
                         ['name' => 'Fees', 'route' => $prefix . '.fees.index', 'icon' => 'currency-rupee'],
                         ['name' => 'Exams', 'route' => $prefix . '.exams.index', 'icon' => 'document-text'],
                         ['name' => 'Transport', 'route' => $prefix . '.transport.index', 'icon' => 'truck'],
+                        ['name' => 'Library', 'route' => $prefix . '.library.index', 'icon' => 'book-open'],
+                        ['name' => 'Events', 'route' => $prefix . '.events.index', 'icon' => 'calendar'],
                     ]);
                     $canSeeTeam = auth()->user()->hasRole('super-admin')
                         || auth()->user()->hasRole('school-admin')

@@ -73,6 +73,9 @@ class RolePermissionSeeder extends Seeder
             // Transport
             'manage-transport',
 
+            // Events
+            'manage-events',
+
             // Notifications
             'send-notifications',
 
