@@ -38,6 +38,45 @@ class DashboardController extends Controller
                 ->where('status', 'absent')->count(),
         ];
 
-        return view('dashboard', compact('stats'));
+        // ─── School context for the welcome banner ──────────────────────────
+        $school = $schoolId ? School::find($schoolId) : null;
+
+        $banner = null;
+        if ($school) {
+            $maxStudents = (int) ($school->max_students ?: 0);
+            $maxStaff    = (int) ($school->max_staff ?: 0);
+
+            $studentUsagePct = $maxStudents > 0
+                ? min(100, round(($stats['total_students'] / $maxStudents) * 100))
+                : 0;
+            $staffUsagePct = $maxStaff > 0
+                ? min(100, round(($stats['total_teachers'] / $maxStaff) * 100))
+                : 0;
+
+            $daysToExpiry = $school->subscription_end
+                ? now()->startOfDay()->diffInDays($school->subscription_end, false)
+                : null;
+
+            $banner = [
+                'name'              => $school->name,
+                'code'              => $school->code,
+                'logo'              => $school->logo,
+                'city'              => $school->city,
+                'state'             => $school->state,
+                'board'             => $school->board_affiliation,
+                'principal'         => $school->principal_name,
+                'phone'             => $school->phone,
+                'email'             => $school->email,
+                'plan'              => ucfirst($school->subscription_plan ?? 'basic'),
+                'subscription_end'  => $school->subscription_end,
+                'days_to_expiry'    => $daysToExpiry !== null ? (int) floor($daysToExpiry) : null,
+                'max_students'      => $maxStudents,
+                'max_staff'         => $maxStaff,
+                'student_usage_pct' => $studentUsagePct,
+                'staff_usage_pct'   => $staffUsagePct,
+            ];
+        }
+
+        return view('dashboard', compact('stats', 'banner', 'school'));
     }
 }

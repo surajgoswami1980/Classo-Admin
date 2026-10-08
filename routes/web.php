@@ -37,6 +37,10 @@ use App\Http\Controllers\Admin\PayrollController;
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+
+    // OTP login (email / mobile) — AJAX
+    Route::post('/login/otp/request', [LoginController::class, 'requestOtp'])->name('login.otp.request');
+    Route::post('/login/otp/verify', [LoginController::class, 'verifyOtp'])->name('login.otp.verify');
 });
 
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
@@ -89,6 +93,7 @@ Route::middleware(['auth', 'super.admin'])
             Route::post('/invoices/generate', [FeeController::class, 'generateInvoices'])->name('invoices.generate');
             Route::get('/defaulters', [FeeController::class, 'defaulters'])->name('defaulters');
             Route::get('/collection-report', [FeeController::class, 'collectionReport'])->name('collection-report');
+            Route::get('/invoices/{id}/document', [FeeController::class, 'invoiceDocument'])->name('invoices.document');
         });
 
         // Exams
@@ -168,6 +173,7 @@ Route::middleware(['auth', 'super.admin'])
             Route::post('/structure', [PayrollController::class, 'storeStructure'])->name('structure.store');
             Route::post('/payslip', [PayrollController::class, 'generatePayslip'])->name('payslip.generate');
             Route::post('/payslip/{id}/paid', [PayrollController::class, 'markPaid'])->name('payslip.paid');
+            Route::get('/payslip/{id}/document', [PayrollController::class, 'payslipDocument'])->name('payslip.document');
         });
 
         // Academic Structure (Sessions, Classes, Sections)
@@ -217,6 +223,7 @@ Route::middleware(['auth', 'super.admin'])
         Route::post('/profile/password', [ProfileController::class, 'changePassword'])->name('profile.password');
         Route::get('/settings', [ProfileController::class, 'settings'])->name('settings');
         Route::post('/settings', [ProfileController::class, 'updateSettings'])->name('settings.update');
+        Route::post('/settings/otp', [ProfileController::class, 'updateOtpSettings'])->name('settings.otp');
     });
 
 // ─── SCHOOL CLIENT ROUTES (/user/*) ─────────────────────────────────────
@@ -258,6 +265,7 @@ Route::middleware(['auth', 'school.tenant', 'resource.permission'])
             Route::post('/invoices/generate', [FeeController::class, 'generateInvoices'])->name('invoices.generate');
             Route::get('/defaulters', [FeeController::class, 'defaulters'])->name('defaulters');
             Route::get('/collection-report', [FeeController::class, 'collectionReport'])->name('collection-report');
+            Route::get('/invoices/{id}/document', [FeeController::class, 'invoiceDocument'])->name('invoices.document');
         });
 
         // Exams
@@ -337,6 +345,7 @@ Route::middleware(['auth', 'school.tenant', 'resource.permission'])
             Route::post('/structure', [PayrollController::class, 'storeStructure'])->name('structure.store');
             Route::post('/payslip', [PayrollController::class, 'generatePayslip'])->name('payslip.generate');
             Route::post('/payslip/{id}/paid', [PayrollController::class, 'markPaid'])->name('payslip.paid');
+            Route::get('/payslip/{id}/document', [PayrollController::class, 'payslipDocument'])->name('payslip.document');
         });
 
         // Academic Structure
@@ -375,6 +384,7 @@ Route::middleware(['auth', 'school.tenant', 'resource.permission'])
         Route::post('/profile/password', [ProfileController::class, 'changePassword'])->name('profile.password');
         Route::get('/settings', [ProfileController::class, 'settings'])->name('settings');
         Route::post('/settings', [ProfileController::class, 'updateSettings'])->name('settings.update');
+        Route::post('/settings/otp', [ProfileController::class, 'updateOtpSettings'])->name('settings.otp');
     });
 
 // ─── Impersonation exit (reachable from inside /user/* while a super-admin

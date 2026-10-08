@@ -71,18 +71,19 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($invoices ?? [] as $invoice)
+                        @php $isPaid = ($invoice->status ?? '') === 'paid'; @endphp
                         <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-4 font-medium text-gray-900">{{ $invoice->invoice_no ?? '-' }}</td>
+                            <td class="px-6 py-4 font-medium text-gray-900">{{ $invoice->invoice_number ?? '-' }}</td>
                             <td class="px-6 py-4">
-                                <p class="font-medium text-gray-900">{{ $invoice->student->first_name ?? '' }} {{ $invoice->student->last_name ?? '' }}</p>
-                                <p class="text-xs text-gray-500">{{ $invoice->student->admission_no ?? '' }}</p>
+                                <p class="font-medium text-gray-900">{{ $invoice->student_name ?? '' }}</p>
+                                <p class="text-xs text-gray-500">Roll: {{ $invoice->roll_number ?? '—' }}</p>
                             </td>
-                            <td class="px-6 py-4 text-gray-700">{{ $invoice->student->class ?? '-' }}</td>
-                            <td class="px-6 py-4 text-gray-900 font-semibold">₹{{ number_format($invoice->amount ?? 0) }}</td>
-                            <td class="px-6 py-4 text-green-600 font-medium">₹{{ number_format($invoice->paid_amount ?? 0) }}</td>
-                            <td class="px-6 py-4 text-gray-700">{{ $invoice->due_date ?? '-' }}</td>
+                            <td class="px-6 py-4 text-gray-700">{{ $invoice->class_name ?? '-' }}</td>
+                            <td class="px-6 py-4 text-gray-900 font-semibold">₹{{ number_format($invoice->total_amount ?? $invoice->amount ?? 0) }}</td>
+                            <td class="px-6 py-4 text-green-600 font-medium">₹{{ number_format($isPaid ? ($invoice->total_amount ?? $invoice->amount ?? 0) : 0) }}</td>
+                            <td class="px-6 py-4 text-gray-700">{{ $invoice->due_date ? \Illuminate\Support\Carbon::parse($invoice->due_date)->format('d M Y') : '-' }}</td>
                             <td class="px-6 py-4">
-                                @if(($invoice->status ?? '') == 'paid')
+                                @if($isPaid)
                                     <span class="px-2.5 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">Paid</span>
                                 @elseif(($invoice->status ?? '') == 'pending')
                                     <span class="px-2.5 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-700">Pending</span>
@@ -93,12 +94,14 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <button class="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition" title="View">
+                                <a href="{{ panel_route('fees.invoices.document', $invoice->id) }}" target="_blank"
+                                   class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg transition
+                                          {{ $isPaid ? 'text-green-700 bg-green-50 hover:bg-green-100' : 'text-blue-700 bg-blue-50 hover:bg-blue-100' }}" title="{{ $isPaid ? 'Download Receipt' : 'View Invoice' }}">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                     </svg>
-                                </button>
+                                    {{ $isPaid ? 'Receipt' : 'Invoice' }}
+                                </a>
                             </td>
                         </tr>
                     @empty

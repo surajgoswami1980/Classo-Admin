@@ -154,4 +154,29 @@ class PayrollController extends Controller
 
         return back()->with('success', 'Payslip marked as paid.');
     }
+
+    /**
+     * Printable payslip for a single staff member/month. Self-contained
+     * HTML → browser "Save as PDF". Scoped to the current school.
+     */
+    public function payslipDocument($id)
+    {
+        $schoolId = $this->schoolId();
+
+        $payslip = DB::table('payslips as p')
+            ->join('users as u', 'u.id', '=', 'p.user_id')
+            ->when($schoolId, fn ($q) => $q->where('p.school_id', $schoolId))
+            ->where('p.id', $id)
+            ->select(['p.*', 'u.name as staff_name', 'u.email as staff_email', 'u.phone as staff_phone', 'u.designation', 'u.department', 'u.employee_id'])
+            ->first();
+
+        if (!$payslip) abort(404, 'Payslip not found');
+
+        $school = \App\Models\School::find($payslip->school_id);
+
+        $months = [1=>'January',2=>'February',3=>'March',4=>'April',5=>'May',6=>'June',7=>'July',8=>'August',9=>'September',10=>'October',11=>'November',12=>'December'];
+        $monthName = $months[$payslip->month] ?? $payslip->month;
+
+        return view('admin.payroll.document', compact('payslip', 'school', 'monthName'));
+    }
 }

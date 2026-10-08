@@ -62,14 +62,14 @@ class ProfileController extends Controller
         $user = auth()->user();
 
         // Only school-admin can update school settings
-        if ($user->school_id && $user->hasRole('school-admin')) {
+        if ($user->school_id && $user->hasRole('school-admin') && $user->school) {
             $validated = $request->validate([
                 'school_name' => 'nullable|string|max:255',
                 'school_email' => 'nullable|email|max:255',
                 'school_phone' => 'nullable|string|max:15',
             ]);
 
-            $user->school?->update([
+            $user->school->update([
                 'name' => $validated['school_name'] ?? $user->school->name,
                 'email' => $validated['school_email'] ?? $user->school->email,
                 'phone' => $validated['school_phone'] ?? $user->school->phone,
@@ -77,5 +77,38 @@ class ProfileController extends Controller
         }
 
         return back()->with('success', 'Settings saved');
+    }
+
+    /**
+     * Persist OTP-login preferences into schools.settings JSON.
+     * Only a school-admin may change their own school's login policy.
+     */
+    public function updateOtpSettings(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!($user->school_id && $user->hasRole('school-admin') && $user->school)) {
+            return back()->withErrors(['error' => 'Only a school admin can change login settings.']);
+        }
+
+        $validated = $request->validate([
+            'otp_login_enabled' => 'nullable|boolean',
+            'otp_channels' => 'nullable|array',
+            'otp_channels.*' => 'in:email,mobile',
+        ]);
+
+        $enabled = $request->boolean('otp_login_enabled');
+        $channels = array_values(array_intersect($validated['otp_channels'] ?? [], ['email', 'mobile']));
+        if (empty($channels)) {
+            $channels = ['email', 'mobile'];
+        }
+
+        $settings = $user->school->settings ?? [];
+        $settings['otp_login_enabled'] = $enabled;
+        $settings['otp_channels'] = $channels;
+        $user->school->settings = $settings;
+        $user->school->save();
+
+        return back()->with('success', 'Login (OTP) settings updated.');
     }
 }

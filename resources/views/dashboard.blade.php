@@ -3,6 +3,9 @@
 @section('page-title', 'Dashboard')
 @section('content')
 <div>
+    <!-- Welcome Banner (school sees its own details after login) -->
+    <x-school-banner :banner="$banner ?? null" />
+
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         <div class="bg-white rounded-xl border p-5 hover:shadow-md transition-shadow">

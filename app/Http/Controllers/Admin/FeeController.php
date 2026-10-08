@@ -185,6 +185,49 @@ class FeeController extends Controller
         return view('admin.fees.defaulters', compact('defaulters'));
     }
 
+    /**
+     * Printable invoice (unpaid) OR receipt (paid) for a single invoice.
+     * Renders a self-contained, print-friendly HTML page — the browser's
+     * "Save as PDF" produces a clean document with no extra dependencies.
+     */
+    public function invoiceDocument($id)
+    {
+        $schoolId = $this->getSchoolId();
+
+        $invoice = DB::table('fee_invoices')
+            ->join('students', 'fee_invoices.student_id', '=', 'students.id')
+            ->join('users', 'students.user_id', '=', 'users.id')
+            ->leftJoin('classes', 'students.class_id', '=', 'classes.id')
+            ->leftJoin('sections', 'students.section_id', '=', 'sections.id')
+            ->leftJoin('fee_structures', 'fee_invoices.fee_structure_id', '=', 'fee_structures.id')
+            ->select([
+                'fee_invoices.*',
+                'users.name as student_name', 'users.email as student_email', 'users.phone as student_phone',
+                'students.roll_number', 'students.admission_number',
+                'students.father_name', 'students.father_phone',
+                'classes.name as class_name', 'sections.name as section_name',
+                'fee_structures.name as fee_name',
+            ])
+            ->where('fee_invoices.id', $id)
+            ->when($schoolId, fn($q) => $q->where('fee_invoices.school_id', $schoolId))
+            ->first();
+
+        if (!$invoice) abort(404, 'Invoice not found');
+
+        $school = \App\Models\School::find($invoice->school_id);
+
+        // Payment (for receipt view), if any successful txn exists
+        $payment = DB::table('payment_transactions')
+            ->where('fee_invoice_id', $invoice->id)
+            ->where('status', 'success')
+            ->orderByDesc('created_at')
+            ->first();
+
+        $isReceipt = $invoice->status === 'paid';
+
+        return view('admin.fees.document', compact('invoice', 'school', 'payment', 'isReceipt'));
+    }
+
     public function collectionReport(Request $request)
     {
         $schoolId = $this->getSchoolId();

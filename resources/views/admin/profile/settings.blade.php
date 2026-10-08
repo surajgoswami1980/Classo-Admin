@@ -36,6 +36,54 @@
     </div>
     @endif
 
+    @if($school && auth()->user()->hasRole('school-admin'))
+    @php
+        $otpEnabled = ($school->settings['otp_login_enabled'] ?? false) === true;
+        $otpChannels = $school->settings['otp_channels'] ?? ['email', 'mobile'];
+    @endphp
+    <!-- Login & OTP Settings -->
+    <div class="bg-white rounded-xl border p-6" x-data="{ otp: {{ $otpEnabled ? 'true' : 'false' }} }">
+        <div class="flex items-start justify-between">
+            <div>
+                <h3 class="text-base font-semibold text-gray-900">Login with OTP</h3>
+                <p class="text-sm text-gray-500 mt-0.5">Let your staff and students sign in with a one-time password sent to their email or mobile.</p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ panel_route('settings.otp') }}" class="mt-4 space-y-4">
+            @csrf
+
+            <!-- Toggle -->
+            <label class="flex items-center justify-between cursor-pointer rounded-lg border border-gray-200 px-4 py-3">
+                <span class="text-sm font-medium text-gray-700">Enable OTP login for this school</span>
+                <span class="relative inline-flex items-center">
+                    <input type="checkbox" name="otp_login_enabled" value="1" x-model="otp" class="sr-only peer">
+                    <span class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 transition-colors"></span>
+                    <span class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-5"></span>
+                </span>
+            </label>
+
+            <!-- Channels -->
+            <div x-show="otp" x-cloak class="rounded-lg border border-gray-200 px-4 py-3 space-y-2">
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Allowed channels</p>
+                <label class="flex items-center gap-2 text-sm text-gray-700">
+                    <input type="checkbox" name="otp_channels[]" value="email" {{ in_array('email', $otpChannels) ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                    Email OTP
+                </label>
+                <label class="flex items-center gap-2 text-sm text-gray-700">
+                    <input type="checkbox" name="otp_channels[]" value="mobile" {{ in_array('mobile', $otpChannels) ? 'checked' : '' }} class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                    Mobile (SMS) OTP
+                </label>
+                <p class="text-xs text-gray-400">If none selected, both are allowed by default.</p>
+            </div>
+
+            <div class="flex justify-end">
+                <button type="submit" class="px-5 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">Save Login Settings</button>
+            </div>
+        </form>
+    </div>
+    @endif
+
     <!-- Subscription Info -->
     <div class="bg-white rounded-xl border p-6">
         <h3 class="text-base font-semibold text-gray-900 mb-3">Subscription</h3>
