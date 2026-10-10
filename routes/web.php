@@ -23,6 +23,8 @@ use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\HostelController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\PayrollController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -146,6 +148,22 @@ Route::middleware(['auth', 'super.admin'])
             Route::post('/{id}/publish', [EventController::class, 'publish'])->name('publish');
             Route::post('/{id}/cancel', [EventController::class, 'cancel'])->name('cancel');
             Route::get('/{id}/registrations', [EventController::class, 'registrations'])->name('registrations');
+        });
+
+        // Banners (slider + popup)
+        Route::prefix('banners')->name('banners.')->group(function () {
+            Route::get('/', [BannerController::class, 'index'])->name('index');
+            Route::post('/', [BannerController::class, 'store'])->name('store');
+            Route::post('/{id}', [BannerController::class, 'update'])->name('update');
+            Route::delete('/{id}', [BannerController::class, 'destroy'])->name('destroy');
+            Route::patch('/{id}/toggle', [BannerController::class, 'toggle'])->name('toggle');
+            Route::post('/reorder/save', [BannerController::class, 'reorder'])->name('reorder');
+        });
+
+        // Notifications (push + in-app)
+        Route::prefix('notifications')->name('notifications.')->group(function () {
+            Route::get('/', [NotificationController::class, 'index'])->name('index');
+            Route::post('/send', [NotificationController::class, 'send'])->name('send');
         });
 
         // Hostel
@@ -318,6 +336,22 @@ Route::middleware(['auth', 'school.tenant', 'resource.permission'])
             Route::post('/{id}/publish', [EventController::class, 'publish'])->name('publish');
             Route::post('/{id}/cancel', [EventController::class, 'cancel'])->name('cancel');
             Route::get('/{id}/registrations', [EventController::class, 'registrations'])->name('registrations');
+        });
+
+        // Banners (slider + popup)
+        Route::prefix('banners')->name('banners.')->group(function () {
+            Route::get('/', [BannerController::class, 'index'])->name('index');
+            Route::post('/', [BannerController::class, 'store'])->name('store');
+            Route::post('/{id}', [BannerController::class, 'update'])->name('update');
+            Route::delete('/{id}', [BannerController::class, 'destroy'])->name('destroy');
+            Route::patch('/{id}/toggle', [BannerController::class, 'toggle'])->name('toggle');
+            Route::post('/reorder/save', [BannerController::class, 'reorder'])->name('reorder');
+        });
+
+        // Notifications (push + in-app)
+        Route::prefix('notifications')->name('notifications.')->group(function () {
+            Route::get('/', [NotificationController::class, 'index'])->name('index');
+            Route::post('/send', [NotificationController::class, 'send'])->name('send');
         });
 
         // Hostel

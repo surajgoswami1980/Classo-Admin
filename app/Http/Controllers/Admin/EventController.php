@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\NotificationController;
+use App\Models\Banner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Event management for the admin/client panel. Schools create events (free or
@@ -66,13 +69,22 @@ class EventController extends Controller
         $schoolId = $this->requireSchoolId();
         $validated = $this->validateEvent($request);
 
-        DB::table('events')->insert($validated + [
+        $banner = $this->storeUpload($request, 'banner', $schoolId);
+        $thumb = $this->storeUpload($request, 'thumbnail', $schoolId);
+        if ($banner) $validated['banner'] = $banner;
+        if ($thumb) $validated['thumbnail'] = $thumb;
+
+        $eventId = DB::table('events')->insertGetId($validated + [
             'school_id' => $schoolId,
             'status' => 'draft',
             'created_by' => auth()->id(),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        if ($request->boolean('set_as_banner') && $banner) {
+            $this->syncEventBanner($schoolId, $eventId, $banner, $thumb, $validated);
+        }
 
         return back()->with('success', 'Event created as draft. Publish it to notify students.');
     }
@@ -84,9 +96,45 @@ class EventController extends Controller
         abort_unless($event, 404, 'Event not found.');
 
         $validated = $this->validateEvent($request);
+
+        $banner = $this->storeUpload($request, 'banner', $schoolId);
+        $thumb = $this->storeUpload($request, 'thumbnail', $schoolId);
+        if ($banner) $validated['banner'] = $banner;
+        if ($thumb) $validated['thumbnail'] = $thumb;
+
         DB::table('events')->where('id', $id)->update($validated + ['updated_at' => now()]);
 
+        $bannerPath = $banner ?: $event->banner;
+        if ($request->boolean('set_as_banner') && $bannerPath) {
+            $this->syncEventBanner($schoolId, $id, $bannerPath, $thumb ?: $event->thumbnail, $validated);
+        }
+
         return back()->with('success', 'Event updated.');
+    }
+
+    /** Create or refresh the slider banner tied to this event. */
+    private function syncEventBanner(int $schoolId, int $eventId, string $image, ?string $thumb, array $event): void
+    {
+        Banner::updateOrCreate(
+            ['school_id' => $schoolId, 'link_type' => 'event', 'event_id' => $eventId],
+            [
+                'title' => $event['title'] ?? null,
+                'image' => $image,
+                'thumbnail' => $thumb ?: $image,
+                'placement' => 'slider',
+                'audience_type' => $event['audience_type'] ?? 'all',
+                'class_id' => $event['class_id'] ?? null,
+                'section_id' => $event['section_id'] ?? null,
+                'is_active' => true,
+                'created_by' => auth()->id(),
+            ],
+        );
+    }
+
+    private function storeUpload(Request $request, string $field, int $schoolId): ?string
+    {
+        if (!$request->hasFile($field)) return null;
+        return $request->file($field)->store("events/{$schoolId}", 'public');
     }
 
     public function destroy($id)
@@ -117,7 +165,7 @@ class EventController extends Controller
             default   => ['target_type' => 'role', 'target_role' => 'student'],
         };
 
-        DB::table('notifications')->insert(array_merge([
+        $notificationId = DB::table('notifications')->insertGetId(array_merge([
             'school_id' => $schoolId,
             'title' => 'New Event: ' . $event->title,
             'body' => $event->title . ' on ' . \Carbon\Carbon::parse($event->start_at)->format('d M Y, h:i A')
@@ -127,12 +175,14 @@ class EventController extends Controller
             'target_class_id' => null,
             'target_section_id' => null,
             'sent_by' => auth()->id(),
-            'status' => 'sent',
-            'sent_at' => now(),
+            'status' => 'queued',
             'created_at' => now(),
         ], $target));
 
-        return back()->with('success', 'Event published and students notified.');
+        // Fan out push + in-app via the shared Redis queue (worker handles it).
+        NotificationController::queuePush($notificationId, $schoolId);
+
+        return back()->with('success', 'Event published and students notified (push + in-app).');
     }
 
     public function cancel($id)

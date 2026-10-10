@@ -1,8 +1,8 @@
 {
     "name": "appsquadz/school-erp-admin",
     "type": "project",
-    "description": "School ERP SaaS Admin Panel - Multi-tenant school management system",
-    "keywords": ["laravel", "school", "erp", "saas", "multi-tenant"],
+    "description": "Quilo - Multi-Tenant SaaS ERP Admin Panel",
+    "keywords": ["laravel", "quilo", "erp", "saas", "multi-tenant"],
     "license": "proprietary",
     "require": {
         "php": "^8.2",

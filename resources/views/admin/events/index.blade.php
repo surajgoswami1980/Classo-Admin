@@ -98,7 +98,7 @@
     <div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 overflow-y-auto" @click.self="showModal = false">
         <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl p-6 my-8" @click.stop>
             <h3 class="text-base font-semibold text-gray-900 mb-4" x-text="editing ? 'Edit Event' : 'Create Event'"></h3>
-            <form method="POST" :action="editing ? '{{ url(panel_prefix().'/events') }}/' + form.id : '{{ panel_route('events.store') }}'" class="space-y-4">
+            <form method="POST" enctype="multipart/form-data" :action="editing ? '{{ url(panel_prefix().'/events') }}/' + form.id : '{{ panel_route('events.store') }}'" class="space-y-4">
                 @csrf
                 <template x-if="editing"><input type="hidden" name="_method" value="PUT"></template>
 
@@ -110,6 +110,22 @@
                     <label class="block text-xs font-medium text-gray-600 mb-1">Description</label>
                     <textarea name="description" x-model="form.description" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
                 </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Event Image / Banner</label>
+                        <input type="file" name="banner" accept="image/*" class="w-full text-xs">
+                        <p class="text-[11px] text-gray-400 mt-1">Shown on the event; can also be used as an app banner.</p>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Thumbnail (optional)</label>
+                        <input type="file" name="thumbnail" accept="image/*" class="w-full text-xs">
+                    </div>
+                </div>
+                <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+                    <input type="hidden" name="set_as_banner" value="0">
+                    <input type="checkbox" name="set_as_banner" value="1" class="rounded border-gray-300">
+                    Also show this event's image as an app banner (slider)
+                </label>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1">Category</label>

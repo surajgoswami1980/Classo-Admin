@@ -4140,3 +4140,15 @@
 #19 C:/Appsquadz_API/school-erp-admin/artisan(11): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
 #20 {main}
 "} 
+[2026-10-09 12:04:42] local.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Appsquadz_API/school-erp-admin/vendor/composer/ClassLoader.php:429)
+[stacktrace]
+#0 {main}
+"} 
+[2026-10-09 12:11:24] local.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Appsquadz_API/school-erp-admin/vendor/composer/ClassLoader.php:429)
+[stacktrace]
+#0 {main}
+"} 
+[2026-10-10 21:08:25] local.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Appsquadz_API/school-erp-admin/vendor/composer/ClassLoader.php:429)
+[stacktrace]
+#0 {main}
+"} 

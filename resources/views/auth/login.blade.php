@@ -60,22 +60,23 @@
                 <div class="max-w-lg">
                     <!-- Logo -->
                     <div class="flex items-center gap-3 mb-12">
-                        <div class="flex items-center justify-center w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm">
-                            <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
-                            </svg>
+                        <div class="flex items-center justify-center w-14 h-14 rounded-xl bg-white/15 backdrop-blur-sm">
+                            <x-quilo-logo :size="36" />
                         </div>
-                        <span class="text-2xl font-bold text-white">School ERP</span>
+                        <div class="leading-none">
+                            <span class="text-2xl font-extrabold text-white tracking-tight">Quilo</span>
+                            <p class="text-[11px] uppercase tracking-[0.2em] text-blue-200/80 mt-1">Multi-Tenant SaaS ERP</p>
+                        </div>
                     </div>
 
                     <!-- Headline -->
                     <h1 class="text-4xl xl:text-5xl font-bold text-white leading-tight mb-6">
-                        Manage your school, <br>
-                        <span class="text-blue-200">effortlessly.</span>
+                        One platform, <br>
+                        <span class="text-blue-200">greater growth.</span>
                     </h1>
 
                     <p class="text-lg text-blue-100/80 mb-10 leading-relaxed">
-                        A complete administration platform for modern schools. Track attendance, manage fees, organize exams, and more — all from one place.
+                        A complete multi-tenant administration platform for modern institutions. Track attendance, manage fees, organize exams, and more — all from one place.
                     </p>
 
                     <!-- Feature highlights -->
@@ -115,12 +116,8 @@
 
                 <!-- Mobile logo (hidden on desktop) -->
                 <div class="flex items-center gap-3 mb-10 lg:hidden">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-primary-600">
-                        <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
-                        </svg>
-                    </div>
-                    <span class="text-xl font-bold text-gray-900">School ERP</span>
+                    <x-quilo-logo :size="40" />
+                    <span class="text-xl font-extrabold text-gray-900 tracking-tight">Quilo</span>
                 </div>
 
                 <!-- Form header -->

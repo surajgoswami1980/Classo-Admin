@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Dashboard') - {{ config('app.name', 'School ERP Admin') }}</title>
+    <title>@yield('title', 'Dashboard') - {{ config('app.name', 'Quilo') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -51,16 +51,14 @@
         <aside :class="[sidebarOpen ? 'translate-x-0' : '-translate-x-full', sidebarCollapsed ? 'lg:w-20' : 'lg:w-72']"
                class="fixed inset-y-0 left-0 z-50 flex flex-col w-72 transition-all duration-300 ease-in-out bg-sidebar-bg lg:translate-x-0 lg:static lg:z-auto">
 
-            <!-- School Logo & Name -->
+            <!-- Brand / School Logo & Name -->
             <div class="flex items-center h-16 px-6 border-b border-white/10 shrink-0">
                 <div class="flex items-center gap-3 overflow-hidden">
-                    <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-primary-600 shrink-0">
-                        <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
-                        </svg>
+                    <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-white/10 shrink-0">
+                        <x-quilo-logo :size="26" />
                     </div>
                     <span x-show="!sidebarCollapsed" class="text-lg font-bold text-white truncate">
-                        {{ auth()->user()?->school?->name ?? config('app.name') }}
+                        {{ auth()->user()?->school?->name ?? config('app.name', 'Quilo') }}
                     </span>
                 </div>
             </div>
@@ -90,6 +88,8 @@
                         ['name' => 'Transport', 'route' => $prefix . '.transport.index', 'icon' => 'truck'],
                         ['name' => 'Library', 'route' => $prefix . '.library.index', 'icon' => 'book-open'],
                         ['name' => 'Events', 'route' => $prefix . '.events.index', 'icon' => 'calendar'],
+                        ['name' => 'Banners', 'route' => $prefix . '.banners.index', 'icon' => 'document-text'],
+                        ['name' => 'Notifications', 'route' => $prefix . '.notifications.index', 'icon' => 'bell'],
                     ]);
                     $canSeeTeam = auth()->user()->hasRole('super-admin')
                         || auth()->user()->hasRole('school-admin')
