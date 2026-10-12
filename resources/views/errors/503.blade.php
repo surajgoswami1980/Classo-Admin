@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('code', '503')
+@section('code-gradient', 'from-slate-500 to-gray-700')
+@section('title', 'Under maintenance')
+@section('message', 'We\'re performing scheduled maintenance and will be back shortly. Thank you for your patience.')

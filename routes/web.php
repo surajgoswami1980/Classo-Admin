@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\PayrollController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\StoreController;
 
 /*
 |--------------------------------------------------------------------------
@@ -164,6 +165,17 @@ Route::middleware(['auth', 'super.admin'])
         Route::prefix('notifications')->name('notifications.')->group(function () {
             Route::get('/', [NotificationController::class, 'index'])->name('index');
             Route::post('/send', [NotificationController::class, 'send'])->name('send');
+        });
+
+        // Store (sellable items + orders)
+        Route::prefix('store')->name('store.')->group(function () {
+            Route::get('/', [StoreController::class, 'index'])->name('index');
+            Route::post('/', [StoreController::class, 'store'])->name('store');
+            Route::post('/{id}', [StoreController::class, 'update'])->name('update');
+            Route::delete('/{id}', [StoreController::class, 'destroy'])->name('destroy');
+            Route::patch('/{id}/toggle', [StoreController::class, 'toggle'])->name('toggle');
+            Route::get('/orders/list', [StoreController::class, 'orders'])->name('orders');
+            Route::post('/orders/{id}/complete', [StoreController::class, 'complete'])->name('orders.complete');
         });
 
         // Hostel
@@ -352,6 +364,17 @@ Route::middleware(['auth', 'school.tenant', 'resource.permission'])
         Route::prefix('notifications')->name('notifications.')->group(function () {
             Route::get('/', [NotificationController::class, 'index'])->name('index');
             Route::post('/send', [NotificationController::class, 'send'])->name('send');
+        });
+
+        // Store (sellable items + orders)
+        Route::prefix('store')->name('store.')->group(function () {
+            Route::get('/', [StoreController::class, 'index'])->name('index');
+            Route::post('/', [StoreController::class, 'store'])->name('store');
+            Route::post('/{id}', [StoreController::class, 'update'])->name('update');
+            Route::delete('/{id}', [StoreController::class, 'destroy'])->name('destroy');
+            Route::patch('/{id}/toggle', [StoreController::class, 'toggle'])->name('toggle');
+            Route::get('/orders/list', [StoreController::class, 'orders'])->name('orders');
+            Route::post('/orders/{id}/complete', [StoreController::class, 'complete'])->name('orders.complete');
         });
 
         // Hostel

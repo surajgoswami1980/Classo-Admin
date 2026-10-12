@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('code', '500')
+@section('code-gradient', 'from-rose-500 to-red-600')
+@section('title', 'Server error')
+@section('message', 'Something went wrong on our end. Our team has been notified. Please try again in a moment.')

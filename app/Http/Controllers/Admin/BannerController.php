@@ -55,10 +55,17 @@ class BannerController extends Controller
     public function store(Request $request)
     {
         $schoolId = $this->requireSchoolId();
+
+        // Image is required when creating a new banner — validate up front so
+        // the user gets a friendly inline error instead of a hard 422 page.
+        $request->validate(
+            ['image' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096'],
+            ['image.required' => 'Please choose a banner image.'],
+        );
+
         $data = $this->validateBanner($request);
 
-        $data['image'] = $this->storeUpload($request, 'image', $schoolId)
-            ?? abort(422, 'Banner image is required.');
+        $data['image'] = $this->storeUpload($request, 'image', $schoolId);
         $data['thumbnail'] = $this->storeUpload($request, 'thumbnail', $schoolId) ?? $data['image'];
 
         // Enforce: only one active popup per school.

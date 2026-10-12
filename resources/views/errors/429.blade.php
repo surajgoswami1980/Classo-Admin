@@ -1,0 +1,5 @@
+@extends('errors.layout')
+@section('code', '429')
+@section('code-gradient', 'from-amber-500 to-orange-600')
+@section('title', 'Too many requests')
+@section('message', 'You\'re doing that a bit too fast. Please wait a moment and try again.')

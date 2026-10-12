@@ -5,6 +5,17 @@
 /public/storage
 /storage/*.key
 /vendor
+
+# Compiled/cached framework output (regenerated at runtime)
+/storage/framework/views/*.php
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/logs/*.log
+/bootstrap/cache/*.php
+
+# Generated sample documents
+/sample_*.pdf
+
 .env
 .env.backup
 .env.production

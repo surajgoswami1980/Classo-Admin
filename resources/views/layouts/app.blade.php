@@ -21,11 +21,43 @@
                     colors: {
                         primary: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' },
                         sidebar: { bg: '#0f172a', hover: '#1e293b', active: '#334155', text: '#94a3b8', textActive: '#f8fafc' },
-                    }
+                    },
+                    keyframes: {
+                        'fade-up': { '0%': { opacity: 0, transform: 'translateY(10px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
+                        'fade-in': { '0%': { opacity: 0 }, '100%': { opacity: 1 } },
+                        'scale-in': { '0%': { opacity: 0, transform: 'scale(.96)' }, '100%': { opacity: 1, transform: 'scale(1)' } },
+                        shimmer: { '100%': { transform: 'translateX(100%)' } },
+                    },
+                    animation: {
+                        'fade-up': 'fade-up .4s ease-out both',
+                        'fade-in': 'fade-in .3s ease-out both',
+                        'scale-in': 'scale-in .25s ease-out both',
+                    },
                 }
             }
         }
     </script>
+    <style>
+        [x-cloak]{display:none!important}
+        /* Staggered entrance for grids/cards */
+        .stagger > *{animation:fade-up .4s ease-out both}
+        .stagger > *:nth-child(1){animation-delay:.02s}
+        .stagger > *:nth-child(2){animation-delay:.06s}
+        .stagger > *:nth-child(3){animation-delay:.10s}
+        .stagger > *:nth-child(4){animation-delay:.14s}
+        .stagger > *:nth-child(5){animation-delay:.18s}
+        .stagger > *:nth-child(6){animation-delay:.22s}
+        .stagger > *:nth-child(7){animation-delay:.26s}
+        .stagger > *:nth-child(8){animation-delay:.30s}
+        @keyframes fade-up{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+        /* Smooth hover lift */
+        .card-hover{transition:transform .2s ease,box-shadow .2s ease}
+        .card-hover:hover{transform:translateY(-3px);box-shadow:0 12px 28px -8px rgba(37,99,235,.18)}
+        /* Nav link active indicator */
+        .nav-link{position:relative;transition:all .15s ease}
+        /* Main content fade on load */
+        main > *{animation:fade-in .35s ease-out both}
+    </style>
 
     <!-- Alpine.js for interactivity -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -89,6 +121,7 @@
                         ['name' => 'Library', 'route' => $prefix . '.library.index', 'icon' => 'book-open'],
                         ['name' => 'Events', 'route' => $prefix . '.events.index', 'icon' => 'calendar'],
                         ['name' => 'Banners', 'route' => $prefix . '.banners.index', 'icon' => 'document-text'],
+                        ['name' => 'Store', 'route' => $prefix . '.store.index', 'icon' => 'currency-rupee'],
                         ['name' => 'Notifications', 'route' => $prefix . '.notifications.index', 'icon' => 'bell'],
                     ]);
                     $canSeeTeam = auth()->user()->hasRole('super-admin')
@@ -100,10 +133,14 @@
                 @endphp
 
                 @foreach($navItems as $item)
+                    @php $active = request()->routeIs($item['route'] . '*'); @endphp
                     <a href="{{ $item['route'] !== '#' ? route($item['route']) : '#' }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
-                              {{ request()->routeIs($item['route'] . '*') ? 'bg-sidebar-active text-sidebar-textActive' : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-textActive' }}">
-                        @include('components.icons.' . $item['icon'], ['class' => 'w-5 h-5 shrink-0'])
+                       class="nav-link group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+                              {{ $active ? 'bg-sidebar-active text-sidebar-textActive' : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-textActive' }}">
+                        @if($active)<span class="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r-full bg-primary-500"></span>@endif
+                        <span class="transition-transform group-hover:scale-110 {{ $active ? 'text-primary-400' : '' }}">
+                            @include('components.icons.' . $item['icon'], ['class' => 'w-5 h-5 shrink-0'])
+                        </span>
                         <span x-show="!sidebarCollapsed">{{ $item['name'] }}</span>
                     </a>
                 @endforeach
@@ -254,6 +291,24 @@
                         </svg>
                         <p class="text-sm font-medium text-red-800">{{ session('error') }}</p>
                         <button @click="show = false" class="ml-auto text-red-600 hover:text-red-800">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div x-data="{ show: true }" x-show="show"
+                         class="mb-6 flex items-start gap-3 p-4 rounded-lg bg-red-50 border border-red-200">
+                        <svg class="w-5 h-5 text-red-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                        </svg>
+                        <div class="flex-1">
+                            <p class="text-sm font-semibold text-red-800">Please fix the following:</p>
+                            <ul class="mt-1 list-disc list-inside text-sm text-red-700 space-y-0.5">
+                                @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
+                            </ul>
+                        </div>
+                        <button @click="show = false" class="text-red-600 hover:text-red-800">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
                         </button>
                     </div>
