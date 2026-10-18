@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Dashboard') - {{ config('app.name', 'Quilo') }}</title>
+    <title>@yield('title', 'Dashboard') - {{ config('app.name', 'MyClasses') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -53,6 +53,11 @@
         /* Smooth hover lift */
         .card-hover{transition:transform .2s ease,box-shadow .2s ease}
         .card-hover:hover{transform:translateY(-3px);box-shadow:0 12px 28px -8px rgba(37,99,235,.18)}
+        /* Claymorphism — soft, puffy cards for a friendly admin feel */
+        .clay{background:#ffffff;border-radius:20px;box-shadow:8px 8px 20px rgba(37,99,235,.08),-8px -8px 20px rgba(255,255,255,.9),inset 0 0 0 1px rgba(226,232,240,.5)}
+        .clay-primary{background:linear-gradient(145deg,#3b82f6,#2563eb);border-radius:20px;box-shadow:8px 8px 20px rgba(37,99,235,.28),-6px -6px 16px rgba(147,197,253,.35)}
+        .clay-btn{border-radius:14px;box-shadow:4px 4px 10px rgba(37,99,235,.15),-4px -4px 10px rgba(255,255,255,.85);transition:all .15s ease}
+        .clay-btn:active{box-shadow:inset 3px 3px 7px rgba(37,99,235,.15),inset -3px -3px 7px rgba(255,255,255,.85)}
         /* Nav link active indicator */
         .nav-link{position:relative;transition:all .15s ease}
         /* Main content fade on load */
@@ -84,65 +89,120 @@
                class="fixed inset-y-0 left-0 z-50 flex flex-col w-72 transition-all duration-300 ease-in-out bg-sidebar-bg lg:translate-x-0 lg:static lg:z-auto">
 
             <!-- Brand / School Logo & Name -->
-            <div class="flex items-center h-16 px-6 border-b border-white/10 shrink-0">
-                <div class="flex items-center gap-3 overflow-hidden">
-                    <div class="flex items-center justify-center w-9 h-9 rounded-lg bg-white/10 shrink-0">
-                        <x-quilo-logo :size="26" />
+            <div class="relative flex items-center h-16 px-5 border-b border-white/10 shrink-0 overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-primary-600/20 to-transparent pointer-events-none"></div>
+                <div class="relative flex items-center gap-3 overflow-hidden">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-white shadow-lg shrink-0 ring-1 ring-white/20">
+                        <x-quilo-logo :size="28" />
                     </div>
-                    <span x-show="!sidebarCollapsed" class="text-lg font-bold text-white truncate">
-                        {{ auth()->user()?->school?->name ?? config('app.name', 'Quilo') }}
-                    </span>
+                    <div x-show="!sidebarCollapsed" class="overflow-hidden">
+                        <span class="block text-base font-bold text-white truncate leading-tight">
+                            {{ auth()->user()?->school?->name ?? config('app.name', 'MyClasses') }}
+                        </span>
+                        <span class="block text-[11px] text-sidebar-text truncate">
+                            {{ auth()->user()->hasRole('super-admin') ? 'Super Admin' : 'School Panel' }}
+                        </span>
+                    </div>
                 </div>
             </div>
 
             <!-- Navigation -->
-            <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+            <nav class="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
                 @php
                     $prefix = auth()->user()->hasRole('super-admin') ? 'admin' : 'user';
-                    $navItems = [
-                        ['name' => 'Dashboard', 'route' => $prefix . '.dashboard', 'icon' => 'home'],
-                    ];
-                    if (auth()->user()->hasRole('super-admin')) {
-                        $navItems[] = ['name' => 'Schools', 'route' => 'admin.schools.index', 'icon' => 'home'];
-                        $navItems[] = ['name' => 'Subscriptions', 'route' => 'admin.subscriptions.index', 'icon' => 'briefcase'];
-                        $navItems[] = ['name' => 'Revenue', 'route' => 'admin.revenue', 'icon' => 'chart-bar'];
-                        $navItems[] = ['name' => 'Resources & Permissions', 'route' => 'admin.resources.index', 'icon' => 'cog-6-tooth'];
+                    $isSuper = auth()->user()->hasRole('super-admin');
+
+                    // Grouped navigation for a cleaner, more organised sidebar.
+                    $navGroups = [];
+
+                    // Overview
+                    $overview = [['name' => 'Dashboard', 'route' => $prefix . '.dashboard', 'icon' => 'home']];
+                    if ($isSuper) {
+                        $enquiryBadge = \Illuminate\Support\Facades\Schema::hasTable('enquiries')
+                            ? \App\Models\Enquiry::where('status', 'new')->count() : 0;
+                        $overview[] = ['name' => 'Schools', 'route' => 'admin.schools.index', 'icon' => 'home'];
+                        $overview[] = ['name' => 'Subscriptions', 'route' => 'admin.subscriptions.index', 'icon' => 'briefcase'];
+                        $overview[] = ['name' => 'Revenue', 'route' => 'admin.revenue', 'icon' => 'chart-bar'];
+                        $overview[] = ['name' => 'Enquiries', 'route' => 'admin.enquiries.index', 'icon' => 'inbox', 'badge' => $enquiryBadge];
                     }
-                    $navItems = array_merge($navItems, [
+                    $navGroups[] = ['label' => $isSuper ? 'Platform' : 'Overview', 'items' => $overview];
+
+                    // Academics
+                    $navGroups[] = ['label' => 'Academics', 'items' => [
                         ['name' => 'Sessions', 'route' => $prefix . '.academic.sessions', 'icon' => 'calendar'],
                         ['name' => 'Classes', 'route' => $prefix . '.academic.classes', 'icon' => 'academic-cap'],
                         ['name' => 'Sections', 'route' => $prefix . '.academic.sections', 'icon' => 'users'],
                         ['name' => 'Students', 'route' => $prefix . '.students.index', 'icon' => 'users'],
                         ['name' => 'Teachers', 'route' => $prefix . '.teachers.index', 'icon' => 'academic-cap'],
                         ['name' => 'Attendance', 'route' => $prefix . '.attendance.index', 'icon' => 'clipboard-check'],
-                        ['name' => 'Fees', 'route' => $prefix . '.fees.index', 'icon' => 'currency-rupee'],
+                        ['name' => 'Assignments', 'route' => $prefix . '.assignments.index', 'icon' => 'document-text'],
                         ['name' => 'Exams', 'route' => $prefix . '.exams.index', 'icon' => 'document-text'],
+                    ]];
+
+                    // Operations
+                    $navGroups[] = ['label' => 'Operations', 'items' => [
+                        ['name' => 'Fees', 'route' => $prefix . '.fees.index', 'icon' => 'currency-rupee'],
+                        ['name' => 'Fee Categories', 'route' => $prefix . '.fees.categories', 'icon' => 'currency-rupee'],
+                        ['name' => 'Pending Fees', 'route' => $prefix . '.fees.pending', 'icon' => 'currency-rupee'],
                         ['name' => 'Transport', 'route' => $prefix . '.transport.index', 'icon' => 'truck'],
                         ['name' => 'Library', 'route' => $prefix . '.library.index', 'icon' => 'book-open'],
+                    ]];
+
+                    // Engagement
+                    $navGroups[] = ['label' => 'Engagement', 'items' => [
                         ['name' => 'Events', 'route' => $prefix . '.events.index', 'icon' => 'calendar'],
                         ['name' => 'Banners', 'route' => $prefix . '.banners.index', 'icon' => 'document-text'],
                         ['name' => 'Store', 'route' => $prefix . '.store.index', 'icon' => 'currency-rupee'],
                         ['name' => 'Notifications', 'route' => $prefix . '.notifications.index', 'icon' => 'bell'],
-                    ]);
-                    $canSeeTeam = auth()->user()->hasRole('super-admin')
+                    ]];
+
+                    // Administration
+                    $adminItems = [];
+                    $canSeeTeam = $isSuper
                         || auth()->user()->hasRole('school-admin')
                         || has_resource_permission('team.view');
                     if ($canSeeTeam) {
-                        $navItems[] = ['name' => 'Team', 'route' => $prefix . '.team.index', 'icon' => 'briefcase'];
+                        $adminItems[] = ['name' => 'Team', 'route' => $prefix . '.team.index', 'icon' => 'briefcase'];
+                    }
+                    if ($isSuper) {
+                        $adminItems[] = ['name' => 'Payment Settings', 'route' => 'admin.payment-settings.index', 'icon' => 'currency-rupee'];
+                        $adminItems[] = ['name' => 'Subscription Billing', 'route' => 'admin.subscription-invoices.index', 'icon' => 'briefcase'];
+                        $adminItems[] = ['name' => 'Resources & Permissions', 'route' => 'admin.resources.index', 'icon' => 'cog-6-tooth'];
+                    } else {
+                        $adminItems[] = ['name' => 'My Subscription', 'route' => $prefix . '.subscription', 'icon' => 'currency-rupee'];
+                    }
+                    if (!empty($adminItems)) {
+                        $navGroups[] = ['label' => 'Administration', 'items' => $adminItems];
                     }
                 @endphp
 
-                @foreach($navItems as $item)
-                    @php $active = request()->routeIs($item['route'] . '*'); @endphp
-                    <a href="{{ $item['route'] !== '#' ? route($item['route']) : '#' }}"
-                       class="nav-link group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
-                              {{ $active ? 'bg-sidebar-active text-sidebar-textActive' : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-textActive' }}">
-                        @if($active)<span class="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r-full bg-primary-500"></span>@endif
-                        <span class="transition-transform group-hover:scale-110 {{ $active ? 'text-primary-400' : '' }}">
-                            @include('components.icons.' . $item['icon'], ['class' => 'w-5 h-5 shrink-0'])
-                        </span>
-                        <span x-show="!sidebarCollapsed">{{ $item['name'] }}</span>
-                    </a>
+                @foreach($navGroups as $group)
+                    <div>
+                        <p x-show="!sidebarCollapsed" class="px-3 mb-1.5 text-[10px] font-bold uppercase tracking-widest text-sidebar-text/60">
+                            {{ $group['label'] }}
+                        </p>
+                        <div class="space-y-0.5">
+                            @foreach($group['items'] as $item)
+                                @php $active = request()->routeIs($item['route'] . '*'); @endphp
+                                <a href="{{ $item['route'] !== '#' ? route($item['route']) : '#' }}"
+                                   @if($active) title="{{ $item['name'] }}" @endif
+                                   class="nav-link group relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
+                                          {{ $active ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-900/30' : 'text-sidebar-text hover:bg-sidebar-hover hover:text-sidebar-textActive' }}">
+                                    @if($active)<span class="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-1 rounded-r-full bg-cyan-300"></span>@endif
+                                    <span class="transition-transform group-hover:scale-110 {{ $active ? 'text-white' : 'text-sidebar-text group-hover:text-cyan-300' }}">
+                                        @include('components.icons.' . $item['icon'], ['class' => 'w-5 h-5 shrink-0'])
+                                    </span>
+                                    <span x-show="!sidebarCollapsed" class="truncate">{{ $item['name'] }}</span>
+                                    @if(!empty($item['badge']) && $item['badge'] > 0)
+                                        <span x-show="!sidebarCollapsed"
+                                              class="ml-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-bold text-white bg-rose-500 rounded-full animate-pulse">
+                                            {{ $item['badge'] > 99 ? '99+' : $item['badge'] }}
+                                        </span>
+                                    @endif
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
                 @endforeach
             </nav>
 

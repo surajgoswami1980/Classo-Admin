@@ -18,7 +18,19 @@ class AttendanceController extends Controller
 
     public function index()
     {
-        return view('attendance.index');
+        $schoolId = $this->getSchoolId();
+
+        $navClasses = DB::table('classes')
+            ->when($schoolId, fn($q) => $q->where('school_id', $schoolId))
+            ->orderBy('numeric_order')
+            ->pluck('name', 'id');
+
+        $navSections = DB::table('sections')
+            ->when($schoolId, fn($q) => $q->where('school_id', $schoolId))
+            ->orderBy('name')
+            ->get(['id', 'name', 'class_id']);
+
+        return view('attendance.index', compact('navClasses', 'navSections'));
     }
 
     public function studentAttendance(Request $request)
@@ -29,7 +41,112 @@ class AttendanceController extends Controller
             ->orderBy('numeric_order')
             ->pluck('name', 'id');
 
-        return view('admin.attendance.students', compact('classes'));
+        // All sections for the school so the UI can filter them by the chosen
+        // class entirely client-side (no extra round-trip).
+        $sections = DB::table('sections')
+            ->when($schoolId, fn($q) => $q->where('school_id', $schoolId))
+            ->orderBy('name')
+            ->get(['id', 'name', 'class_id']);
+
+        return view('admin.attendance.students', compact('classes', 'sections'));
+    }
+
+    /**
+     * AJAX: students of a class/section merged with any attendance already
+     * recorded for a given date. Lets the admin review/complete an existing
+     * day's record and mark previous days.
+     */
+    public function studentRoster(Request $request)
+    {
+        $classId = (int) $request->get('class_id');
+        $sectionId = (int) $request->get('section_id');
+        $date = $request->get('date');
+        $schoolId = $this->getSchoolId();
+
+        if (!$classId || !$sectionId) {
+            return response()->json(['data' => [], 'has_record' => false]);
+        }
+
+        $students = DB::table('students')
+            ->join('users', 'students.user_id', '=', 'users.id')
+            ->where('students.class_id', $classId)
+            ->where('students.section_id', $sectionId)
+            ->when($schoolId, fn($q) => $q->where('students.school_id', $schoolId))
+            ->where('students.status', 'active')
+            ->select(['students.id', 'students.roll_number', 'users.name'])
+            ->orderBy('students.roll_number')
+            ->get();
+
+        // Existing marks for the date → so admin sees what's already recorded.
+        $existing = [];
+        if ($date) {
+            $existing = DB::table('student_attendance')
+                ->where('class_id', $classId)
+                ->where('section_id', $sectionId)
+                ->whereDate('date', $date)
+                ->pluck('status', 'student_id')
+                ->toArray();
+        }
+
+        $data = $students->map(function ($s) use ($existing) {
+            return [
+                'id' => $s->id,
+                'roll_number' => $s->roll_number,
+                'name' => $s->name,
+                'status' => $existing[$s->id] ?? 'present',
+                'recorded' => isset($existing[$s->id]),
+            ];
+        });
+
+        return response()->json([
+            'data' => $data,
+            'has_record' => count($existing) > 0,
+        ]);
+    }
+
+    /**
+     * AJAX: staff list merged with any attendance already recorded for a date.
+     */
+    public function staffRoster(Request $request)
+    {
+        $date = $request->get('date');
+        $schoolId = $this->getSchoolId();
+
+        $staff = DB::table('users')
+            ->when($schoolId, fn($q) => $q->where('school_id', $schoolId))
+            ->whereIn('id', function ($q) {
+                $q->select('model_id')->from('model_has_roles')
+                  ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                  ->whereIn('roles.name', ['teacher', 'school-admin', 'sub-admin']);
+            })
+            ->where('is_active', true)
+            ->select(['id', 'name', 'email', 'employee_id'])
+            ->orderBy('name')
+            ->get();
+
+        $existing = [];
+        if ($date) {
+            $existing = DB::table('staff_attendance')
+                ->when($schoolId, fn($q) => $q->where('school_id', $schoolId))
+                ->whereDate('date', $date)
+                ->pluck('status', 'user_id')
+                ->toArray();
+        }
+
+        $data = $staff->map(function ($m) use ($existing) {
+            return [
+                'id' => $m->id,
+                'employee_id' => $m->employee_id,
+                'name' => $m->name,
+                'status' => $existing[$m->id] ?? 'present',
+                'recorded' => isset($existing[$m->id]),
+            ];
+        });
+
+        return response()->json([
+            'data' => $data,
+            'has_record' => count($existing) > 0,
+        ]);
     }
 
     public function markStudentAttendance(Request $request)

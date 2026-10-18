@@ -4,329 +4,292 @@
 @section('page-title', 'Attendance')
 
 @section('content')
-<div x-data="attendancePage()" x-init="init()">
+<div x-data="attendanceHub()" x-init="init()" class="space-y-6">
 
-    <!-- Tab Navigation -->
-    <div class="flex gap-1 p-1 bg-gray-100 rounded-xl w-fit mb-6">
-        <button @click="activeTab = 'student'"
-                :class="activeTab === 'student' ? 'bg-white shadow-sm text-blue-700' : 'text-gray-600 hover:text-gray-900'"
-                class="px-5 py-2 rounded-lg text-sm font-medium transition-all">
+    {{-- Tab Navigation --}}
+    <div class="flex gap-1 p-1 bg-gray-100 rounded-xl w-fit">
+        <button @click="tab = 'student'"
+                :class="tab === 'student' ? 'bg-white shadow-sm text-primary-700' : 'text-gray-600 hover:text-gray-900'"
+                class="px-5 py-2 rounded-lg text-sm font-semibold transition-all">
             Student Attendance
         </button>
-        <button @click="activeTab = 'staff'"
-                :class="activeTab === 'staff' ? 'bg-white shadow-sm text-blue-700' : 'text-gray-600 hover:text-gray-900'"
-                class="px-5 py-2 rounded-lg text-sm font-medium transition-all">
+        <button @click="switchStaff()"
+                :class="tab === 'staff' ? 'bg-white shadow-sm text-primary-700' : 'text-gray-600 hover:text-gray-900'"
+                class="px-5 py-2 rounded-lg text-sm font-semibold transition-all">
             Staff / Teacher Attendance
         </button>
     </div>
 
-    <!-- ═══ Student Attendance Tab ═══ -->
-    <div x-show="activeTab === 'student'" x-transition>
-        <!-- Filters -->
-        <div class="bg-white rounded-xl border p-5 mb-6">
+    {{-- ═══ STUDENT TAB ═══ --}}
+    <div x-show="tab === 'student'" x-transition class="space-y-6">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Class</label>
-                    <select x-model="filters.class_id" @change="fetchSections()" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Class</label>
+                    <select x-model="classId" @change="onClassChange()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none transition">
                         <option value="">Select Class</option>
-                        <template x-for="cls in classes" :key="cls.id">
-                            <option :value="cls.id" x-text="cls.name"></option>
-                        </template>
+                        @foreach($navClasses ?? [] as $id => $name)
+                            <option value="{{ $id }}">{{ $name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Section</label>
-                    <select x-model="filters.section_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Section</label>
+                    <select x-model="sectionId" @change="loadStudents()" :disabled="!classId" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none transition disabled:bg-gray-50 disabled:text-gray-400">
                         <option value="">Select Section</option>
-                        <template x-for="sec in sections" :key="sec.id">
-                            <option :value="sec.id" x-text="sec.name"></option>
+                        <template x-for="s in filteredSections" :key="s.id">
+                            <option :value="s.id" x-text="s.name"></option>
                         </template>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Date</label>
-                    <input type="date" x-model="filters.date" :max="today" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Date</label>
+                    <input type="date" x-model="date" :max="today" @change="loadStudents()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none transition">
                 </div>
-                <div class="flex items-end">
-                    <button @click="fetchStudentAttendance()" class="w-full bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700 transition">
-                        Load Students
+                <div class="flex items-end gap-2">
+                    <button type="button" @click="markAll('present')" :disabled="!students.length" class="flex-1 px-3 py-2.5 text-xs font-semibold bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition disabled:opacity-40">All Present</button>
+                    <button type="button" @click="markAll('absent')" :disabled="!students.length" class="flex-1 px-3 py-2.5 text-xs font-semibold bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition disabled:opacity-40">All Absent</button>
+                </div>
+            </div>
+            <div x-show="studentHasRecord" x-cloak x-transition class="mt-4 flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-50 border border-blue-100 text-sm text-blue-700">
+                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg>
+                <span>Attendance already recorded for this date — you're editing it.</span>
+            </div>
+        </div>
+
+        <div x-show="students.length > 0" x-cloak class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <template x-for="pill in studentPills" :key="pill.key">
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center justify-between">
+                    <span class="text-xs font-medium text-gray-500" x-text="pill.label"></span>
+                    <span class="text-lg font-bold" :class="pill.color" x-text="pill.count"></span>
+                </div>
+            </template>
+        </div>
+
+        <div x-show="loading" x-cloak class="flex items-center justify-center py-16">
+            <div class="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+        </div>
+
+        <form method="POST" action="{{ panel_route('attendance.students.mark') }}" x-show="!loading && students.length > 0" x-cloak>
+            @csrf
+            <input type="hidden" name="class_id" :value="classId">
+            <input type="hidden" name="section_id" :value="sectionId">
+            <input type="hidden" name="date" :value="date">
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50 border-b border-gray-100">
+                        <tr class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                            <th class="px-4 py-3 text-left">Roll</th>
+                            <th class="px-4 py-3 text-left">Name</th>
+                            <th class="px-4 py-3 text-center">Present</th>
+                            <th class="px-4 py-3 text-center">Absent</th>
+                            <th class="px-4 py-3 text-center">Late</th>
+                            <th class="px-4 py-3 text-center">Half Day</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        <template x-for="(s, i) in students" :key="s.id">
+                            <tr class="hover:bg-gray-50/70 transition-colors">
+                                <td class="px-4 py-2.5 text-gray-500" x-text="s.roll_number || '—'"></td>
+                                <td class="px-4 py-2.5"><span class="font-medium text-gray-900" x-text="s.name"></span></td>
+                                <input type="hidden" :name="'attendance['+i+'][student_id]'" :value="s.id">
+                                <template x-for="opt in studentOptions" :key="opt.val">
+                                    <td class="px-4 py-2.5 text-center">
+                                        <label class="inline-flex items-center justify-center cursor-pointer">
+                                            <input type="radio" :name="'attendance['+i+'][status]'" :value="opt.val" x-model="attendance[s.id]" class="peer sr-only">
+                                            <span class="w-6 h-6 rounded-full border-2 border-gray-200 flex items-center justify-center transition-all peer-checked:scale-110" :class="attendance[s.id]===opt.val ? opt.active : 'bg-white'">
+                                                <svg x-show="attendance[s.id]===opt.val" class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                                            </span>
+                                        </label>
+                                    </td>
+                                </template>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+                <div class="px-4 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                    <p class="text-xs text-gray-500"><span class="font-semibold text-gray-700" x-text="students.length"></span> students</p>
+                    <button type="submit" class="px-6 py-2.5 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-700 transition active:scale-95 shadow-lg shadow-primary-600/20">
+                        <span x-text="studentHasRecord ? 'Update Attendance' : 'Save Attendance'"></span>
                     </button>
                 </div>
             </div>
+        </form>
+
+        <div x-show="!loading && students.length === 0 && classId && sectionId" x-cloak class="text-center py-16 bg-white rounded-2xl border border-gray-100">
+            <p class="text-gray-500 font-medium">No students found for this class & section</p>
         </div>
-
-        <!-- Quick Actions -->
-        <div x-show="students.length > 0" class="flex gap-2 mb-4">
-            <button @click="markAll('present')" class="text-xs px-3 py-1.5 bg-green-100 text-green-700 rounded-full hover:bg-green-200 font-medium">All Present</button>
-            <button @click="markAll('absent')" class="text-xs px-3 py-1.5 bg-red-100 text-red-700 rounded-full hover:bg-red-200 font-medium">All Absent</button>
-            <span class="ml-auto text-xs text-gray-500" x-show="isAlreadyMarked">
-                ✓ Attendance already marked for this date
-            </span>
-        </div>
-
-        <!-- Student List -->
-        <div x-show="students.length > 0" class="bg-white rounded-xl border overflow-hidden">
-            <table class="w-full">
-                <thead class="bg-gray-50 border-b">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Roll</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Present</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Absent</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Late</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Half Day</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    <template x-for="student in students" :key="student.student_id">
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-4 py-3 text-sm text-gray-600" x-text="student.roll_number || '-'"></td>
-                            <td class="px-4 py-3 text-sm font-medium text-gray-900" x-text="student.name || ('Student #' + student.student_id)"></td>
-                            <td class="px-4 py-3 text-center">
-                                <input type="radio" :name="'att_' + student.student_id" value="present"
-                                       x-model="attendance[student.student_id]"
-                                       class="w-4 h-4 text-green-600 focus:ring-green-500">
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                <input type="radio" :name="'att_' + student.student_id" value="absent"
-                                       x-model="attendance[student.student_id]"
-                                       class="w-4 h-4 text-red-600 focus:ring-red-500">
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                <input type="radio" :name="'att_' + student.student_id" value="late"
-                                       x-model="attendance[student.student_id]"
-                                       class="w-4 h-4 text-yellow-600 focus:ring-yellow-500">
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                <input type="radio" :name="'att_' + student.student_id" value="half_day"
-                                       x-model="attendance[student.student_id]"
-                                       class="w-4 h-4 text-orange-600 focus:ring-orange-500">
-                            </td>
-                        </tr>
-                    </template>
-                </tbody>
-            </table>
-
-            <!-- Stats & Submit -->
-            <div class="px-4 py-4 bg-gray-50 border-t flex items-center justify-between">
-                <div class="flex gap-4 text-xs">
-                    <span class="text-green-600 font-medium">Present: <span x-text="countStatus('present')"></span></span>
-                    <span class="text-red-600 font-medium">Absent: <span x-text="countStatus('absent')"></span></span>
-                    <span class="text-yellow-600 font-medium">Late: <span x-text="countStatus('late')"></span></span>
-                    <span class="text-gray-500">Total: <span x-text="students.length"></span></span>
-                </div>
-                <button @click="saveStudentAttendance()" :disabled="saving"
-                        class="px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition disabled:opacity-60">
-                    <span x-text="saving ? 'Saving...' : (isAlreadyMarked ? 'Update Attendance' : 'Save Attendance')"></span>
-                </button>
-            </div>
+        <div x-show="!classId || !sectionId" x-cloak class="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-200">
+            <p class="text-gray-400">Select a class, section and date to load the roster.</p>
         </div>
     </div>
 
-    <!-- ═══ Staff Attendance Tab ═══ -->
-    <div x-show="activeTab === 'staff'" x-transition>
-        <div class="bg-white rounded-xl border p-5 mb-6">
+    {{-- ═══ STAFF TAB ═══ --}}
+    <div x-show="tab === 'staff'" x-transition class="space-y-6">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Date</label>
-                    <input type="date" x-model="staffFilters.date" :max="today" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Date</label>
+                    <input type="date" x-model="staffDate" :max="today" @change="loadStaff()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none transition">
                 </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Department</label>
-                    <select x-model="staffFilters.department" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                        <option value="">All Departments</option>
-                        <option value="teaching">Teaching Staff</option>
-                        <option value="admin">Administrative</option>
-                        <option value="support">Support Staff</option>
-                    </select>
+                <div class="flex items-end gap-2 md:col-span-2">
+                    <button type="button" @click="markAllStaff('present')" :disabled="!staff.length" class="px-3 py-2.5 text-xs font-semibold bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition disabled:opacity-40">All Present</button>
+                    <button type="button" @click="markAllStaff('absent')" :disabled="!staff.length" class="px-3 py-2.5 text-xs font-semibold bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition disabled:opacity-40">All Absent</button>
+                    <button type="button" @click="markAllStaff('leave')" :disabled="!staff.length" class="px-3 py-2.5 text-xs font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition disabled:opacity-40">All Leave</button>
                 </div>
-                <div class="flex items-end">
-                    <button @click="fetchStaffList()" class="w-full bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-blue-700 transition">
-                        Load Staff
-                    </button>
-                </div>
+            </div>
+            <div x-show="staffHasRecord" x-cloak x-transition class="mt-4 flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-50 border border-blue-100 text-sm text-blue-700">
+                <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg>
+                <span>Staff attendance already recorded for this date — you're editing it.</span>
             </div>
         </div>
 
-        <!-- Staff Table -->
-        <div x-show="staffList.length > 0" class="bg-white rounded-xl border overflow-hidden">
-            <table class="w-full">
-                <thead class="bg-gray-50 border-b">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Emp ID</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Check-In</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Check-Out</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                    <template x-for="staff in staffList" :key="staff.user_id">
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 text-sm text-gray-600" x-text="staff.employee_id || '-'"></td>
-                            <td class="px-4 py-3 text-sm font-medium text-gray-900" x-text="staff.name"></td>
-                            <td class="px-4 py-3 text-sm text-gray-600 capitalize" x-text="staff.role"></td>
-                            <td class="px-4 py-3 text-center">
-                                <select x-model="staffAttendance[staff.user_id].status"
-                                        class="text-sm border rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500 outline-none">
-                                    <option value="present">Present</option>
-                                    <option value="absent">Absent</option>
-                                    <option value="leave">Leave</option>
-                                    <option value="late">Late</option>
-                                    <option value="half_day">Half Day</option>
-                                </select>
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                <input type="time" x-model="staffAttendance[staff.user_id].check_in"
-                                       class="text-sm border rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500 outline-none">
-                            </td>
-                            <td class="px-4 py-3 text-center">
-                                <input type="time" x-model="staffAttendance[staff.user_id].check_out"
-                                       class="text-sm border rounded-lg px-2 py-1 focus:ring-2 focus:ring-blue-500 outline-none">
-                            </td>
+        <div x-show="staff.length > 0" x-cloak class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <template x-for="pill in staffPills" :key="pill.key">
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center justify-between">
+                    <span class="text-xs font-medium text-gray-500" x-text="pill.label"></span>
+                    <span class="text-lg font-bold" :class="pill.color" x-text="pill.count"></span>
+                </div>
+            </template>
+        </div>
+
+        <div x-show="staffLoading" x-cloak class="flex items-center justify-center py-16">
+            <div class="w-8 h-8 border-2 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+        </div>
+
+        <form method="POST" action="{{ panel_route('attendance.staff.mark') }}" x-show="!staffLoading && staff.length > 0" x-cloak>
+            @csrf
+            <input type="hidden" name="date" :value="staffDate">
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50 border-b border-gray-100">
+                        <tr class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                            <th class="px-4 py-3 text-left">Emp ID</th>
+                            <th class="px-4 py-3 text-left">Name</th>
+                            <th class="px-4 py-3 text-center">Present</th>
+                            <th class="px-4 py-3 text-center">Absent</th>
+                            <th class="px-4 py-3 text-center">Leave</th>
+                            <th class="px-4 py-3 text-center">Late</th>
+                            <th class="px-4 py-3 text-center">Half Day</th>
                         </tr>
-                    </template>
-                </tbody>
-            </table>
-            <div class="px-4 py-4 bg-gray-50 border-t flex justify-end">
-                <button @click="saveStaffAttendance()" :disabled="saving"
-                        class="px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition disabled:opacity-60">
-                    <span x-text="saving ? 'Saving...' : 'Save Staff Attendance'"></span>
-                </button>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        <template x-for="(m, i) in staff" :key="m.id">
+                            <tr class="hover:bg-gray-50/70 transition-colors">
+                                <td class="px-4 py-2.5 text-gray-500" x-text="m.employee_id || '—'"></td>
+                                <td class="px-4 py-2.5"><span class="font-medium text-gray-900" x-text="m.name"></span></td>
+                                <input type="hidden" :name="'attendance['+i+'][user_id]'" :value="m.id">
+                                <template x-for="opt in staffOptions" :key="opt.val">
+                                    <td class="px-4 py-2.5 text-center">
+                                        <label class="inline-flex items-center justify-center cursor-pointer">
+                                            <input type="radio" :name="'attendance['+i+'][status]'" :value="opt.val" x-model="staffAtt[m.id]" class="peer sr-only">
+                                            <span class="w-6 h-6 rounded-full border-2 border-gray-200 flex items-center justify-center transition-all peer-checked:scale-110" :class="staffAtt[m.id]===opt.val ? opt.active : 'bg-white'">
+                                                <svg x-show="staffAtt[m.id]===opt.val" class="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                                            </span>
+                                        </label>
+                                    </td>
+                                </template>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+                <div class="px-4 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                    <p class="text-xs text-gray-500"><span class="font-semibold text-gray-700" x-text="staff.length"></span> staff members</p>
+                    <button type="submit" class="px-6 py-2.5 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-700 transition active:scale-95 shadow-lg shadow-primary-600/20">
+                        <span x-text="staffHasRecord ? 'Update Attendance' : 'Save Staff Attendance'"></span>
+                    </button>
+                </div>
             </div>
+        </form>
+
+        <div x-show="!staffLoading && staff.length === 0" x-cloak class="text-center py-16 bg-white rounded-2xl border border-gray-100">
+            <p class="text-gray-500 font-medium">No staff found for this school</p>
         </div>
     </div>
 </div>
 
 @push('scripts')
 <script>
-function attendancePage() {
+function attendanceHub() {
     return {
-        activeTab: 'student',
+        tab: 'student',
         today: new Date().toISOString().split('T')[0],
-        saving: false,
-        isAlreadyMarked: false,
+        allSections: @json($navSections ?? []),
 
-        // Student attendance
-        classes: [],
-        sections: [],
-        students: [],
-        attendance: {},
-        filters: { class_id: '', section_id: '', date: new Date().toISOString().split('T')[0] },
+        // student
+        classId: '', sectionId: '',
+        date: new Date().toISOString().split('T')[0],
+        students: [], attendance: {}, loading: false, studentHasRecord: false,
+        studentOptions: [
+            { val:'present',  active:'bg-emerald-500 border-emerald-500' },
+            { val:'absent',   active:'bg-rose-500 border-rose-500' },
+            { val:'late',     active:'bg-amber-500 border-amber-500' },
+            { val:'half_day', active:'bg-orange-500 border-orange-500' },
+        ],
 
-        // Staff attendance
-        staffList: [],
-        staffAttendance: {},
-        staffFilters: { date: new Date().toISOString().split('T')[0], department: '' },
+        // staff
+        staff: [], staffAtt: {}, staffLoading: false, staffHasRecord: false, staffLoaded: false,
+        staffDate: new Date().toISOString().split('T')[0],
+        staffOptions: [
+            { val:'present',  active:'bg-emerald-500 border-emerald-500' },
+            { val:'absent',   active:'bg-rose-500 border-rose-500' },
+            { val:'leave',    active:'bg-blue-500 border-blue-500' },
+            { val:'late',     active:'bg-amber-500 border-amber-500' },
+            { val:'half_day', active:'bg-orange-500 border-orange-500' },
+        ],
 
-        async init() {
-            await this.fetchClasses();
+        init() {},
+        get filteredSections() { return this.allSections.filter(s => String(s.class_id) === String(this.classId)); },
+        get studentPills() {
+            const c = (st) => this.students.filter(s => this.attendance[s.id] === st).length;
+            return [
+                { key:'t', label:'Total',    count:this.students.length, color:'text-gray-900' },
+                { key:'p', label:'Present',  count:c('present'),  color:'text-emerald-600' },
+                { key:'a', label:'Absent',   count:c('absent'),   color:'text-rose-600' },
+                { key:'l', label:'Late',     count:c('late'),     color:'text-amber-600' },
+                { key:'h', label:'Half Day', count:c('half_day'), color:'text-orange-600' },
+            ];
         },
-
-        async fetchClasses() {
-            try {
-                const res = await fetch('/api/proxy/school/classes', { headers: this.authHeaders() });
-                const data = await res.json();
-                this.classes = data.data || [];
-            } catch (e) { console.error(e); }
+        get staffPills() {
+            const c = (st) => this.staff.filter(m => this.staffAtt[m.id] === st).length;
+            return [
+                { key:'t', label:'Total',   count:this.staff.length, color:'text-gray-900' },
+                { key:'p', label:'Present', count:c('present'), color:'text-emerald-600' },
+                { key:'a', label:'Absent',  count:c('absent'),  color:'text-rose-600' },
+                { key:'lv',label:'Leave',   count:c('leave'),   color:'text-blue-600' },
+                { key:'l', label:'Late',    count:c('late'),    color:'text-amber-600' },
+            ];
         },
-
-        async fetchSections() {
-            if (!this.filters.class_id) return;
+        onClassChange() { this.sectionId=''; this.students=[]; this.studentHasRecord=false; },
+        async loadStudents() {
+            if (!this.classId || !this.sectionId) { this.students=[]; return; }
+            this.loading = true;
             try {
-                const res = await fetch(`/api/proxy/school/sections?class_id=${this.filters.class_id}`, { headers: this.authHeaders() });
-                const data = await res.json();
-                this.sections = data.data || [];
-            } catch (e) { console.error(e); }
-        },
-
-        async fetchStudentAttendance() {
-            if (!this.filters.class_id || !this.filters.section_id || !this.filters.date) return;
-            try {
-                const params = new URLSearchParams(this.filters).toString();
-                const res = await fetch(`/api/proxy/attendance/student/get?${params}`, { headers: this.authHeaders() });
-                const data = await res.json();
-                this.students = data.data?.students || [];
-                this.isAlreadyMarked = data.data?.is_marked || false;
-
-                // Initialize attendance
+                const url = `{{ panel_route('attendance.students.roster') }}?class_id=${this.classId}&section_id=${this.sectionId}&date=${this.date}`;
+                const res = await fetch(url, { headers: { 'Accept':'application/json' } });
+                const json = await res.json();
+                this.students = json.data || [];
+                this.studentHasRecord = !!json.has_record;
                 this.attendance = {};
-                this.students.forEach(s => {
-                    this.attendance[s.student_id] = s.status || 'present';
-                });
-            } catch (e) { console.error(e); }
+                this.students.forEach(s => { this.attendance[s.id] = s.status || 'present'; });
+            } catch(e) { this.students=[]; } finally { this.loading=false; }
         },
+        markAll(status) { this.students.forEach(s => { this.attendance[s.id] = status; }); },
 
-        markAll(status) {
-            this.students.forEach(s => { this.attendance[s.student_id] = status; });
-        },
-
-        countStatus(status) {
-            return Object.values(this.attendance).filter(v => v === status).length;
-        },
-
-        async saveStudentAttendance() {
-            this.saving = true;
+        switchStaff() { this.tab='staff'; if (!this.staffLoaded) { this.staffLoaded=true; this.loadStaff(); } },
+        async loadStaff() {
+            this.staffLoading = true;
             try {
-                const payload = {
-                    class_id: parseInt(this.filters.class_id),
-                    section_id: parseInt(this.filters.section_id),
-                    date: this.filters.date,
-                    attendance: Object.entries(this.attendance).map(([sid, status]) => ({
-                        student_id: parseInt(sid), status
-                    }))
-                };
-                const res = await fetch('/api/proxy/attendance/student/mark', {
-                    method: 'POST',
-                    headers: { ...this.authHeaders(), 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (res.ok) {
-                    this.isAlreadyMarked = true;
-                    alert('Attendance saved successfully!');
-                }
-            } catch (e) { alert('Failed to save'); }
-            this.saving = false;
+                const url = `{{ panel_route('attendance.staff.roster') }}?date=${this.staffDate}`;
+                const res = await fetch(url, { headers: { 'Accept':'application/json' } });
+                const json = await res.json();
+                this.staff = json.data || [];
+                this.staffHasRecord = !!json.has_record;
+                this.staffAtt = {};
+                this.staff.forEach(m => { this.staffAtt[m.id] = m.status || 'present'; });
+            } catch(e) { this.staff=[]; } finally { this.staffLoading=false; }
         },
-
-        async fetchStaffList() {
-            try {
-                const res = await fetch('/api/proxy/school/staff-list', { headers: this.authHeaders() });
-                const data = await res.json();
-                this.staffList = data.data || [];
-                this.staffAttendance = {};
-                this.staffList.forEach(s => {
-                    this.staffAttendance[s.user_id] = { status: 'present', check_in: '09:00', check_out: '17:00' };
-                });
-            } catch (e) { console.error(e); }
-        },
-
-        async saveStaffAttendance() {
-            this.saving = true;
-            try {
-                const payload = {
-                    date: this.staffFilters.date,
-                    attendance: Object.entries(this.staffAttendance).map(([uid, data]) => ({
-                        user_id: parseInt(uid),
-                        status: data.status,
-                        check_in_time: data.check_in ? `${this.staffFilters.date}T${data.check_in}:00` : null,
-                        check_out_time: data.check_out ? `${this.staffFilters.date}T${data.check_out}:00` : null,
-                    }))
-                };
-                const res = await fetch('/api/proxy/attendance/staff/mark', {
-                    method: 'POST',
-                    headers: { ...this.authHeaders(), 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (res.ok) alert('Staff attendance saved!');
-            } catch (e) { alert('Failed to save'); }
-            this.saving = false;
-        },
-
-        authHeaders() {
-            return { 'Authorization': `Bearer ${document.cookie.match(/token=([^;]+)/)?.[1] || ''}` };
-        }
+        markAllStaff(status) { this.staff.forEach(m => { this.staffAtt[m.id] = status; }); },
     };
 }
 </script>

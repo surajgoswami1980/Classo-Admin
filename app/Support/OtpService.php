@@ -81,7 +81,7 @@ class OtpService
         );
         Cache::put($this->cooldownKey($channel, $destination), 1, now()->addSeconds(self::RESEND_COOLDOWN));
 
-        $message = "Your Quilo login OTP is {$code}. Valid for 5 minutes. Do not share it with anyone.";
+        $message = "Your MyClasses login OTP is {$code}. Valid for 5 minutes. Do not share it with anyone.";
 
         if ($channel === 'email') {
             $this->sendEmail($destination, $code, $recipientName);
@@ -143,7 +143,7 @@ class OtpService
                 "<h2 style=\"letter-spacing:4px\">{$code}</h2>" .
                 "<p>It is valid for 5 minutes. Do not share it with anyone.</p>",
                 function ($m) use ($to) {
-                    $m->to($to)->subject('Your Quilo OTP');
+                    $m->to($to)->subject('Your MyClasses OTP');
                 },
             );
         } catch (\Throwable $e) {

@@ -181,7 +181,27 @@ class StudentController extends Controller
 
         if (!$student) abort(404, 'Student not found');
 
-        return view('admin.students.show', compact('student'));
+        // Per-student fee profile: effective amount per category (class plan
+        // amount, overridden by any student-specific override).
+        $feeProfile = DB::table('fee_categories as c')
+            ->join('class_fee_plans as p', function ($j) use ($student) {
+                $j->on('p.fee_category_id', '=', 'c.id')
+                  ->where('p.class_id', '=', $student->class_id)
+                  ->where('p.is_active', '=', 1);
+            })
+            ->leftJoin('student_fee_overrides as o', function ($j) use ($id) {
+                $j->on('o.fee_category_id', '=', 'c.id')->where('o.student_id', '=', $id);
+            })
+            ->where('c.school_id', $student->school_id)
+            ->where('c.is_active', 1)
+            ->orderBy('c.sort_order')
+            ->select([
+                'c.id as fee_category_id', 'c.name as category_name', 'c.type as category_type',
+                'p.amount as class_amount', 'o.amount as override_amount', 'o.reason as override_reason',
+            ])
+            ->get();
+
+        return view('admin.students.show', compact('student', 'feeProfile'));
     }
 
     public function edit($id)

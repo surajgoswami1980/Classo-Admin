@@ -53,7 +53,26 @@ class TeacherController extends Controller
     {
         $user = auth()->user();
         $schools = ($user->hasRole('super-admin') && !is_impersonating()) ? School::active()->pluck('name', 'id') : collect();
-        return view('admin.teachers.create', compact('schools'));
+
+        $schoolId = current_school_id();
+        $classes = DB::table('classes')
+            ->when($schoolId, fn($q) => $q->where('school_id', $schoolId))
+            ->orderBy('numeric_order')
+            ->get(['id', 'name']);
+        $sections = DB::table('sections')
+            ->when($schoolId, fn($q) => $q->where('school_id', $schoolId))
+            ->orderBy('name')
+            ->get(['id', 'name', 'class_id']);
+        // Subjects across every class (Nursery, LKG, UKG, 1st …) so a teacher
+        // can be assigned subjects spanning multiple levels.
+        $subjects = DB::table('subjects')
+            ->join('classes', 'subjects.class_id', '=', 'classes.id')
+            ->when($schoolId, fn($q) => $q->where('subjects.school_id', $schoolId))
+            ->orderBy('classes.numeric_order')
+            ->orderBy('subjects.name')
+            ->get(['subjects.id', 'subjects.name', 'subjects.class_id', 'classes.name as class_name']);
+
+        return view('admin.teachers.create', compact('schools', 'classes', 'sections', 'subjects'));
     }
 
     public function store(Request $request)
@@ -68,8 +87,18 @@ class TeacherController extends Controller
             'designation' => 'nullable|string|max:100',
             'department' => 'nullable|string|max:100',
             'qualifications' => 'nullable|string|max:1000',
+            'qualification' => 'nullable|string|max:1000',
             'date_of_joining' => 'nullable|date',
+            'joining_date' => 'nullable|date',
             'salary' => 'nullable|numeric|min:0',
+            // Class assignment & subjects
+            'is_class_incharge' => 'nullable|boolean',
+            'incharge_class_id' => 'nullable|integer|exists:classes,id',
+            'incharge_section_id' => 'nullable|integer|exists:sections,id',
+            'assigned_classes' => 'nullable|array',
+            'assigned_classes.*' => 'integer|exists:classes,id',
+            'assigned_subjects' => 'nullable|array',
+            'assigned_subjects.*' => 'integer|exists:subjects,id',
         ], [
             'name.required' => 'Teacher name is required.',
             'email.required' => 'Email is required for teacher login.',
@@ -85,6 +114,8 @@ class TeacherController extends Controller
 
         DB::beginTransaction();
         try {
+            $isIncharge = $request->boolean('is_class_incharge');
+
             $teacherUser = User::create([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
@@ -93,6 +124,9 @@ class TeacherController extends Controller
                 'school_id' => $schoolId,
                 'employee_id' => $validated['employee_id'] ?? null,
                 'is_active' => true,
+                'is_class_incharge' => $isIncharge,
+                'incharge_class_id' => $isIncharge ? ($validated['incharge_class_id'] ?? null) : null,
+                'incharge_section_id' => $isIncharge ? ($validated['incharge_section_id'] ?? null) : null,
             ]);
             $teacherUser->assignRole('teacher');
 
@@ -101,9 +135,11 @@ class TeacherController extends Controller
                 'user_id' => $teacherUser->id,
                 'designation' => $validated['designation'] ?? null,
                 'department' => $validated['department'] ?? null,
-                'qualifications' => $validated['qualifications'] ?? null,
-                'date_of_joining' => $validated['date_of_joining'] ?? now()->toDateString(),
+                'qualifications' => $validated['qualifications'] ?? ($validated['qualification'] ?? null),
+                'date_of_joining' => $validated['date_of_joining'] ?? ($validated['joining_date'] ?? now()->toDateString()),
                 'salary' => $validated['salary'] ?? null,
+                'assigned_classes' => !empty($validated['assigned_classes']) ? json_encode(array_values($validated['assigned_classes'])) : null,
+                'assigned_subjects' => !empty($validated['assigned_subjects']) ? json_encode(array_values($validated['assigned_subjects'])) : null,
                 'status' => 'active',
                 'created_at' => now(),
                 'updated_at' => now(),

@@ -163,6 +163,84 @@
             </div>
         </div>
 
+        <!-- Class Assignment & Subjects -->
+        <div x-data="teacherAssign()" class="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="text-base font-semibold text-gray-900 mb-1">Class Assignment & Subjects</h3>
+            <p class="text-sm text-gray-500 mb-4">Make this teacher a class incharge and assign the subjects they teach (across any level — Nursery, LKG, 1st, etc.).</p>
+
+            {{-- Class Incharge --}}
+            <div class="rounded-lg border border-gray-100 bg-gray-50/60 p-4 mb-5">
+                <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-800 cursor-pointer">
+                    <input type="checkbox" name="is_class_incharge" value="1" x-model="isIncharge" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                    Assign as Class Incharge
+                </label>
+                <div x-show="isIncharge" x-cloak x-transition class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Incharge of Class</label>
+                        <select name="incharge_class_id" x-model="inchargeClass" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="">Select Class</option>
+                            @foreach($classes as $c)
+                                <option value="{{ $c->id }}">{{ $c->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Section</label>
+                        <select name="incharge_section_id" :disabled="!inchargeClass" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100">
+                            <option value="">Select Section</option>
+                            <template x-for="s in inchargeSections" :key="s.id">
+                                <option :value="s.id" x-text="s.name"></option>
+                            </template>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Classes taught --}}
+            <div class="mb-5">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Classes this teacher handles</label>
+                @if($classes->isEmpty())
+                    <p class="text-sm text-gray-400">No classes defined yet. Add classes under Academics → Classes first.</p>
+                @else
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($classes as $c)
+                            <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-700 cursor-pointer hover:bg-gray-50 has-[:checked]:bg-blue-50 has-[:checked]:border-blue-300 has-[:checked]:text-blue-700 transition">
+                                <input type="checkbox" name="assigned_classes[]" value="{{ $c->id }}" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                {{ $c->name }}
+                            </label>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+
+            {{-- Subjects (grouped by class) --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Subjects taught</label>
+                @if($subjects->isEmpty())
+                    <p class="text-sm text-gray-400">No subjects defined yet. Subjects are created per class; add them first to assign here.</p>
+                @else
+                    <div class="space-y-4 max-h-80 overflow-y-auto pr-1">
+                        @foreach($subjects->groupBy('class_name') as $className => $classSubjects)
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="text-xs font-bold uppercase tracking-wide text-gray-500">{{ $className }}</span>
+                                    <span class="h-px flex-1 bg-gray-100"></span>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach($classSubjects as $subj)
+                                        <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-700 cursor-pointer hover:bg-gray-50 has-[:checked]:bg-emerald-50 has-[:checked]:border-emerald-300 has-[:checked]:text-emerald-700 transition">
+                                            <input type="checkbox" name="assigned_subjects[]" value="{{ $subj->id }}" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                                            {{ $subj->name }}
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
+
         <!-- Actions -->
         <div class="flex items-center justify-end gap-3">
             <a href="{{ panel_route('teachers.index') }}" class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
@@ -174,4 +252,19 @@
         </div>
     </form>
 </div>
+
+@push('scripts')
+<script>
+function teacherAssign() {
+    return {
+        isIncharge: {{ old('is_class_incharge') ? 'true' : 'false' }},
+        inchargeClass: '{{ old('incharge_class_id') }}',
+        allSections: @json($sections),
+        get inchargeSections() {
+            return this.allSections.filter(s => String(s.class_id) === String(this.inchargeClass));
+        },
+    };
+}
+</script>
+@endpush
 @endsection

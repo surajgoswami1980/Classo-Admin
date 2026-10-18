@@ -15,6 +15,7 @@ use App\Http\Controllers\SuperAdmin\SchoolController;
 use App\Http\Controllers\SuperAdmin\DashboardController as SuperAdminDashboardController;
 use App\Http\Controllers\SuperAdmin\SubscriptionController;
 use App\Http\Controllers\SuperAdmin\SchoolSwitchController;
+use App\Http\Controllers\SuperAdmin\EnquiryController;
 use App\Http\Controllers\Admin\ManageTeamsController;
 use App\Http\Controllers\Admin\AccessControlController;
 use App\Http\Controllers\Admin\TransportController;
@@ -26,6 +27,7 @@ use App\Http\Controllers\Admin\PayrollController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\StoreController;
+use App\Http\Controllers\Admin\AssignmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +71,14 @@ Route::middleware(['auth', 'super.admin'])
         Route::get('/revenue', [SubscriptionController::class, 'revenue'])->name('revenue');
         Route::get('/revenue/export', [SubscriptionController::class, 'exportRevenue'])->name('revenue.export');
 
+        // Enquiries (leads from the public marketing website)
+        Route::prefix('enquiries')->name('enquiries.')->group(function () {
+            Route::get('/', [EnquiryController::class, 'index'])->name('index');
+            Route::get('/{enquiry}', [EnquiryController::class, 'show'])->name('show');
+            Route::put('/{enquiry}', [EnquiryController::class, 'update'])->name('update');
+            Route::delete('/{enquiry}', [EnquiryController::class, 'destroy'])->name('destroy');
+        });
+
         // All module management (super admin can do everything)
         Route::resource('students', StudentController::class);
         Route::post('/students/import', [StudentController::class, 'import'])->name('students.import');
@@ -81,8 +91,10 @@ Route::middleware(['auth', 'super.admin'])
         Route::prefix('attendance')->name('attendance.')->group(function () {
             Route::get('/', [AttendanceController::class, 'index'])->name('index');
             Route::get('/students', [AttendanceController::class, 'studentAttendance'])->name('students');
+            Route::get('/students/roster', [AttendanceController::class, 'studentRoster'])->name('students.roster');
             Route::post('/students/mark', [AttendanceController::class, 'markStudentAttendance'])->name('students.mark');
             Route::get('/staff', [AttendanceController::class, 'staffAttendance'])->name('staff');
+            Route::get('/staff/roster', [AttendanceController::class, 'staffRoster'])->name('staff.roster');
             Route::post('/staff/mark', [AttendanceController::class, 'markStaffAttendance'])->name('staff.mark');
             Route::get('/report', [AttendanceController::class, 'report'])->name('report');
         });
@@ -97,6 +109,21 @@ Route::middleware(['auth', 'super.admin'])
             Route::get('/defaulters', [FeeController::class, 'defaulters'])->name('defaulters');
             Route::get('/collection-report', [FeeController::class, 'collectionReport'])->name('collection-report');
             Route::get('/invoices/{id}/document', [FeeController::class, 'invoiceDocument'])->name('invoices.document');
+
+            // Category-based fees
+            Route::get('/categories', [FeeController::class, 'categories'])->name('categories');
+            Route::post('/categories', [FeeController::class, 'storeCategory'])->name('categories.store');
+            Route::delete('/categories/{id}', [FeeController::class, 'deleteCategory'])->name('categories.delete');
+            Route::post('/plans', [FeeController::class, 'storePlan'])->name('plans.store');
+            Route::delete('/plans/{id}', [FeeController::class, 'deletePlan'])->name('plans.delete');
+            Route::post('/categories/generate', [FeeController::class, 'generateCategory'])->name('categories.generate');
+
+            // Class-wise pending + manual payment
+            Route::get('/pending', [FeeController::class, 'pending'])->name('pending');
+            Route::post('/invoices/{id}/pay-offline', [FeeController::class, 'payOffline'])->name('invoices.pay-offline');
+
+            // Per-student fee override
+            Route::post('/student-override', [FeeController::class, 'setStudentOverride'])->name('student-override');
         });
 
         // Exams
@@ -247,6 +274,26 @@ Route::middleware(['auth', 'super.admin'])
             Route::patch('/actions/{action}/status', [AccessControlController::class, 'toggleActionStatus'])->name('actions.status');
         });
 
+        // Assignments (create, grade, view submissions)
+        Route::prefix('assignments')->name('assignments.')->group(function () {
+            Route::get('/', [AssignmentController::class, 'index'])->name('index');
+            Route::post('/', [AssignmentController::class, 'store'])->name('store');
+            Route::delete('/{id}', [AssignmentController::class, 'destroy'])->name('destroy');
+            Route::get('/{id}/submissions', [AssignmentController::class, 'submissions'])->name('submissions');
+            Route::post('/{id}/grade', [AssignmentController::class, 'grade'])->name('grade');
+        });
+
+        // Payment gateway settings (per school — super-admin configures)
+        Route::get('/payment-settings', [\App\Http\Controllers\Admin\PaymentSettingsController::class, 'index'])->name('payment-settings.index');
+        Route::post('/payment-settings/{schoolId}', [\App\Http\Controllers\Admin\PaymentSettingsController::class, 'update'])->name('payment-settings.update');
+
+        // Subscription invoices (platform bills schools)
+        Route::prefix('subscription-invoices')->name('subscription-invoices.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\SuperAdmin\SubscriptionInvoiceController::class, 'index'])->name('index');
+            Route::post('/', [\App\Http\Controllers\SuperAdmin\SubscriptionInvoiceController::class, 'store'])->name('store');
+            Route::post('/{id}/cancel', [\App\Http\Controllers\SuperAdmin\SubscriptionInvoiceController::class, 'cancel'])->name('cancel');
+        });
+
         // Profile & Settings
         Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
         Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -280,8 +327,10 @@ Route::middleware(['auth', 'school.tenant', 'resource.permission'])
         Route::prefix('attendance')->name('attendance.')->group(function () {
             Route::get('/', [AttendanceController::class, 'index'])->name('index');
             Route::get('/students', [AttendanceController::class, 'studentAttendance'])->name('students');
+            Route::get('/students/roster', [AttendanceController::class, 'studentRoster'])->name('students.roster');
             Route::post('/students/mark', [AttendanceController::class, 'markStudentAttendance'])->name('students.mark');
             Route::get('/staff', [AttendanceController::class, 'staffAttendance'])->name('staff');
+            Route::get('/staff/roster', [AttendanceController::class, 'staffRoster'])->name('staff.roster');
             Route::post('/staff/mark', [AttendanceController::class, 'markStaffAttendance'])->name('staff.mark');
             Route::get('/report', [AttendanceController::class, 'report'])->name('report');
         });
@@ -296,6 +345,21 @@ Route::middleware(['auth', 'school.tenant', 'resource.permission'])
             Route::get('/defaulters', [FeeController::class, 'defaulters'])->name('defaulters');
             Route::get('/collection-report', [FeeController::class, 'collectionReport'])->name('collection-report');
             Route::get('/invoices/{id}/document', [FeeController::class, 'invoiceDocument'])->name('invoices.document');
+
+            // Category-based fees
+            Route::get('/categories', [FeeController::class, 'categories'])->name('categories');
+            Route::post('/categories', [FeeController::class, 'storeCategory'])->name('categories.store');
+            Route::delete('/categories/{id}', [FeeController::class, 'deleteCategory'])->name('categories.delete');
+            Route::post('/plans', [FeeController::class, 'storePlan'])->name('plans.store');
+            Route::delete('/plans/{id}', [FeeController::class, 'deletePlan'])->name('plans.delete');
+            Route::post('/categories/generate', [FeeController::class, 'generateCategory'])->name('categories.generate');
+
+            // Class-wise pending + manual payment
+            Route::get('/pending', [FeeController::class, 'pending'])->name('pending');
+            Route::post('/invoices/{id}/pay-offline', [FeeController::class, 'payOffline'])->name('invoices.pay-offline');
+
+            // Per-student fee override
+            Route::post('/student-override', [FeeController::class, 'setStudentOverride'])->name('student-override');
         });
 
         // Exams
@@ -434,6 +498,20 @@ Route::middleware(['auth', 'school.tenant', 'resource.permission'])
             Route::post('/users/{user}/reset-password', [ManageTeamsController::class, 'resetUserPassword'])->name('users.password.reset');
             Route::delete('/users/{user}', [ManageTeamsController::class, 'destroyUser'])->name('users.destroy');
         });
+
+        // Assignments (create, grade, view submissions)
+        Route::prefix('assignments')->name('assignments.')->group(function () {
+            Route::get('/', [AssignmentController::class, 'index'])->name('index');
+            Route::post('/', [AssignmentController::class, 'store'])->name('store');
+            Route::delete('/{id}', [AssignmentController::class, 'destroy'])->name('destroy');
+            Route::get('/{id}/submissions', [AssignmentController::class, 'submissions'])->name('submissions');
+            Route::post('/{id}/grade', [AssignmentController::class, 'grade'])->name('grade');
+        });
+
+        // Pay subscription (school-admin pays the platform)
+        Route::get('/subscription', [\App\Http\Controllers\SuperAdmin\SubscriptionInvoiceController::class, 'mySubscription'])->name('subscription');
+        Route::post('/subscription/{id}/pay', [\App\Http\Controllers\SuperAdmin\SubscriptionInvoiceController::class, 'initiatePay'])->name('subscription.pay');
+        Route::post('/subscription/{id}/verify', [\App\Http\Controllers\SuperAdmin\SubscriptionInvoiceController::class, 'verifyPay'])->name('subscription.verify');
 
         // Profile & Settings
         Route::get('/profile', [ProfileController::class, 'index'])->name('profile');

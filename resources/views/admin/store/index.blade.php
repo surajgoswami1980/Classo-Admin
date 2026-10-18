@@ -122,12 +122,14 @@
 @push('scripts')
 <script>
     function storeManager() {
+        const blank = () => ({ id:'', name:'', description:'', category:'', price:'', stock:'', sort_order:0, is_active:true });
         return {
             show: false, editing: false,
-            form: this.blank(),
-            blank() { return { id:'', name:'', description:'', category:'', price:'', stock:'', sort_order:0, is_active:true }; },
-            openCreate() { this.editing=false; this.form=this.blank(); this.show=true; },
-            openEdit(i) { this.editing=true; this.form={ id:i.id, name:i.name||'', description:i.description||'', category:i.category||'', price:i.price||'', stock:i.stock??'', sort_order:i.sort_order||0, is_active:!!i.is_active }; this.show=true; },
+            // NOTE: initialise `form` with a plain object (not `this.blank()`),
+            // because inside an object literal `this` is NOT the component yet.
+            form: blank(),
+            openCreate() { this.editing=false; this.form=blank(); this.show=true; },
+            openEdit(i) { this.editing=true; this.form={ id:i.id, name:i.name||'', description:i.description||'', category:i.category||'', price:i.price||'', stock:(i.stock??''), sort_order:i.sort_order||0, is_active:!!i.is_active }; this.show=true; },
         };
     }
 </script>
