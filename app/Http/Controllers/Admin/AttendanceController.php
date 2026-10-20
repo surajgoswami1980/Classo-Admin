@@ -101,6 +101,7 @@ class AttendanceController extends Controller
         return response()->json([
             'data' => $data,
             'has_record' => count($existing) > 0,
+            'day_off' => $date ? \App\Support\AttendanceRules::dayOff($schoolId, $date, 'students') : null,
         ]);
     }
 
@@ -117,35 +118,49 @@ class AttendanceController extends Controller
             ->whereIn('id', function ($q) {
                 $q->select('model_id')->from('model_has_roles')
                   ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-                  ->whereIn('roles.name', ['teacher', 'school-admin', 'sub-admin']);
+                  ->whereIn('roles.name', ['teacher', 'incharge', 'staff', 'school-admin', 'sub-admin']);
             })
             ->where('is_active', true)
             ->select(['id', 'name', 'email', 'employee_id'])
             ->orderBy('name')
             ->get();
 
-        $existing = [];
+        $existing = collect();
         if ($date) {
             $existing = DB::table('staff_attendance')
                 ->when($schoolId, fn($q) => $q->where('school_id', $schoolId))
                 ->whereDate('date', $date)
-                ->pluck('status', 'user_id')
-                ->toArray();
+                ->get(['user_id', 'status', 'method', 'check_in_time', 'check_out_time', 'late_minutes', 'check_in_distance', 'face_score', 'remarks'])
+                ->keyBy('user_id');
         }
 
-        $data = $staff->map(function ($m) use ($existing) {
+        $tz = \App\Support\AttendanceRules::forSchool($schoolId)['timezone'];
+        $fmt = fn ($t) => $t ? \Carbon\Carbon::parse($t)->timezone($tz)->format('h:i A') : null;
+
+        $data = $staff->map(function ($m) use ($existing, $fmt) {
+            $r = $existing[$m->id] ?? null;
             return [
                 'id' => $m->id,
                 'employee_id' => $m->employee_id,
                 'name' => $m->name,
-                'status' => $existing[$m->id] ?? 'present',
-                'recorded' => isset($existing[$m->id]),
+                'status' => $r->status ?? 'present',
+                'recorded' => (bool) $r,
+                'method' => $r->method ?? null,
+                'check_in' => $fmt($r->check_in_time ?? null),
+                'check_out' => $fmt($r->check_out_time ?? null),
+                'late_minutes' => $r->late_minutes ?? null,
+                'distance' => $r->check_in_distance ?? null,
+                'face_score' => $r->face_score ?? null,
+                'remarks' => $r->remarks ?? null,
             ];
         });
 
+        $off = $date ? \App\Support\AttendanceRules::dayOff($schoolId, $date, 'staff') : null;
+
         return response()->json([
             'data' => $data,
-            'has_record' => count($existing) > 0,
+            'has_record' => $existing->count() > 0,
+            'day_off' => $off,
         ]);
     }
 
@@ -164,6 +179,9 @@ class AttendanceController extends Controller
         ]);
 
         $schoolId = $this->getSchoolId();
+        if ($off = \App\Support\AttendanceRules::dayOff($schoolId, $validated['date'], 'students')) {
+            return back()->withInput()->with('error', \App\Support\AttendanceRules::offMessage($validated['date'], $off));
+        }
         $markedBy = auth()->id();
         $count = 0;
 
@@ -197,7 +215,7 @@ class AttendanceController extends Controller
             ->whereIn('id', function ($q) {
                 $q->select('model_id')->from('model_has_roles')
                   ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-                  ->whereIn('roles.name', ['teacher', 'school-admin', 'sub-admin']);
+                  ->whereIn('roles.name', ['teacher', 'incharge', 'staff', 'school-admin', 'sub-admin']);
             })
             ->where('is_active', true)
             ->select(['id', 'name', 'email', 'employee_id'])
@@ -213,32 +231,65 @@ class AttendanceController extends Controller
             'attendance' => 'required|array|min:1',
             'attendance.*.user_id' => 'required|integer|exists:users,id',
             'attendance.*.status' => 'required|in:present,absent,leave,half_day,late',
+            'attendance.*.remarks' => 'nullable|string|max:255',
         ]);
 
         $schoolId = $this->getSchoolId();
+        if ($off = \App\Support\AttendanceRules::dayOff($schoolId, $validated['date'], 'staff')) {
+            return back()->withInput()->with('error', \App\Support\AttendanceRules::offMessage($validated['date'], $off));
+        }
         $markedBy = auth()->id();
         $count = 0;
+        $changed = 0;
+
+        $existing = DB::table('staff_attendance')
+            ->whereDate('date', $validated['date'])
+            ->whereIn('user_id', collect($validated['attendance'])->pluck('user_id'))
+            ->get()->keyBy('user_id');
 
         foreach ($validated['attendance'] as $item) {
-            DB::table('staff_attendance')->updateOrInsert(
-                [
+            $row = $existing[$item['user_id']] ?? null;
+
+            // A self / biometric check-in keeps its times and method unless the admin changes the status.
+            if ($row && $row->method !== 'manual' && $row->status === $item['status']) {
+                if (!empty($item['remarks'])) {
+                    DB::table('staff_attendance')->where('id', $row->id)->update(['remarks' => $item['remarks'], 'updated_at' => now()]);
+                }
+                $count++;
+                continue;
+            }
+
+            $data = [
+                'school_id' => $schoolId ?? DB::table('users')->where('id', $item['user_id'])->value('school_id'),
+                'status' => $item['status'],
+                'method' => 'manual',
+                'marked_by' => $markedBy,
+                'updated_at' => now(),
+            ];
+            if (!empty($item['remarks'])) {
+                $data['remarks'] = $item['remarks'];
+            }
+            if ($row) {
+                if ($row->method !== 'manual') {
+                    $changed++;
+                    $data['remarks'] = trim(($item['remarks'] ?? '') . ' [Overridden by admin; was ' . $row->status . ' via ' . $row->method . ']');
+                }
+                DB::table('staff_attendance')->where('id', $row->id)->update($data);
+            } else {
+                DB::table('staff_attendance')->insert($data + [
                     'user_id' => $item['user_id'],
                     'date' => $validated['date'],
-                ],
-                [
-                    'school_id' => $schoolId ?? DB::table('users')->where('id', $item['user_id'])->value('school_id'),
-                    'status' => $item['status'],
-                    'check_in_time' => $item['check_in_time'] ?? null,
-                    'check_out_time' => $item['check_out_time'] ?? null,
-                    'marked_by' => $markedBy,
-                    'updated_at' => now(),
                     'created_at' => now(),
-                ]
-            );
+                ]);
+            }
             $count++;
         }
 
-        return back()->with('success', "Staff attendance marked for {$count} members");
+        $msg = "Staff attendance saved for {$count} members";
+        if ($changed) {
+            $msg .= " ({$changed} self/fingerprint check-ins overridden)";
+        }
+        return back()->with('success', $msg);
     }
 
     public function report(Request $request)

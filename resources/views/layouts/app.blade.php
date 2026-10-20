@@ -123,6 +123,7 @@
                         $overview[] = ['name' => 'Schools', 'route' => 'admin.schools.index', 'icon' => 'home'];
                         $overview[] = ['name' => 'Subscriptions', 'route' => 'admin.subscriptions.index', 'icon' => 'briefcase'];
                         $overview[] = ['name' => 'Revenue', 'route' => 'admin.revenue', 'icon' => 'chart-bar'];
+                        $overview[] = ['name' => 'Payment Links', 'route' => 'admin.payment-links.index', 'icon' => 'currency-rupee'];
                         $overview[] = ['name' => 'Enquiries', 'route' => 'admin.enquiries.index', 'icon' => 'inbox', 'badge' => $enquiryBadge];
                     }
                     $navGroups[] = ['label' => $isSuper ? 'Platform' : 'Overview', 'items' => $overview];
@@ -135,6 +136,8 @@
                         ['name' => 'Students', 'route' => $prefix . '.students.index', 'icon' => 'users'],
                         ['name' => 'Teachers', 'route' => $prefix . '.teachers.index', 'icon' => 'academic-cap'],
                         ['name' => 'Attendance', 'route' => $prefix . '.attendance.index', 'icon' => 'clipboard-check'],
+                        ['name' => 'Holidays', 'route' => $prefix . '.holidays.index', 'icon' => 'calendar'],
+                        ['name' => 'Attendance Settings', 'route' => $prefix . '.attendance.settings', 'icon' => 'cog-6-tooth'],
                         ['name' => 'Assignments', 'route' => $prefix . '.assignments.index', 'icon' => 'document-text'],
                         ['name' => 'Exams', 'route' => $prefix . '.exams.index', 'icon' => 'document-text'],
                     ]];
@@ -165,7 +168,7 @@
                         $adminItems[] = ['name' => 'Team', 'route' => $prefix . '.team.index', 'icon' => 'briefcase'];
                     }
                     if ($isSuper) {
-                        $adminItems[] = ['name' => 'Payment Settings', 'route' => 'admin.payment-settings.index', 'icon' => 'currency-rupee'];
+                        $adminItems[] = ['name' => 'Integrations', 'route' => 'admin.integrations.index', 'icon' => 'cog-6-tooth'];
                         $adminItems[] = ['name' => 'Subscription Billing', 'route' => 'admin.subscription-invoices.index', 'icon' => 'briefcase'];
                         $adminItems[] = ['name' => 'Resources & Permissions', 'route' => 'admin.resources.index', 'icon' => 'cog-6-tooth'];
                     } else {

@@ -20,6 +20,8 @@
                     <button type="submit" class="px-4 py-2 border border-blue-300 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-50 transition">View as School Admin</button>
                 </form>
                 @endif
+                <a href="{{ route('admin.payment-links.index', ['school' => $school->id]) }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Send payment link</a>
+                <a href="{{ route('admin.schools.payment-settings', $school) }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Payment settings</a>
                 <a href="{{ route('admin.schools.edit', $school) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">Edit</a>
                 @if($school->is_active)
                     <form method="POST" action="{{ route('admin.schools.deactivate', $school) }}" class="inline">@csrf<button type="submit" class="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition">Deactivate</button></form>

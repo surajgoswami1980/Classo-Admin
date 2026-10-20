@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Support\PlatformSettings;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -138,6 +139,7 @@ class OtpService
     private function sendEmail(string $to, string $code, ?string $name): void
     {
         try {
+            PlatformSettings::applyMailConfig();
             Mail::html(
                 "<p>Hi " . e($name ?: 'there') . ",</p><p>Your One-Time Password is:</p>" .
                 "<h2 style=\"letter-spacing:4px\">{$code}</h2>" .
@@ -153,8 +155,8 @@ class OtpService
 
     private function sendSms(string $phone, string $message): void
     {
-        $provider = strtolower((string) env('SMS_PROVIDER', 'log'));
-        $urlTemplate = env('SMS_API_URL');
+        $provider = strtolower((string) PlatformSettings::get('sms', 'provider', 'log'));
+        $urlTemplate = PlatformSettings::get('sms', 'api_url');
 
         if ($provider === 'log' || !$urlTemplate) {
             Log::warning("SMS gateway not configured — would have sent to {$phone}: {$message}");
@@ -165,7 +167,7 @@ class OtpService
             $digits = preg_replace('/\D/', '', $phone);
             $url = str_replace(
                 ['{phone}', '{message}', '{key}', '{sender}'],
-                [rawurlencode($digits), rawurlencode($message), rawurlencode((string) env('SMS_API_KEY', '')), rawurlencode((string) env('SMS_SENDER_ID', ''))],
+                [rawurlencode($digits), rawurlencode($message), rawurlencode((string) PlatformSettings::get('sms', 'api_key', '')), rawurlencode((string) PlatformSettings::get('sms', 'sender_id', ''))],
                 $urlTemplate,
             );
             \Illuminate\Support\Facades\Http::timeout(10)->get($url);

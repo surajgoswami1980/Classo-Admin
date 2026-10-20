@@ -18,7 +18,12 @@
             </div>
         </div>
 
-        <div x-show="hasRecord" x-cloak x-transition class="mt-4 flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-50 border border-blue-100 text-sm text-blue-700">
+        <div x-show="dayOff" x-cloak x-transition class="mt-4 flex items-center gap-2 px-4 py-2.5 rounded-lg bg-rose-50 border border-rose-100 text-sm text-rose-700">
+            <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg>
+            <span x-text="dayOff && dayOff.kind === 'holiday' ? 'Holiday: ' + dayOff.title + ' — attendance can\'t be marked on this day.' : 'Weekly off day — attendance can\'t be marked.'"></span>
+        </div>
+
+        <div x-show="hasRecord && !dayOff" x-cloak x-transition class="mt-4 flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-50 border border-blue-100 text-sm text-blue-700">
             <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg>
             <span>Staff attendance was already recorded for this date. You're editing the existing record.</span>
         </div>
@@ -48,6 +53,7 @@
                     <tr class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
                         <th class="px-4 py-3 text-left">Emp ID</th>
                         <th class="px-4 py-3 text-left">Name</th>
+                        <th class="px-4 py-3 text-left">How marked</th>
                         <th class="px-4 py-3 text-center">Present</th>
                         <th class="px-4 py-3 text-center">Absent</th>
                         <th class="px-4 py-3 text-center">Leave</th>
@@ -62,6 +68,22 @@
                             <td class="px-4 py-2.5">
                                 <span class="font-medium text-gray-900" x-text="m.name"></span>
                                 <span x-show="m.recorded" class="ml-2 text-[10px] font-semibold text-blue-500">●</span>
+                            </td>
+                            <td class="px-4 py-2.5">
+                                <template x-if="m.method">
+                                    <div>
+                                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ring-1 ring-inset" :class="methodClass(m.method)" x-text="methodLabel(m.method)"></span>
+                                        <p class="mt-0.5 text-[11px] text-gray-500" x-show="m.check_in">
+                                            <span x-text="'In ' + m.check_in"></span><span x-show="m.check_out" x-text="' · Out ' + m.check_out"></span>
+                                            <span x-show="m.late_minutes > 0" class="text-amber-600" x-text="' · ' + m.late_minutes + 'm late'"></span>
+                                        </p>
+                                        <p class="text-[11px] text-gray-400" x-show="m.distance !== null || m.face_score">
+                                            <span x-show="m.distance !== null" x-text="m.distance + ' m from school'"></span>
+                                            <span x-show="m.face_score" x-text="' · face ' + Math.round(m.face_score) + '%'"></span>
+                                        </p>
+                                    </div>
+                                </template>
+                                <span x-show="!m.method" class="text-xs text-gray-300">—</span>
                             </td>
                             <input type="hidden" :name="'attendance['+i+'][user_id]'" :value="m.id">
                             <template x-for="opt in options" :key="opt.val">
@@ -81,7 +103,7 @@
             </table>
             <div class="px-4 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
                 <p class="text-xs text-gray-500"><span class="font-semibold text-gray-700" x-text="staff.length"></span> staff members</p>
-                <button type="submit" class="px-6 py-2.5 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-700 transition active:scale-95 shadow-lg shadow-primary-600/20">
+                <button type="submit" :disabled="!!dayOff" class="px-6 py-2.5 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-700 transition active:scale-95 shadow-lg shadow-primary-600/20 disabled:opacity-40 disabled:cursor-not-allowed">
                     <span x-text="hasRecord ? 'Update Attendance' : 'Save Staff Attendance'"></span>
                 </button>
             </div>
@@ -97,7 +119,9 @@
 <script>
 function staffAttendance() {
     return {
-        staff: [], attendance: {}, loading: false, hasRecord: false,
+        staff: [], attendance: {}, loading: false, hasRecord: false, dayOff: null,
+        methodLabel(m) { return ({ manual: 'Admin', app: 'App', geo: 'Location', face: 'Face', face_geo: 'Face + location', biometric: 'Fingerprint' })[m] || m; },
+        methodClass(m) { return ({ manual: 'bg-gray-50 text-gray-600 ring-gray-500/20', geo: 'bg-sky-50 text-sky-700 ring-sky-600/20', app: 'bg-sky-50 text-sky-700 ring-sky-600/20', face: 'bg-violet-50 text-violet-700 ring-violet-600/20', face_geo: 'bg-violet-50 text-violet-700 ring-violet-600/20', biometric: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' })[m] || 'bg-gray-50 text-gray-600 ring-gray-500/20'; },
         date: new Date().toISOString().split('T')[0],
         today: new Date().toISOString().split('T')[0],
         options: [
@@ -126,6 +150,7 @@ function staffAttendance() {
                 const json = await res.json();
                 this.staff = json.data || [];
                 this.hasRecord = !!json.has_record;
+                this.dayOff = json.day_off || null;
                 this.attendance = {};
                 this.staff.forEach(m => { this.attendance[m.id] = m.status || 'present'; });
             } catch (e) {

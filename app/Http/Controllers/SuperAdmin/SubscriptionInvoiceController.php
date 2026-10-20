@@ -85,7 +85,7 @@ class SubscriptionInvoiceController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        $razorpayKey = config('services.razorpay.key') ?: env('RAZORPAY_KEY_ID');
+        $razorpayKey = \App\Support\PlatformSettings::get('razorpay', 'key_id');
 
         return view('admin.subscription.index', compact('invoices', 'razorpayKey'));
     }
@@ -100,10 +100,10 @@ class SubscriptionInvoiceController extends Controller
             return response()->json(['success' => false, 'message' => 'Already paid.'], 422);
         }
 
-        $keyId = env('RAZORPAY_KEY_ID');
-        $keySecret = env('RAZORPAY_KEY_SECRET');
+        $keyId = \App\Support\PlatformSettings::get('razorpay', 'key_id');
+        $keySecret = \App\Support\PlatformSettings::get('razorpay', 'key_secret');
         if (!$keyId || !$keySecret) {
-            return response()->json(['success' => false, 'message' => 'Platform Razorpay keys not configured.'], 422);
+            return response()->json(['success' => false, 'message' => 'Platform Razorpay keys not configured (Admin → Integrations).'], 422);
         }
 
         // Create a Razorpay order via REST (no SDK dependency in Laravel).
@@ -146,7 +146,7 @@ class SubscriptionInvoiceController extends Controller
         $expected = hash_hmac(
             'sha256',
             $data['razorpay_order_id'] . '|' . $data['razorpay_payment_id'],
-            env('RAZORPAY_KEY_SECRET')
+            (string) \App\Support\PlatformSettings::get('razorpay', 'key_secret')
         );
 
         if (!hash_equals($expected, $data['razorpay_signature'])) {

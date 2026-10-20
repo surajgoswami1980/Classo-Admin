@@ -65,6 +65,9 @@ Route::middleware(['auth', 'super.admin'])
         Route::post('/schools/{school}/activate', [SchoolController::class, 'activate'])->name('schools.activate');
         Route::post('/schools/{school}/deactivate', [SchoolController::class, 'deactivate'])->name('schools.deactivate');
         Route::post('/schools/{school}/switch', [SchoolSwitchController::class, 'switch'])->name('schools.switch');
+        // Per-school split payout (Razorpay Route / Cashfree Easy Split) — action in School Management
+        Route::get('/schools/{school}/payment-settings', [\App\Http\Controllers\Admin\PaymentSettingsController::class, 'edit'])->name('schools.payment-settings');
+        Route::put('/schools/{school}/payment-settings', [\App\Http\Controllers\Admin\PaymentSettingsController::class, 'update'])->name('schools.payment-settings.update');
 
         // Subscriptions & Revenue
         Route::resource('subscriptions', SubscriptionController::class);
@@ -97,6 +100,28 @@ Route::middleware(['auth', 'super.admin'])
             Route::get('/staff/roster', [AttendanceController::class, 'staffRoster'])->name('staff.roster');
             Route::post('/staff/mark', [AttendanceController::class, 'markStaffAttendance'])->name('staff.mark');
             Route::get('/report', [AttendanceController::class, 'report'])->name('report');
+        });
+
+        // Attendance settings: timings, self check-in (location/face), face approvals, phones, fingerprint machines
+        Route::prefix('attendance-settings')->name('attendance.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'index'])->name('settings');
+            Route::put('/', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'update'])->name('settings.update');
+            Route::get('/faces/{id}/photo', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'facePhoto'])->whereNumber('id')->name('settings.faces.photo');
+            Route::post('/faces/{id}/review', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'faceReview'])->whereNumber('id')->name('settings.faces.review');
+            Route::delete('/devices/{id}', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'resetDevice'])->whereNumber('id')->name('settings.devices.reset');
+            Route::post('/machines', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'storeMachine'])->name('settings.machines.store');
+            Route::delete('/machines/{id}', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'destroyMachine'])->whereNumber('id')->name('settings.machines.destroy');
+            Route::post('/machine-users', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'saveMaps'])->name('settings.machines.maps');
+            Route::get('/attempts', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'attempts'])->name('settings.attempts');
+        });
+
+        // Holidays & weekly offs
+        Route::prefix('holidays')->name('holidays.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\HolidayController::class, 'index'])->name('index');
+            Route::post('/', [\App\Http\Controllers\Admin\HolidayController::class, 'store'])->name('store');
+            Route::put('/{id}', [\App\Http\Controllers\Admin\HolidayController::class, 'update'])->whereNumber('id')->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Admin\HolidayController::class, 'destroy'])->whereNumber('id')->name('destroy');
+            Route::post('/weekly-off', [\App\Http\Controllers\Admin\HolidayController::class, 'weeklyOff'])->name('weekly-off');
         });
 
         // Fees
@@ -283,9 +308,26 @@ Route::middleware(['auth', 'super.admin'])
             Route::post('/{id}/grade', [AssignmentController::class, 'grade'])->name('grade');
         });
 
-        // Payment gateway settings (per school — super-admin configures)
-        Route::get('/payment-settings', [\App\Http\Controllers\Admin\PaymentSettingsController::class, 'index'])->name('payment-settings.index');
-        Route::post('/payment-settings/{schoolId}', [\App\Http\Controllers\Admin\PaymentSettingsController::class, 'update'])->name('payment-settings.update');
+        // Old standalone page → payment settings now live under School Management.
+        Route::get('/payment-settings', fn () => redirect()->route('admin.schools.index'))->name('payment-settings.index');
+
+        // Payment links (onboarding / setup / subscription) on the platform gateway
+        Route::prefix('payment-links')->name('payment-links.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\SuperAdmin\PaymentLinkController::class, 'index'])->name('index');
+            Route::post('/', [\App\Http\Controllers\SuperAdmin\PaymentLinkController::class, 'store'])->middleware('throttle:20,1')->name('store');
+            Route::post('/{id}/refresh', [\App\Http\Controllers\SuperAdmin\PaymentLinkController::class, 'refresh'])->whereNumber('id')->name('refresh');
+            Route::post('/{id}/cancel', [\App\Http\Controllers\SuperAdmin\PaymentLinkController::class, 'cancel'])->whereNumber('id')->name('cancel');
+        });
+
+        // Integrations: global credentials (payment gateways, Firebase, email, SMS)
+        Route::prefix('integrations')->name('integrations.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\SuperAdmin\IntegrationsController::class, 'index'])->name('index');
+            Route::put('/{section}', [\App\Http\Controllers\SuperAdmin\IntegrationsController::class, 'update'])
+                ->whereIn('section', ['payments', 'firebase', 'email', 'sms'])->name('update');
+            Route::post('/test/{target}', [\App\Http\Controllers\SuperAdmin\IntegrationsController::class, 'test'])
+                ->whereIn('target', ['razorpay', 'cashfree', 'firebase', 'email', 'sms'])
+                ->middleware('throttle:10,1')->name('test');
+        });
 
         // Subscription invoices (platform bills schools)
         Route::prefix('subscription-invoices')->name('subscription-invoices.')->group(function () {
@@ -333,6 +375,28 @@ Route::middleware(['auth', 'school.tenant', 'resource.permission'])
             Route::get('/staff/roster', [AttendanceController::class, 'staffRoster'])->name('staff.roster');
             Route::post('/staff/mark', [AttendanceController::class, 'markStaffAttendance'])->name('staff.mark');
             Route::get('/report', [AttendanceController::class, 'report'])->name('report');
+        });
+
+        // Attendance settings: timings, self check-in (location/face), face approvals, phones, fingerprint machines
+        Route::prefix('attendance-settings')->name('attendance.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'index'])->name('settings');
+            Route::put('/', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'update'])->name('settings.update');
+            Route::get('/faces/{id}/photo', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'facePhoto'])->whereNumber('id')->name('settings.faces.photo');
+            Route::post('/faces/{id}/review', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'faceReview'])->whereNumber('id')->name('settings.faces.review');
+            Route::delete('/devices/{id}', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'resetDevice'])->whereNumber('id')->name('settings.devices.reset');
+            Route::post('/machines', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'storeMachine'])->name('settings.machines.store');
+            Route::delete('/machines/{id}', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'destroyMachine'])->whereNumber('id')->name('settings.machines.destroy');
+            Route::post('/machine-users', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'saveMaps'])->name('settings.machines.maps');
+            Route::get('/attempts', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'attempts'])->name('settings.attempts');
+        });
+
+        // Holidays & weekly offs
+        Route::prefix('holidays')->name('holidays.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\HolidayController::class, 'index'])->name('index');
+            Route::post('/', [\App\Http\Controllers\Admin\HolidayController::class, 'store'])->name('store');
+            Route::put('/{id}', [\App\Http\Controllers\Admin\HolidayController::class, 'update'])->whereNumber('id')->name('update');
+            Route::delete('/{id}', [\App\Http\Controllers\Admin\HolidayController::class, 'destroy'])->whereNumber('id')->name('destroy');
+            Route::post('/weekly-off', [\App\Http\Controllers\Admin\HolidayController::class, 'weeklyOff'])->name('weekly-off');
         });
 
         // Fees

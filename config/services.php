@@ -39,4 +39,13 @@ return [
         'timeout' => (int) env('NESTJS_API_TIMEOUT', 30),
     ],
 
+    /*
+    | Encryption key for global credentials saved on Admin → Integrations.
+    | Must be the SAME base64 32-byte value in the NestJS API .env.
+    | Generate: php -r "echo base64_encode(random_bytes(32));"
+    */
+    'platform_settings' => [
+        'key' => env('SETTINGS_ENCRYPTION_KEY'),
+    ],
+
 ];
