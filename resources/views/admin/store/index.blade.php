@@ -8,10 +8,10 @@
 
     {{-- Stats --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Items</p><p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['items'] }}</p></div>
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Published</p><p class="text-2xl font-bold text-green-600 mt-1">{{ $stats['active'] }}</p></div>
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Awaiting Collection</p><p class="text-2xl font-bold text-amber-600 mt-1">{{ $stats['purchased'] }}</p></div>
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Revenue</p><p class="text-2xl font-bold text-blue-600 mt-1">₹{{ number_format($stats['revenue']) }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Items</p><p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['items'] }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Published</p><p class="text-2xl font-bold text-green-600 mt-1">{{ $stats['active'] }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Awaiting Collection</p><p class="text-2xl font-bold text-amber-600 mt-1">{{ $stats['purchased'] }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Revenue</p><p class="text-2xl font-bold text-blue-600 mt-1">₹{{ number_format($stats['revenue']) }}</p></div>
     </div>
 
     <div class="flex items-center justify-between">
@@ -20,15 +20,15 @@
             <p class="text-sm text-gray-500">Items students can buy in the app. Payment is online; students collect at the counter.</p>
         </div>
         <div class="flex gap-2">
-            <a href="{{ panel_route('store.orders') }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50">View Orders</a>
-            <button @click="openCreate()" class="px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition active:scale-95">+ Add Item</button>
+            <a href="{{ panel_route('store.orders') }}" class="btn btn-secondary">View Orders</a>
+            <button @click="openCreate()" class="btn btn-primary">+ Add Item</button>
         </div>
     </div>
 
     {{-- Items grid --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         @forelse($items as $item)
-        <div class="group bg-white rounded-xl border overflow-hidden hover:shadow-md transition-all duration-200">
+        <div class="mc-card group overflow-hidden transition-all duration-200 card-hover">
             <div class="relative h-40 bg-gray-100 overflow-hidden">
                 @if($item->image)
                     <img src="{{ \Illuminate\Support\Str::startsWith($item->image,'http') ? $item->image : asset('storage/'.$item->image) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="{{ $item->name }}">
@@ -55,60 +55,60 @@
                     <form method="POST" action="{{ panel_route('store.toggle', $item->id) }}" class="flex-1">@csrf @method('PATCH')
                         <button type="submit" class="w-full text-xs font-medium text-gray-600 hover:bg-gray-100 py-1.5 rounded-lg transition">{{ $item->is_active ? 'Hide' : 'Publish' }}</button>
                     </form>
-                    <form method="POST" action="{{ panel_route('store.destroy', $item->id) }}" onsubmit="return confirm('Delete this item?')">@csrf @method('DELETE')
+                    <form method="POST" action="{{ panel_route('store.destroy', $item->id) }}" data-confirm="This action can't be undone." data-confirm-title="Delete this item?" data-confirm-ok="Delete" data-confirm-tone="danger">@csrf @method('DELETE')
                         <button type="submit" class="text-xs font-medium text-red-500 hover:bg-red-50 px-2 py-1.5 rounded-lg transition">Delete</button>
                     </form>
                 </div>
             </div>
         </div>
         @empty
-        <div class="col-span-full bg-white rounded-xl border p-12 text-center text-gray-400">
+        <div class="mc-card col-span-full p-12 text-center text-gray-400">
             No store items yet. Click "Add Item" to list your first product.
         </div>
         @endforelse
     </div>
 
     {{-- Create/Edit Modal --}}
-    <div x-show="show" x-cloak x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" @click.self="show=false">
-        <div x-show="show" x-transition.scale.origin.center class="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6" @click.stop>
+    <div x-show="show" x-cloak x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-[2px]" @click.self="show=false">
+        <div x-show="show" x-transition.scale.origin.center class="modal-panel max-w-lg max-h-[90vh] overflow-y-auto p-6" @click.stop>
             <h3 class="text-base font-semibold text-gray-900 mb-4" x-text="editing ? 'Edit Item' : 'Add Item'"></h3>
             <form :action="editing ? '{{ url(panel_prefix().'/store') }}/' + form.id : '{{ panel_route('store.store') }}'" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Item Name *</label>
-                    <input type="text" name="name" x-model="form.name" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="form-label">Item Name *</label>
+                    <input type="text" name="name" x-model="form.name" required class="form-input">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Description</label>
-                    <textarea name="description" x-model="form.description" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                    <label class="form-label">Description</label>
+                    <textarea name="description" x-model="form.description" rows="2" class="form-input"></textarea>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Category</label>
-                        <input type="text" name="category" x-model="form.category" placeholder="books, uniform..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Category</label>
+                        <input type="text" name="category" x-model="form.category" placeholder="books, uniform..." class="form-input">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Price (₹) *</label>
-                        <input type="number" name="price" x-model="form.price" min="0" step="0.01" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Price (₹) *</label>
+                        <input type="number" name="price" x-model="form.price" min="0" step="0.01" required class="form-input">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Stock (blank = unlimited)</label>
-                        <input type="number" name="stock" x-model="form.stock" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Stock (blank = unlimited)</label>
+                        <input type="number" name="stock" x-model="form.stock" min="0" class="form-input">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Sort Order</label>
-                        <input type="number" name="sort_order" x-model="form.sort_order" min="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Sort Order</label>
+                        <input type="number" name="sort_order" x-model="form.sort_order" min="0" class="form-input">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Item Image</label>
+                    <label class="form-label">Item Image</label>
                     <input type="file" name="image" accept="image/*" class="w-full text-xs">
                     <p class="text-[11px] text-gray-400 mt-1" x-show="editing">Leave blank to keep the current image.</p>
                 </div>
                 <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                    <input type="checkbox" name="is_active" value="1" x-model="form.is_active" class="rounded border-gray-300"> Publish (visible to students)
+                    <input type="checkbox" name="is_active" value="1" x-model="form.is_active" class="form-check"> Publish (visible to students)
                 </label>
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" @click="show=false" class="px-4 py-2 border border-gray-300 rounded-lg text-sm">Cancel</button>

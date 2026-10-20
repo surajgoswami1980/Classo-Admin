@@ -8,7 +8,7 @@
         <a href="{{ panel_route('students.edit', $student->id) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Edit Student</a>
     </div>
 
-    <div class="bg-white rounded-xl border p-6 mb-6">
+    <div class="mc-card p-6 mb-6">
         <div class="flex items-center gap-4 mb-6">
             <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-xl font-bold text-blue-700">
                 {{ strtoupper(substr($student->user_name ?? 'S', 0, 1)) }}
@@ -36,7 +36,7 @@
     </div>
 
     <!-- Fee profile & per-student override -->
-    <div class="bg-white rounded-xl border p-6" x-data="{ edit:null, amount:'', reason:'' }">
+    <div class="mc-card p-6" x-data="{ edit:null, amount:'', reason:'' }">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-900">Fees</h3>
             <span class="text-xs text-gray-400">Adjust a category amount for this student (scholarship, sibling discount, penalty…)</span>
@@ -46,13 +46,13 @@
 
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b">
+                <thead class="bg-gray-50/80 border-b border-gray-200">
                     <tr>
-                        <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600 uppercase">Category</th>
-                        <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600 uppercase">Type</th>
-                        <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600 uppercase">Class Amount</th>
-                        <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600 uppercase">Effective</th>
-                        <th class="px-4 py-2 text-right text-xs font-semibold text-gray-600 uppercase">Action</th>
+                        <th class="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Category</th>
+                        <th class="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Type</th>
+                        <th class="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Class Amount</th>
+                        <th class="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Effective</th>
+                        <th class="px-4 py-2 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -78,12 +78,12 @@
                                     <input type="hidden" name="student_id" value="{{ $student->id }}">
                                     <input type="hidden" name="fee_category_id" value="{{ $f->fee_category_id }}">
                                     <div>
-                                        <label class="block text-xs text-gray-500 mb-1">New Amount (₹)</label>
-                                        <input name="amount" type="number" min="0" step="0.01" x-model="amount" required class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-40">
+                                        <label class="form-label">New Amount (₹)</label>
+                                        <input name="amount" type="number" min="0" step="0.01" x-model="amount" required class="form-input w-40">
                                     </div>
                                     <div class="flex-1 min-w-[180px]">
-                                        <label class="block text-xs text-gray-500 mb-1">Reason</label>
-                                        <input name="reason" x-model="reason" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm w-full" placeholder="e.g. Sibling discount">
+                                        <label class="form-label">Reason</label>
+                                        <input name="reason" x-model="reason" class="form-input" placeholder="e.g. Sibling discount">
                                     </div>
                                     <button class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm">Save</button>
                                     <button type="button" @click="edit=null" class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm">Cancel</button>

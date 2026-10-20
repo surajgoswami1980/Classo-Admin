@@ -4,7 +4,7 @@
 @section('content')
 <div class="max-w-4xl">
     <!-- Add Session Form -->
-    <div class="bg-white rounded-xl border p-6 mb-6">
+    <div class="mc-card p-6 mb-6">
         <h3 class="text-base font-semibold text-gray-900 mb-4">Add New Session</h3>
         <form method="POST" action="{{ panel_route('academic.sessions.store') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
             @csrf
@@ -12,41 +12,41 @@
                 <div class="md:col-span-4 p-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">{{ $errors->first() }}</div>
             @endif
             <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">Session Name *</label>
-                <input type="text" name="name" required placeholder="e.g. 2026-2027" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <label class="form-label">Session Name *</label>
+                <input type="text" name="name" required placeholder="e.g. 2026-2027" class="form-input">
             </div>
             <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">Start Date *</label>
-                <input type="date" name="start_date" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <label class="form-label">Start Date *</label>
+                <input type="date" name="start_date" required class="form-input">
             </div>
             <div>
-                <label class="block text-xs font-medium text-gray-600 mb-1">End Date *</label>
-                <input type="date" name="end_date" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <label class="form-label">End Date *</label>
+                <input type="date" name="end_date" required class="form-input">
             </div>
             <div class="flex items-end gap-2">
                 <label class="flex items-center gap-2 text-sm">
                     <input type="checkbox" name="is_current" value="1" class="rounded">
                     Current
                 </label>
-                <button type="submit" class="px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">Add</button>
+                <button type="submit" class="btn btn-primary">Add</button>
             </div>
         </form>
     </div>
 
     <!-- Sessions List -->
-    <div class="bg-white rounded-xl border overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b">
+            <thead class="bg-gray-50/80 border-b border-gray-200">
                 <tr>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Name</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Start</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">End</th>
-                    <th class="px-4 py-3 text-center font-medium text-gray-600">Status</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Name</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Start</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">End</th>
+                    <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
                 </tr>
             </thead>
-            <tbody class="divide-y">
+            <tbody class="divide-y divide-gray-100">
                 @forelse($sessions as $session)
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-primary-50/40 transition-colors">
                     <td class="px-4 py-3 font-medium text-gray-900">{{ $session->name }}</td>
                     <td class="px-4 py-3 text-gray-600">{{ \Carbon\Carbon::parse($session->start_date)->format('d M Y') }}</td>
                     <td class="px-4 py-3 text-gray-600">{{ \Carbon\Carbon::parse($session->end_date)->format('d M Y') }}</td>

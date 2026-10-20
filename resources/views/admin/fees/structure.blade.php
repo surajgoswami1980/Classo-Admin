@@ -12,29 +12,29 @@
             <h2 class="text-lg font-semibold text-gray-900">Fee Structure</h2>
             <p class="text-sm text-gray-500">Manage fee categories and amounts</p>
         </div>
-        <a href="{{ panel_route('fees.index') }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+        <a href="{{ panel_route('fees.index') }}" class="btn btn-secondary">
             ← Back to Fee Management
         </a>
     </div>
 
     <!-- Table -->
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b border-gray-200">
+                <thead class="bg-gray-50/80 border-b border-gray-200">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">#</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Fee Category</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Class</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Frequency</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Due Date</th>
-                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">#</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Fee Category</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Class</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Amount</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Frequency</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Due Date</th>
+                        <th class="px-6 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($structures ?? [] as $index => $structure)
-                        <tr class="hover:bg-gray-50 transition-colors">
+                        <tr class="hover:bg-primary-50/40 transition-colors">
                             <td class="px-6 py-4 text-gray-500">{{ $index + 1 }}</td>
                             <td class="px-6 py-4 font-medium text-gray-900">{{ $structure->name ?? '' }}</td>
                             <td class="px-6 py-4 text-gray-700">{{ $structure->class ?? 'All' }}</td>

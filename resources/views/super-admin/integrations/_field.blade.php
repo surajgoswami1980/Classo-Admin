@@ -52,10 +52,10 @@
                 <label class="mt-2 inline-flex items-center gap-2 text-xs text-gray-500">
                     <input type="file" accept="application/json,.json" class="hidden" x-ref="file"
                            @change="const f = $event.target.files[0]; if (f) f.text().then(t => document.getElementById('{{ $id }}').value = t)">
-                    <button type="button" @click="$refs.file.click()" class="rounded-lg border border-gray-200 bg-white px-2.5 py-1 font-medium text-gray-700 hover:bg-gray-50">Upload .json file</button>
+                    <button type="button" @click="$refs.file.click()" class="btn btn-secondary">Upload .json file</button>
                     @if($hasSaved)
                         <span class="text-gray-300">·</span>
-                        <label class="inline-flex items-center gap-1.5 text-red-600"><input type="checkbox" name="{{ $group }}[{{ $key }}__clear]" value="1" class="rounded border-gray-300 text-red-600"> Remove saved key</label>
+                        <label class="inline-flex items-center gap-1.5 text-red-600"><input type="checkbox" name="{{ $group }}[{{ $key }}__clear]" value="1" class="form-check text-red-600"> Remove saved key</label>
                     @endif
                 </label>
             </div>

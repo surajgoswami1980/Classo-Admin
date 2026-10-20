@@ -7,10 +7,8 @@
     $greeting = now()->hour < 12 ? 'Good morning' : (now()->hour < 17 ? 'Good afternoon' : 'Good evening');
 @endphp
 
-<div class="relative mb-8 overflow-hidden rounded-2xl bg-gradient-to-br from-primary-700 via-primary-600 to-indigo-600 shadow-lg">
-    <!-- decorative blobs -->
-    <div class="pointer-events-none absolute -top-16 -right-10 h-56 w-56 rounded-full bg-white/10 blur-2xl"></div>
-    <div class="pointer-events-none absolute -bottom-20 left-1/3 h-48 w-48 rounded-full bg-indigo-400/20 blur-2xl"></div>
+<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-navy-800 via-navy-800 to-primary-700 shadow-card">
+    <div class="pointer-events-none absolute -top-24 -right-16 h-64 w-64 rounded-full bg-primary-500/25 blur-3xl" aria-hidden="true"></div>
 
     <div class="relative flex flex-col gap-6 p-6 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
         <!-- Identity -->
@@ -25,8 +23,8 @@
             </div>
 
             <div class="min-w-0">
-                <p class="text-sm font-medium text-white/70">{{ $greeting }}, welcome back 👋</p>
-                <h2 class="mt-0.5 truncate text-2xl font-bold text-white sm:text-3xl">{{ $banner['name'] }}</h2>
+                <p class="text-sm font-medium text-white/60">{{ $greeting }}, welcome back</p>
+                <h2 class="mt-0.5 truncate text-2xl font-bold tracking-tight text-white">{{ $banner['name'] }}</h2>
 
                 <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/80">
                     @if($banner['code'])
@@ -61,7 +59,7 @@
                 </div>
                 @if(!is_null($days))
                     <p class="mt-1.5 text-sm font-semibold
-                        {{ $expiryTone === 'danger' ? 'text-rose-200' : ($expiryTone === 'warning' ? 'text-amber-200' : 'text-emerald-100') }}">
+                        {{ $expiryTone === 'danger' ? 'text-rose-200' : ($expiryTone === 'warning' ? 'text-amber-200' : 'text-green-100') }}">
                         @if($days < 0)
                             Expired {{ abs($days) }} day{{ abs($days) === 1 ? '' : 's' }} ago
                         @elseif($days === 0)
@@ -108,9 +106,9 @@
         <div class="relative border-t border-white/15 bg-black/10 px-6 py-2.5 sm:px-8">
             <p class="text-sm text-white/90">
                 @if($days < 0)
-                    ⚠️ Your subscription has expired. Please renew to avoid service interruption.
+                    Your subscription has expired. Please renew to avoid service interruption.
                 @else
-                    ⏳ Your subscription renews soon. Contact support to extend your plan.
+                    Your subscription renews soon. Contact support to extend your plan.
                 @endif
             </p>
         </div>

@@ -10,7 +10,7 @@
             <h2 class="text-lg font-semibold text-gray-900">Resources & Permissions</h2>
             <p class="text-sm text-gray-500">The catalog every school's Policies are built from. Most resources/actions are auto-derived from app routes — you can rename them, toggle availability, or add custom ones here.</p>
         </div>
-        <button @click="showCreateResource = true" class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+        <button @click="showCreateResource = true" class="btn btn-primary">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             New Resource
         </button>
@@ -18,7 +18,7 @@
 
     <div class="space-y-4">
         @forelse($resources as $resource)
-        <div class="bg-white rounded-xl border overflow-hidden">
+        <div class="mc-card overflow-hidden">
             <div class="flex items-center justify-between px-5 py-4 border-b bg-gray-50">
                 <template x-if="editingResource !== {{ $resource->id }}">
                     <div class="flex items-center gap-3">
@@ -51,14 +51,14 @@
                 <form method="POST" action="{{ route('admin.resources.actions.store', $resource) }}" class="flex items-end gap-2">
                     @csrf
                     <div>
-                        <label class="block text-xs text-gray-500 mb-1">Action key</label>
-                        <input type="text" name="action" placeholder="e.g. export" required class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm">
+                        <label class="form-label">Action key</label>
+                        <input type="text" name="action" placeholder="e.g. export" required class="form-input">
                     </div>
                     <div>
-                        <label class="block text-xs text-gray-500 mb-1">Label</label>
-                        <input type="text" name="label" placeholder="e.g. Export" required class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm">
+                        <label class="form-label">Label</label>
+                        <input type="text" name="label" placeholder="e.g. Export" required class="form-input">
                     </div>
-                    <button type="submit" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Add</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
                 </form>
             </div>
 
@@ -96,29 +96,29 @@
             </div>
         </div>
         @empty
-        <div class="bg-white rounded-xl border p-12 text-center text-gray-400">
+        <div class="mc-card p-12 text-center text-gray-400">
             No resources yet. Run the seeder or add one manually.
         </div>
         @endforelse
     </div>
 
     <!-- Create resource modal -->
-    <div x-show="showCreateResource" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" @click.self="showCreateResource = false">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6" @click.stop>
+    <div x-show="showCreateResource" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-[2px]" @click.self="showCreateResource = false">
+        <div class="modal-panel max-w-md p-6" @click.stop>
             <h3 class="text-base font-semibold text-gray-900 mb-4">New Resource</h3>
             <form method="POST" action="{{ route('admin.resources.store') }}" class="space-y-4">
                 @csrf
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Display Name</label>
-                    <input type="text" name="name" required maxlength="100" placeholder="e.g. Hostel" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="form-label">Display Name</label>
+                    <input type="text" name="name" required maxlength="100" placeholder="e.g. Hostel" class="form-input">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Slug (used in permission keys)</label>
-                    <input type="text" name="slug" required maxlength="100" placeholder="e.g. hostel" pattern="[a-zA-Z0-9_-]+" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="form-label">Slug (used in permission keys)</label>
+                    <input type="text" name="slug" required maxlength="100" placeholder="e.g. hostel" pattern="[a-zA-Z0-9_-]+" class="form-input">
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" @click="showCreateResource = false" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Create</button>
+                    <button type="button" @click="showCreateResource = false" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
                 </div>
             </form>
         </div>

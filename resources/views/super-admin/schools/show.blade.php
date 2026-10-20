@@ -3,7 +3,7 @@
 @section('page-title', $school->name)
 @section('content')
 <div class="max-w-4xl">
-    <div class="bg-white rounded-xl border p-6 mb-6">
+    <div class="mc-card p-6 mb-6">
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-4">
                 <div class="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center text-xl font-bold text-blue-700">
@@ -21,8 +21,8 @@
                 </form>
                 @endif
                 <a href="{{ route('admin.payment-links.index', ['school' => $school->id]) }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Send payment link</a>
-                <a href="{{ route('admin.schools.payment-settings', $school) }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition">Payment settings</a>
-                <a href="{{ route('admin.schools.edit', $school) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">Edit</a>
+                <a href="{{ route('admin.schools.payment-settings', $school) }}" class="btn btn-secondary">Payment settings</a>
+                <a href="{{ route('admin.schools.edit', $school) }}" class="btn btn-primary">Edit</a>
                 @if($school->is_active)
                     <form method="POST" action="{{ route('admin.schools.deactivate', $school) }}" class="inline">@csrf<button type="submit" class="px-4 py-2 border border-red-300 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 transition">Deactivate</button></form>
                 @else
@@ -45,7 +45,7 @@
     </div>
 
     @if(isset($adminUser))
-    <div class="bg-white rounded-xl border p-6">
+    <div class="mc-card p-6">
         <h3 class="text-base font-semibold text-gray-900 mb-3">School Admin</h3>
         <div class="grid grid-cols-3 gap-4">
             <div><p class="text-xs text-gray-500">Name</p><p class="text-sm font-medium">{{ $adminUser->name }}</p></div>

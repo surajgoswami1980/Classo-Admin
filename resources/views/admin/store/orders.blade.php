@@ -7,38 +7,38 @@
 <div class="space-y-6">
 
     <div class="grid grid-cols-3 gap-4">
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Awaiting Collection</p><p class="text-2xl font-bold text-amber-600 mt-1">{{ $stats['purchased'] }}</p></div>
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Completed</p><p class="text-2xl font-bold text-green-600 mt-1">{{ $stats['completed'] }}</p></div>
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Revenue</p><p class="text-2xl font-bold text-blue-600 mt-1">₹{{ number_format($stats['revenue']) }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Awaiting Collection</p><p class="text-2xl font-bold text-amber-600 mt-1">{{ $stats['purchased'] }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Completed</p><p class="text-2xl font-bold text-green-600 mt-1">{{ $stats['completed'] }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Revenue</p><p class="text-2xl font-bold text-blue-600 mt-1">₹{{ number_format($stats['revenue']) }}</p></div>
     </div>
 
     <div class="flex items-center justify-between">
         <form method="GET" class="flex gap-2">
-            <select name="status" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            <select name="status" class="form-input">
                 <option value="">All statuses</option>
                 @foreach(['purchased'=>'Awaiting Collection','completed'=>'Completed','pending_payment'=>'Pending Payment','cancelled'=>'Cancelled'] as $k=>$label)
                     <option value="{{ $k }}" {{ ($filters['status'] ?? '')===$k ? 'selected' : '' }}>{{ $label }}</option>
                 @endforeach
             </select>
-            <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900">Filter</button>
+            <button type="submit" class="btn btn-primary">Filter</button>
         </form>
-        <a href="{{ panel_route('store.index') }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50">← Store Items</a>
+        <a href="{{ panel_route('store.index') }}" class="btn btn-secondary">← Store Items</a>
     </div>
 
-    <div class="bg-white rounded-xl border overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b"><tr>
-                <th class="px-4 py-3 text-left font-medium text-gray-600">Order</th>
-                <th class="px-4 py-3 text-left font-medium text-gray-600">Buyer</th>
-                <th class="px-4 py-3 text-left font-medium text-gray-600">Item</th>
-                <th class="px-4 py-3 text-right font-medium text-gray-600">Amount</th>
-                <th class="px-4 py-3 text-center font-medium text-gray-600">Payment</th>
-                <th class="px-4 py-3 text-center font-medium text-gray-600">Status</th>
-                <th class="px-4 py-3 text-right font-medium text-gray-600">Action</th>
+            <thead class="bg-gray-50/80 border-b border-gray-200"><tr>
+                <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Order</th>
+                <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Buyer</th>
+                <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Item</th>
+                <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Amount</th>
+                <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Payment</th>
+                <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
+                <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Action</th>
             </tr></thead>
-            <tbody class="divide-y">
+            <tbody class="divide-y divide-gray-100">
                 @forelse($orders as $o)
-                <tr class="hover:bg-gray-50 transition-colors">
+                <tr class="hover:bg-primary-50/40 transition-colors">
                     <td class="px-4 py-3">
                         <p class="font-mono text-xs text-gray-700">{{ $o->order_number }}</p>
                         <p class="text-[11px] text-gray-400">{{ \Illuminate\Support\Carbon::parse($o->created_at)->format('d M, h:i A') }}</p>
@@ -61,8 +61,8 @@
                     </td>
                     <td class="px-4 py-3 text-right">
                         @if($o->status==='purchased')
-                        <form method="POST" action="{{ panel_route('store.orders.complete', $o->id) }}" class="inline" onsubmit="return confirm('Mark as collected/completed?')">@csrf
-                            <button type="submit" class="text-xs font-semibold text-white bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded-lg transition active:scale-95">Mark Collected</button>
+                        <form method="POST" action="{{ panel_route('store.orders.complete', $o->id) }}" class="inline" data-confirm="Please confirm to continue." data-confirm-title="Mark as collected/completed?" data-confirm-ok="Confirm" data-confirm-tone="success">@csrf
+                            <button type="submit" class="btn btn-success btn-sm">Mark Collected</button>
                         </form>
                         @elseif($o->status==='completed')
                         <span class="text-xs text-green-600">✓ {{ $o->completed_at ? \Illuminate\Support\Carbon::parse($o->completed_at)->format('d M') : '' }}</span>

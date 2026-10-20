@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="space-y-5">
-    <div class="bg-white rounded-xl border p-5 flex items-center justify-between">
+    <div class="mc-card p-5 flex items-center justify-between">
         <div>
             <h2 class="text-lg font-semibold text-gray-900">{{ $event->title }}</h2>
             <p class="text-sm text-gray-500">
@@ -17,22 +17,22 @@
         <a href="{{ panel_route('events.index') }}" class="text-sm text-gray-600 hover:underline">&larr; Back to events</a>
     </div>
 
-    <div class="bg-white rounded-xl border overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <div class="px-4 py-3 border-b text-sm font-medium text-gray-600">{{ $registrations->count() }} registration(s)</div>
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b">
+            <thead class="bg-gray-50/80 border-b border-gray-200">
                 <tr>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Student</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Class</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Contact</th>
-                    <th class="px-4 py-3 text-center font-medium text-gray-600">Payment</th>
-                    <th class="px-4 py-3 text-center font-medium text-gray-600">Status</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Registered</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Student</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Class</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Contact</th>
+                    <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Payment</th>
+                    <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Registered</th>
                 </tr>
             </thead>
-            <tbody class="divide-y">
+            <tbody class="divide-y divide-gray-100">
                 @forelse($registrations as $r)
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-primary-50/40 transition-colors">
                     <td class="px-4 py-3">
                         <p class="font-medium text-gray-900">{{ $r->user_name }}</p>
                         @if($r->roll_number)<p class="text-xs text-gray-400">Roll {{ $r->roll_number }}</p>@endif

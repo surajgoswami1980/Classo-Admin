@@ -4,37 +4,37 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6">
-    <div class="bg-gradient-to-r from-primary-600 to-cyan-500 rounded-2xl p-6 text-white shadow-lg">
+    <div class="bg-gradient-to-r from-navy-800 to-primary-600 rounded-2xl p-6 text-white shadow-lg">
         <h2 class="text-xl font-bold">Your MyClasses Subscription</h2>
         <p class="text-white/85 text-sm mt-1">Pay your platform subscription invoices securely online.</p>
     </div>
 
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            <thead class="bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wide">
                 <tr>
-                    <th class="px-5 py-3 text-left">Invoice</th>
-                    <th class="px-5 py-3 text-left">Plan / Period</th>
-                    <th class="px-5 py-3 text-right">Amount</th>
-                    <th class="px-5 py-3 text-center">Status</th>
-                    <th class="px-5 py-3 text-right">Action</th>
+                    <th class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Invoice</th>
+                    <th class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Plan / Period</th>
+                    <th class="px-5 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Amount</th>
+                    <th class="px-5 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
+                    <th class="px-5 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Action</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-50">
                 @forelse($invoices as $inv)
-                    <tr class="hover:bg-gray-50/70">
+                    <tr class="hover:bg-primary-50/40 transition-colors">
                         <td class="px-5 py-4 font-mono text-xs text-gray-700">{{ $inv->invoice_number }}</td>
                         <td class="px-5 py-4 text-gray-500">{{ $inv->plan ?: '—' }} · {{ $inv->period ?: '—' }}</td>
                         <td class="px-5 py-4 text-right font-semibold text-gray-900">₹{{ number_format($inv->amount) }}</td>
                         <td class="px-5 py-4 text-center">
-                            @php $m = ['paid'=>'bg-emerald-100 text-emerald-700','unpaid'=>'bg-amber-100 text-amber-700','cancelled'=>'bg-gray-100 text-gray-500']; @endphp
+                            @php $m = ['paid'=>'bg-green-100 text-green-700','unpaid'=>'bg-amber-100 text-amber-700','cancelled'=>'bg-gray-100 text-gray-500']; @endphp
                             <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-full {{ $m[$inv->status] }}">{{ ucfirst($inv->status) }}</span>
                         </td>
                         <td class="px-5 py-4 text-right">
                             @if($inv->status === 'unpaid')
                                 <button onclick="paySubscription({{ $inv->id }}, '{{ $inv->invoice_number }}')" class="px-4 py-2 bg-primary-600 text-white text-xs font-semibold rounded-lg hover:bg-primary-700 transition active:scale-95">Pay Now</button>
                             @elseif($inv->status === 'paid')
-                                <span class="text-xs text-emerald-600 font-semibold">Paid {{ $inv->paid_at ? \Carbon\Carbon::parse($inv->paid_at)->format('d M Y') : '' }}</span>
+                                <span class="text-xs text-green-600 font-semibold">Paid {{ $inv->paid_at ? \Carbon\Carbon::parse($inv->paid_at)->format('d M Y') : '' }}</span>
                             @else
                                 <span class="text-xs text-gray-300">—</span>
                             @endif

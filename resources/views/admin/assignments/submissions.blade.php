@@ -10,7 +10,7 @@
     </a>
 
     {{-- Header card --}}
-    <div class="bg-gradient-to-r from-primary-600 to-cyan-500 rounded-2xl p-6 text-white shadow-lg">
+    <div class="bg-gradient-to-r from-navy-800 to-primary-600 rounded-2xl p-6 text-white shadow-lg">
         <h2 class="text-xl font-bold">{{ $assignment->title }}</h2>
         @if($assignment->topic)<p class="text-white/85 text-sm mt-0.5">{{ $assignment->topic }}</p>@endif
         <div class="mt-3 flex flex-wrap gap-4 text-sm text-white/90">
@@ -26,21 +26,21 @@
 
     <form method="POST" action="{{ panel_route('assignments.grade', $assignment->id) }}">
         @csrf
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="mc-card overflow-hidden">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                <thead class="bg-gray-50/80 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wide">
                     <tr>
-                        <th class="px-5 py-3 text-left">Roll</th>
-                        <th class="px-5 py-3 text-left">Student</th>
-                        <th class="px-5 py-3 text-left">Submission</th>
-                        <th class="px-5 py-3 text-center">Status</th>
-                        <th class="px-5 py-3 text-center">Marks / {{ $assignment->max_marks }}</th>
-                        <th class="px-5 py-3 text-left">Feedback</th>
+                        <th class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Roll</th>
+                        <th class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Student</th>
+                        <th class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Submission</th>
+                        <th class="px-5 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
+                        <th class="px-5 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Marks / {{ $assignment->max_marks }}</th>
+                        <th class="px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Feedback</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                     @forelse($rows as $r)
-                        <tr class="hover:bg-gray-50/70 transition-colors">
+                        <tr class="hover:bg-primary-50/40 transition-colors">
                             <td class="px-5 py-4 text-gray-500">{{ $r->roll_number ?: '—' }}</td>
                             <td class="px-5 py-4 font-medium text-gray-900">{{ $r->student_name }}</td>
                             <td class="px-5 py-4">
@@ -60,7 +60,7 @@
                             </td>
                             <td class="px-5 py-4 text-center">
                                 @php
-                                    $map = ['submitted'=>'bg-blue-100 text-blue-700','graded'=>'bg-emerald-100 text-emerald-700','missed'=>'bg-rose-100 text-rose-700','pending'=>'bg-gray-100 text-gray-500'];
+                                    $map = ['submitted'=>'bg-blue-100 text-blue-700','graded'=>'bg-green-100 text-green-700','missed'=>'bg-rose-100 text-rose-700','pending'=>'bg-gray-100 text-gray-500'];
                                     $st = $r->status ?: 'pending';
                                 @endphp
                                 <span class="inline-block px-2.5 py-1 text-xs font-semibold rounded-full {{ $map[$st] ?? 'bg-gray-100 text-gray-500' }}">{{ ucfirst($st) }}</span>
@@ -82,7 +82,7 @@
             </table>
             @if($rows->count())
                 <div class="px-5 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
-                    <button type="submit" class="px-6 py-2.5 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-700 transition active:scale-95">Save Marks</button>
+                    <button type="submit" class="btn btn-primary">Save Marks</button>
                 </div>
             @endif
         </div>

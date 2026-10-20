@@ -13,24 +13,24 @@
             <p class="text-sm text-gray-500">Manage exams, schedules, and results</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="#" onclick="alert('Select an exam from the list below first')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+            <a href="#exam-list" onclick="event.preventDefault(); mcToast('Pick an exam from the list below to enter marks.', 'info'); document.getElementById('exam-list')?.scrollIntoView({ behavior: 'smooth' })" class="btn btn-secondary">
                 Enter Marks
             </a>
-            <a href="#" onclick="alert('Select an exam from the list below first')" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+            <a href="#exam-list" onclick="event.preventDefault(); mcToast('Pick an exam from the list below to view results.', 'info'); document.getElementById('exam-list')?.scrollIntoView({ behavior: 'smooth' })" class="btn btn-secondary">
                 View Results
             </a>
         </div>
     </div>
 
     <!-- Filters -->
-    <div class="bg-white rounded-xl border border-gray-200 p-4">
+    <div class="mc-card p-4">
         <form method="GET" action="{{ panel_route('exams.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by exam name..."
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    class="form-input">
             </div>
             <div>
-                <select name="class" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <select name="class" class="form-input">
                     <option value="">All Classes</option>
                     @for($i = 1; $i <= 12; $i++)
                         <option value="{{ $i }}" {{ request('class') == $i ? 'selected' : '' }}>Class {{ $i }}</option>
@@ -38,7 +38,7 @@
                 </select>
             </div>
             <div>
-                <select name="status" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <select name="status" class="form-input">
                     <option value="">All Status</option>
                     <option value="upcoming" {{ request('status') == 'upcoming' ? 'selected' : '' }}>Upcoming</option>
                     <option value="ongoing" {{ request('status') == 'ongoing' ? 'selected' : '' }}>Ongoing</option>
@@ -46,7 +46,7 @@
                 </select>
             </div>
             <div>
-                <button type="submit" class="w-full px-4 py-2.5 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900 transition">
+                <button type="submit" class="btn btn-primary w-full">
                     Filter
                 </button>
             </div>
@@ -54,23 +54,23 @@
     </div>
 
     <!-- Table -->
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div id="exam-list" class="mc-card overflow-hidden scroll-mt-24">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b border-gray-200">
+                <thead class="bg-gray-50/80 border-b border-gray-200">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Exam Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Class</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Start Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">End Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Subjects</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Exam Name</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Class</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Start Date</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">End Date</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Subjects</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
+                        <th class="px-6 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($exams ?? [] as $exam)
-                        <tr class="hover:bg-gray-50 transition-colors">
+                        <tr class="hover:bg-primary-50/40 transition-colors">
                             <td class="px-6 py-4 font-medium text-gray-900">{{ $exam->name ?? '' }}</td>
                             <td class="px-6 py-4 text-gray-700">Class {{ $exam->class ?? '-' }}</td>
                             <td class="px-6 py-4 text-gray-700">{{ $exam->start_date ?? '-' }}</td>

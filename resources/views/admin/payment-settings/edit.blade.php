@@ -59,7 +59,7 @@
     {{-- Mode banner --}}
     @php
         $banners = [
-            'auto' => ['bg-emerald-50 border-emerald-200 text-emerald-900', 'text-emerald-600', 'Automatic payouts are on', "Each payment sends this school's share to its {$gwLabel} {$splitName} account."],
+            'auto' => ['bg-green-50 border-green-200 text-green-900', 'text-green-600', 'Automatic payouts are on', "Each payment sends this school's share to its {$gwLabel} {$splitName} account."],
             'manual' => ['bg-gray-50 border-gray-200 text-gray-800', 'text-gray-500', 'Platform default — manual settlement', "Payments are collected on the platform {$gwLabel} account. You pay this school its share yourself."],
             'missing' => ['bg-amber-50 border-amber-200 text-amber-900', 'text-amber-600', "Split is on, but there's no {$gwLabel} account", "Add the {$gwLabel} " . ($gw === 'cashfree' ? 'vendor ID' : 'linked account ID') . ' below — until then payments fall back to manual settlement.'],
             'product_off' => ['bg-amber-50 border-amber-200 text-amber-900', 'text-amber-600', "{$gwLabel} {$splitName} is switched off platform-wide", 'Turn it on in Integrations → Payments to send shares automatically. Until then every school is on manual settlement.'],
@@ -81,7 +81,7 @@
         @foreach([
             ['Collected online', $inr($stats->collected ?? 0), (int) ($stats->payments ?? 0) . ' payments', 'text-gray-900'],
             ['Platform + route fees', $inr(($stats->platform_fee ?? 0) + ($stats->gateway_fee ?? 0)), 'Kept by the platform', 'text-gray-900'],
-            ['Auto-settled', $inr($stats->auto_settled ?? 0), 'Sent via ' . $splitName, 'text-emerald-700'],
+            ['Auto-settled', $inr($stats->auto_settled ?? 0), 'Sent via ' . $splitName, 'text-green-700'],
             ['Owed to school', $inr($stats->pending_manual ?? 0), 'Manual settlement', ($stats->pending_manual ?? 0) > 0 ? 'text-amber-700' : 'text-gray-900'],
         ] as [$label, $value, $sub, $color])
             <div class="{{ $card }} p-4">
@@ -152,7 +152,7 @@
                         ['gateway_fee_percent', 'Route / split fee', 'route', $defaults['gateway_fee_percent']],
                     ] as [$field, $label, $model, $def])
                         <div>
-                            <label for="{{ $field }}" class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">{{ $label }}</label>
+                            <label for="{{ $field }}" class="form-label">{{ $label }}</label>
                             <div class="relative">
                                 <input id="{{ $field }}" type="number" step="0.01" min="0" max="50" name="{{ $field }}" x-model="{{ $model }}" placeholder="{{ $pct($def) }}"
                                        class="w-full rounded-xl border bg-white px-3.5 py-2.5 pr-9 text-sm transition focus:outline-none focus:ring-4 focus:ring-primary-500/15 focus:border-primary-500 {{ $errors->has($field) ? 'border-red-400' : 'border-gray-200' }}">
@@ -174,12 +174,12 @@
                     <label for="calc-amount" class="mt-3 block text-xs font-medium text-gray-500">If a parent pays</label>
                     <div class="relative mt-1">
                         <span class="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-gray-400">₹</span>
-                        <input id="calc-amount" type="number" min="0" step="100" x-model="amount" class="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-8 pr-3 text-lg font-bold text-gray-900 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary-500/15 focus:border-primary-500">
+                        <input id="calc-amount" type="number" min="0" step="100" x-model="amount" class="form-input bg-gray-50 pl-8 pr-3 text-lg font-bold text-gray-900">
                     </div>
                 </div>
                 <div class="space-y-4 p-5">
                     <div class="flex h-3 overflow-hidden rounded-full bg-gray-100" aria-hidden="true">
-                        <div class="bg-emerald-500 transition-all" :style="{ width: width(share) }"></div>
+                        <div class="bg-green-500 transition-all" :style="{ width: width(share) }"></div>
                         <div class="bg-primary-500 transition-all" :style="{ width: width(pf) }"></div>
                         <div class="bg-amber-400 transition-all" :style="{ width: width(rf) }"></div>
                     </div>
@@ -193,16 +193,16 @@
                             <dd class="font-semibold text-gray-900" x-text="money(rf)"></dd>
                         </div>
                         <div class="flex items-center justify-between border-t border-dashed border-gray-200 pt-2.5">
-                            <dt class="flex items-center gap-2 font-semibold text-gray-900"><span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>School receives</dt>
-                            <dd class="text-lg font-bold text-emerald-700" x-text="money(share)"></dd>
+                            <dt class="flex items-center gap-2 font-semibold text-gray-900"><span class="h-2.5 w-2.5 rounded-full bg-green-500"></span>School receives</dt>
+                            <dd class="text-lg font-bold text-green-700" x-text="money(share)"></dd>
                         </div>
                     </dl>
-                    <p class="rounded-xl px-3 py-2 text-xs" :class="split ? 'bg-emerald-50 text-emerald-800' : 'bg-amber-50 text-amber-800'"
+                    <p class="rounded-xl px-3 py-2 text-xs" :class="split ? 'bg-green-50 text-green-800' : 'bg-amber-50 text-amber-800'"
                        x-text="split ? 'Sent automatically via {{ $gwLabel }} {{ $splitName }}.' : 'Held in the platform account — settle with the school manually.'"></p>
                 </div>
                 <div class="flex gap-3 border-t border-gray-100 bg-gray-50/60 p-5">
-                    <a href="{{ route('admin.schools.index') }}" class="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-center text-sm font-semibold text-gray-700 hover:bg-gray-50">Cancel</a>
-                    <button type="submit" class="flex-1 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-primary-600/20 transition hover:bg-primary-700 active:scale-[.98]">Save</button>
+                    <a href="{{ route('admin.schools.index') }}" class="btn btn-secondary flex-1">Cancel</a>
+                    <button type="submit" class="btn btn-primary flex-1 shadow-md">Save</button>
                 </div>
             </div>
         </aside>

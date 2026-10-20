@@ -12,7 +12,7 @@
             <h2 class="text-lg font-semibold text-gray-900">Add New Teacher</h2>
             <p class="text-sm text-gray-500">Fill in the details to add a new teacher</p>
         </div>
-        <a href="{{ panel_route('teachers.index') }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+        <a href="{{ panel_route('teachers.index') }}" class="btn btn-secondary">
             ← Back to List
         </a>
     </div>
@@ -33,65 +33,65 @@
         @endif
 
         <!-- Personal Information -->
-        <div class="bg-white rounded-xl border border-gray-200 p-6">
+        <div class="mc-card p-6">
             <h3 class="text-base font-semibold text-gray-900 mb-4">Personal Information</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Full Name <span class="text-red-500">*</span></label>
+                    <label class="form-label">Full Name <span class="text-red-500">*</span></label>
                     <input type="text" name="name" value="{{ old('name') }}" required
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    @error('name') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                        class="form-input">
+                    @error('name') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                    <label class="form-label">Email <span class="text-red-500">*</span></label>
                     <input type="email" name="email" value="{{ old('email') }}" required
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    @error('email') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                        class="form-input">
+                    @error('email') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone <span class="text-red-500">*</span></label>
+                    <label class="form-label">Phone <span class="text-red-500">*</span></label>
                     <input type="text" name="phone" value="{{ old('phone') }}" required
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    @error('phone') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                        class="form-input">
+                    @error('phone') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                    <label class="form-label">Date of Birth</label>
                     <input type="date" name="dob" value="{{ old('dob') }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    @error('dob') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                        class="form-input">
+                    @error('dob') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                    <select name="gender" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="form-label">Gender</label>
+                    <select name="gender" class="form-input">
                         <option value="">Select Gender</option>
                         <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
                         <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
                         <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
                     </select>
-                    @error('gender') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                    @error('gender') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Qualification</label>
+                    <label class="form-label">Qualification</label>
                     <input type="text" name="qualification" value="{{ old('qualification') }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    @error('qualification') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                        class="form-input">
+                    @error('qualification') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
             </div>
         </div>
 
         <!-- Professional Information -->
-        <div class="bg-white rounded-xl border border-gray-200 p-6">
+        <div class="mc-card p-6">
             <h3 class="text-base font-semibold text-gray-900 mb-4">Professional Information</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Employee ID <span class="text-red-500">*</span></label>
+                    <label class="form-label">Employee ID <span class="text-red-500">*</span></label>
                     <input type="text" name="employee_id" value="{{ old('employee_id') }}" required
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    @error('employee_id') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                        class="form-input">
+                    @error('employee_id') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Designation <span class="text-red-500">*</span></label>
-                    <select name="designation" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="form-label">Designation <span class="text-red-500">*</span></label>
+                    <select name="designation" required class="form-input">
                         <option value="">Select Designation</option>
                         <option value="Principal" {{ old('designation') == 'Principal' ? 'selected' : '' }}>Principal</option>
                         <option value="Vice Principal" {{ old('designation') == 'Vice Principal' ? 'selected' : '' }}>Vice Principal</option>
@@ -100,11 +100,11 @@
                         <option value="Teacher" {{ old('designation') == 'Teacher' ? 'selected' : '' }}>Teacher</option>
                         <option value="Assistant Teacher" {{ old('designation') == 'Assistant Teacher' ? 'selected' : '' }}>Assistant Teacher</option>
                     </select>
-                    @error('designation') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                    @error('designation') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Department <span class="text-red-500">*</span></label>
-                    <select name="department" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="form-label">Department <span class="text-red-500">*</span></label>
+                    <select name="department" required class="form-input">
                         <option value="">Select Department</option>
                         <option value="mathematics" {{ old('department') == 'mathematics' ? 'selected' : '' }}>Mathematics</option>
                         <option value="science" {{ old('department') == 'science' ? 'selected' : '' }}>Science</option>
@@ -115,69 +115,69 @@
                         <option value="physical_education" {{ old('department') == 'physical_education' ? 'selected' : '' }}>Physical Education</option>
                         <option value="arts" {{ old('department') == 'arts' ? 'selected' : '' }}>Arts</option>
                     </select>
-                    @error('department') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                    @error('department') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Joining Date</label>
+                    <label class="form-label">Joining Date</label>
                     <input type="date" name="joining_date" value="{{ old('joining_date') }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    @error('joining_date') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                        class="form-input">
+                    @error('joining_date') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Salary</label>
+                    <label class="form-label">Salary</label>
                     <input type="number" name="salary" value="{{ old('salary') }}" placeholder="₹"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    @error('salary') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                        class="form-input">
+                    @error('salary') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Experience (Years)</label>
+                    <label class="form-label">Experience (Years)</label>
                     <input type="number" name="experience" value="{{ old('experience') }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    @error('experience') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                        class="form-input">
+                    @error('experience') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
             </div>
         </div>
 
         <!-- Address Information -->
-        <div class="bg-white rounded-xl border border-gray-200 p-6">
+        <div class="mc-card p-6">
             <h3 class="text-base font-semibold text-gray-900 mb-4">Address Information</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="lg:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                    <label class="form-label">Address</label>
                     <input type="text" name="address" value="{{ old('address') }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    @error('address') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                        class="form-input">
+                    @error('address') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                    <label class="form-label">City</label>
                     <input type="text" name="city" value="{{ old('city') }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    @error('city') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                        class="form-input">
+                    @error('city') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">State</label>
+                    <label class="form-label">State</label>
                     <input type="text" name="state" value="{{ old('state') }}"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    @error('state') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
+                        class="form-input">
+                    @error('state') <p class="form-error">{{ $message }}</p> @enderror
                 </div>
             </div>
         </div>
 
         <!-- Class Assignment & Subjects -->
-        <div x-data="teacherAssign()" class="bg-white rounded-xl border border-gray-200 p-6">
+        <div x-data="teacherAssign()" class="mc-card p-6">
             <h3 class="text-base font-semibold text-gray-900 mb-1">Class Assignment & Subjects</h3>
             <p class="text-sm text-gray-500 mb-4">Make this teacher a class incharge and assign the subjects they teach (across any level — Nursery, LKG, 1st, etc.).</p>
 
             {{-- Class Incharge --}}
             <div class="rounded-lg border border-gray-100 bg-gray-50/60 p-4 mb-5">
                 <label class="inline-flex items-center gap-2 text-sm font-medium text-gray-800 cursor-pointer">
-                    <input type="checkbox" name="is_class_incharge" value="1" x-model="isIncharge" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                    <input type="checkbox" name="is_class_incharge" value="1" x-model="isIncharge" class="form-check">
                     Assign as Class Incharge
                 </label>
                 <div x-show="isIncharge" x-cloak x-transition class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Incharge of Class</label>
-                        <select name="incharge_class_id" x-model="inchargeClass" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Incharge of Class</label>
+                        <select name="incharge_class_id" x-model="inchargeClass" class="form-input">
                             <option value="">Select Class</option>
                             @foreach($classes as $c)
                                 <option value="{{ $c->id }}">{{ $c->name }}</option>
@@ -185,8 +185,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Section</label>
-                        <select name="incharge_section_id" :disabled="!inchargeClass" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100">
+                        <label class="form-label">Section</label>
+                        <select name="incharge_section_id" :disabled="!inchargeClass" class="form-input disabled:bg-gray-100">
                             <option value="">Select Section</option>
                             <template x-for="s in inchargeSections" :key="s.id">
                                 <option :value="s.id" x-text="s.name"></option>
@@ -198,7 +198,7 @@
 
             {{-- Classes taught --}}
             <div class="mb-5">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Classes this teacher handles</label>
+                <label class="form-label">Classes this teacher handles</label>
                 @if($classes->isEmpty())
                     <p class="text-sm text-gray-400">No classes defined yet. Add classes under Academics → Classes first.</p>
                 @else
@@ -215,7 +215,7 @@
 
             {{-- Subjects (grouped by class) --}}
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Subjects taught</label>
+                <label class="form-label">Subjects taught</label>
                 @if($subjects->isEmpty())
                     <p class="text-sm text-gray-400">No subjects defined yet. Subjects are created per class; add them first to assign here.</p>
                 @else
@@ -228,8 +228,8 @@
                                 </div>
                                 <div class="flex flex-wrap gap-2">
                                     @foreach($classSubjects as $subj)
-                                        <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-700 cursor-pointer hover:bg-gray-50 has-[:checked]:bg-emerald-50 has-[:checked]:border-emerald-300 has-[:checked]:text-emerald-700 transition">
-                                            <input type="checkbox" name="assigned_subjects[]" value="{{ $subj->id }}" class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                                        <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-sm text-gray-700 cursor-pointer hover:bg-gray-50 has-[:checked]:bg-green-50 has-[:checked]:border-green-300 has-[:checked]:text-green-700 transition">
+                                            <input type="checkbox" name="assigned_subjects[]" value="{{ $subj->id }}" class="rounded border-gray-300 text-green-600 focus:ring-green-500">
                                             {{ $subj->name }}
                                         </label>
                                     @endforeach
@@ -243,10 +243,10 @@
 
         <!-- Actions -->
         <div class="flex items-center justify-end gap-3">
-            <a href="{{ panel_route('teachers.index') }}" class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+            <a href="{{ panel_route('teachers.index') }}" class="btn btn-secondary">
                 Cancel
             </a>
-            <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+            <button type="submit" class="btn btn-primary">
                 Add Teacher
             </button>
         </div>

@@ -22,8 +22,15 @@ class DashboardController extends Controller
         $stats = [
             'total_schools' => School::count(),
             'active_subscriptions' => School::where('is_active', true)->count(),
-            'total_students_platform' => 0,
-            'monthly_revenue' => 0,
+            // Real platform totals (previously hardcoded to 0).
+            'total_students_platform' => \Illuminate\Support\Facades\DB::table('students')->where('status', 'active')->count(),
+            // Same definition as the Revenue page (successful payments this month).
+            'monthly_revenue' => (float) \Illuminate\Support\Facades\DB::table('payment_transactions')->where('status', 'success')
+                ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])->sum('amount'),
+            'new_enquiries' => \Illuminate\Support\Facades\Schema::hasTable('enquiries')
+                ? \Illuminate\Support\Facades\DB::table('enquiries')->where('status', 'new')->count() : 0,
+            'expiring_soon' => School::whereNotNull('subscription_end')
+                ->whereBetween('subscription_end', [now()->toDateString(), now()->addDays(30)->toDateString()])->count(),
             'new_schools_this_month' => School::whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)
                 ->count(),

@@ -15,8 +15,8 @@
 
         {{-- Lead details --}}
         <div class="lg:col-span-2 space-y-6">
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-fade-up">
-                <div class="bg-gradient-to-r from-blue-600 to-cyan-500 px-6 py-5 text-white">
+            <div class="mc-card overflow-hidden animate-fade-up">
+                <div class="bg-gradient-to-r from-navy-800 to-primary-600 px-6 py-5 text-white">
                     <div class="flex items-center gap-4">
                         <div class="flex items-center justify-center w-14 h-14 rounded-full bg-white/20 text-xl font-bold">
                             {{ strtoupper(substr($enquiry->name, 0, 1)) }}
@@ -61,28 +61,28 @@
 
         {{-- Workflow panel --}}
         <div class="space-y-6">
-            <form method="POST" action="{{ route('admin.enquiries.update', $enquiry) }}" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 animate-fade-up">
+            <form method="POST" action="{{ route('admin.enquiries.update', $enquiry) }}" class="mc-card p-6 animate-fade-up">
                 @csrf
                 @method('PUT')
                 <h3 class="text-sm font-bold text-gray-900 mb-4">Manage Lead</h3>
 
-                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Status</label>
-                <select name="status" class="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none mb-4">
+                <label class="form-label">Status</label>
+                <select name="status" class="form-input mb-4">
                     @foreach(\App\Models\Enquiry::STATUSES as $s)
                         <option value="{{ $s }}" @selected($enquiry->status === $s)>{{ ucfirst($s) }}</option>
                     @endforeach
                 </select>
 
-                <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5">Internal Notes</label>
+                <label class="form-label">Internal Notes</label>
                 <textarea name="admin_notes" rows="5" placeholder="Call summary, next steps…"
-                          class="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none mb-4">{{ old('admin_notes', $enquiry->admin_notes) }}</textarea>
+                          class="form-input mb-4">{{ old('admin_notes', $enquiry->admin_notes) }}</textarea>
 
-                <button class="w-full px-4 py-2.5 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors">
+                <button class="btn btn-primary w-full">
                     Save Changes
                 </button>
             </form>
 
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div class="mc-card p-6">
                 <h3 class="text-sm font-bold text-gray-900 mb-3">Quick Actions</h3>
                 <div class="space-y-2">
                     <a href="{{ route('admin.payment-links.index', ['enquiry' => $enquiry->id]) }}" class="flex items-center gap-2 px-3 py-2.5 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors">
@@ -95,11 +95,11 @@
                     </a>
                     @if($enquiry->phone)
                         <a href="tel:{{ $enquiry->phone }}" class="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                            <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" /></svg>
+                            <svg class="w-4 h-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" /></svg>
                             Call {{ $enquiry->phone }}
                         </a>
                     @endif
-                    <form method="POST" action="{{ route('admin.enquiries.destroy', $enquiry) }}" onsubmit="return confirm('Delete this enquiry permanently?')">
+                    <form method="POST" action="{{ route('admin.enquiries.destroy', $enquiry) }}" data-confirm="This action can't be undone." data-confirm-title="Delete this enquiry permanently?" data-confirm-ok="Delete" data-confirm-tone="danger">
                         @csrf
                         @method('DELETE')
                         <button class="flex items-center gap-2 w-full px-3 py-2.5 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">

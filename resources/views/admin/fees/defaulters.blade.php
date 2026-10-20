@@ -12,20 +12,20 @@
             <h2 class="text-lg font-semibold text-gray-900">Fee Defaulters</h2>
             <p class="text-sm text-gray-500">Students with overdue fee payments</p>
         </div>
-        <a href="{{ panel_route('fees.index') }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+        <a href="{{ panel_route('fees.index') }}" class="btn btn-secondary">
             ← Back to Fee Management
         </a>
     </div>
 
     <!-- Filters -->
-    <div class="bg-white rounded-xl border border-gray-200 p-4">
+    <div class="mc-card p-4">
         <form method="GET" action="{{ panel_route('fees.defaulters') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by student name..."
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    class="form-input">
             </div>
             <div>
-                <select name="class" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <select name="class" class="form-input">
                     <option value="">All Classes</option>
                     @for($i = 1; $i <= 12; $i++)
                         <option value="{{ $i }}" {{ request('class') == $i ? 'selected' : '' }}>Class {{ $i }}</option>
@@ -33,7 +33,7 @@
                 </select>
             </div>
             <div>
-                <select name="overdue_days" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <select name="overdue_days" class="form-input">
                     <option value="">All Overdue</option>
                     <option value="30" {{ request('overdue_days') == '30' ? 'selected' : '' }}>30+ Days</option>
                     <option value="60" {{ request('overdue_days') == '60' ? 'selected' : '' }}>60+ Days</option>
@@ -41,7 +41,7 @@
                 </select>
             </div>
             <div>
-                <button type="submit" class="w-full px-4 py-2.5 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900 transition">
+                <button type="submit" class="btn btn-primary w-full">
                     Filter
                 </button>
             </div>
@@ -49,23 +49,23 @@
     </div>
 
     <!-- Table -->
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b border-gray-200">
+                <thead class="bg-gray-50/80 border-b border-gray-200">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Student</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Class</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Total Due</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Overdue Since</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Days Overdue</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Father's Phone</th>
-                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Student</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Class</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Total Due</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Overdue Since</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Days Overdue</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Father's Phone</th>
+                        <th class="px-6 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($defaulters ?? [] as $defaulter)
-                        <tr class="hover:bg-gray-50 transition-colors">
+                        <tr class="hover:bg-primary-50/40 transition-colors">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-700 font-semibold text-xs">

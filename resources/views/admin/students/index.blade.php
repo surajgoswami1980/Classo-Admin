@@ -11,47 +11,47 @@
             <h2 class="text-lg font-semibold text-gray-900">Student Management</h2>
             <p class="text-sm text-gray-500">{{ $students->total() ?? 0 }} students total</p>
         </div>
-        <a href="{{ panel_route('students.create') }}" class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+        <a href="{{ panel_route('students.create') }}" class="btn btn-primary">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             Add Student
         </a>
     </div>
 
     <!-- Filters -->
-    <form method="GET" class="bg-white rounded-xl border p-4">
+    <form method="GET" class="mc-card p-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
             <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Search name, phone, admission no..."
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-            <select name="status" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                class="form-input">
+            <select name="status" class="form-input">
                 <option value="">All Status</option>
                 <option value="active" {{ ($filters['status'] ?? '') === 'active' ? 'selected' : '' }}>Active</option>
                 <option value="inactive" {{ ($filters['status'] ?? '') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                 <option value="transferred" {{ ($filters['status'] ?? '') === 'transferred' ? 'selected' : '' }}>Transferred</option>
             </select>
-            <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900">Filter</button>
-            <a href="{{ panel_route('students.index') }}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium text-center hover:bg-gray-50">Reset</a>
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{{ panel_route('students.index') }}" class="btn btn-secondary">Reset</a>
         </div>
     </form>
 
     <!-- Table -->
-    <div class="bg-white rounded-xl border overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b">
+                <thead class="bg-gray-50/80 border-b border-gray-200">
                     <tr>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Name</th>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Class</th>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Section</th>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Roll No</th>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Admission No</th>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Phone</th>
-                        <th class="px-4 py-3 text-center font-medium text-gray-600">Status</th>
-                        <th class="px-4 py-3 text-right font-medium text-gray-600">Actions</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Name</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Class</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Section</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Roll No</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Admission No</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Phone</th>
+                        <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
+                        <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y">
+                <tbody class="divide-y divide-gray-100">
                     @forelse($students as $student)
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-primary-50/40 transition-colors">
                         <td class="px-4 py-3 font-medium text-gray-900">{{ $student->user_name ?? '—' }}</td>
                         <td class="px-4 py-3 text-gray-600">{{ $student->class_name ?? '—' }}</td>
                         <td class="px-4 py-3 text-gray-600">{{ $student->section_name ?? '—' }}</td>
@@ -72,7 +72,7 @@
                                 <a href="{{ panel_route('students.attendance', $student->id) }}" class="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg" title="View Attendance">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008Z"/></svg>
                                 </a>
-                                <a href="{{ panel_route('students.books', $student->id) }}" class="p-1.5 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg" title="View Books">
+                                <a href="{{ panel_route('students.books', $student->id) }}" class="p-1.5 text-gray-400 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg" title="View Books">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>
                                 </a>
                                 <a href="{{ panel_route('students.transport', $student->id) }}" class="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg" title="View Transport">

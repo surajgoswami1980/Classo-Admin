@@ -16,22 +16,22 @@
             <a href="{{ panel_route('teachers.edit', $teacher->id) }}" class="px-4 py-2 text-sm font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition">
                 Edit Teacher
             </a>
-            <a href="{{ panel_route('teachers.index') }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+            <a href="{{ panel_route('teachers.index') }}" class="btn btn-secondary">
                 ← Back to List
             </a>
         </div>
     </div>
 
     <!-- Teacher Profile Card -->
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div class="bg-gradient-to-r from-purple-600 to-purple-800 px-6 py-8">
+    <div class="mc-card overflow-hidden">
+        <div class="bg-gradient-to-r from-navy-800 to-primary-700 px-6 py-8">
             <div class="flex items-center gap-4">
                 <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-white text-xl font-bold">
                     {{ strtoupper(substr($teacher->user_name ?? '', 0, 2)) }}
                 </div>
                 <div>
                     <h3 class="text-xl font-bold text-white">{{ $teacher->user_name ?? '' }}</h3>
-                    <p class="text-purple-100 text-sm">{{ $teacher->designation ?? '' }} · {{ ucfirst(str_replace('_', ' ', $teacher->department ?? '')) }}</p>
+                    <p class="text-primary-100 text-sm">{{ $teacher->designation ?? '' }} · {{ ucfirst(str_replace('_', ' ', $teacher->department ?? '')) }}</p>
                 </div>
                 <div class="ml-auto">
                     @if(($teacher->status ?? '') == 'active')

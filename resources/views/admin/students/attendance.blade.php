@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="space-y-5">
-    <div class="bg-white rounded-xl border p-5 flex items-center justify-between">
+    <div class="mc-card p-5 flex items-center justify-between">
         <div>
             <h2 class="text-lg font-semibold text-gray-900">{{ $student->user_name }}</h2>
             <p class="text-sm text-gray-500">{{ $student->class_name }} - {{ $student->section_name }} · Roll {{ $student->roll_number ?? '—' }}</p>
@@ -25,7 +25,7 @@
 
     {{-- Summary --}}
     <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <div class="bg-white rounded-xl border p-4 text-center">
+        <div class="mc-card p-4 text-center">
             <p class="text-2xl font-bold text-gray-900">{{ $total }}</p>
             <p class="text-xs text-gray-500 mt-0.5">Marked Days</p>
         </div>
@@ -47,20 +47,20 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl border overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <div class="px-4 py-3 border-b text-sm font-medium text-gray-600">{{ $label }} — daily records</div>
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b">
+            <thead class="bg-gray-50/80 border-b border-gray-200">
                 <tr>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Date</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Day</th>
-                    <th class="px-4 py-3 text-center font-medium text-gray-600">Status</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Remarks</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Date</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Day</th>
+                    <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Remarks</th>
                 </tr>
             </thead>
-            <tbody class="divide-y">
+            <tbody class="divide-y divide-gray-100">
                 @forelse($records as $rec)
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-primary-50/40 transition-colors">
                     <td class="px-4 py-3 text-gray-900">{{ \Carbon\Carbon::parse($rec->date)->format('d M Y') }}</td>
                     <td class="px-4 py-3 text-gray-600">{{ \Carbon\Carbon::parse($rec->date)->format('l') }}</td>
                     <td class="px-4 py-3 text-center">

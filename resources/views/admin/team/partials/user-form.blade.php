@@ -6,26 +6,26 @@
 <div x-data="{ assignmentType: '{{ $assignmentType }}' }" class="space-y-4">
     <div class="grid grid-cols-2 gap-3">
         <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">Name</label>
+            <label class="form-label">Name</label>
             <input type="text" name="name" required maxlength="255" value="{{ $member->name ?? '' }}"
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
         <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">Email</label>
+            <label class="form-label">Email</label>
             <input type="email" name="email" required maxlength="255" value="{{ $member->email ?? '' }}"
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
     </div>
     <div class="grid grid-cols-2 gap-3">
         <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">Phone</label>
+            <label class="form-label">Phone</label>
             <input type="text" name="phone" maxlength="15" value="{{ $member->phone ?? '' }}"
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
         @if(!isset($member))
         <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">Panel Role</label>
-            <select name="panel_role" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <label class="form-label">Panel Role</label>
+            <select name="panel_role" required class="form-input">
                 <option value="sub-admin">Sub Admin</option>
                 <option value="incharge">Class Incharge</option>
             </select>
@@ -34,7 +34,7 @@
     </div>
 
     <div>
-        <label class="block text-xs font-medium text-gray-600 mb-2">Access</label>
+        <label class="form-label">Access</label>
         <div class="flex gap-4 mb-3">
             <label class="flex items-center gap-1.5 text-sm text-gray-700">
                 <input type="radio" name="assignment_type" value="role" x-model="assignmentType" class="text-blue-600 focus:ring-blue-500">
@@ -47,7 +47,7 @@
         </div>
 
         <div x-show="assignmentType === 'role'">
-            <select name="access_role_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <select name="access_role_id" class="form-input">
                 <option value="">Select a role...</option>
                 @foreach($roles as $role)
                     <option value="{{ $role->id }}" {{ (isset($member) && $member->access_role_id === $role->id) ? 'selected' : '' }}>{{ $role->name }}</option>

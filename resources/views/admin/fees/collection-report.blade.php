@@ -12,27 +12,27 @@
             <h2 class="text-lg font-semibold text-gray-900">Fee Collection Report</h2>
             <p class="text-sm text-gray-500">Analytics and reporting of fee collections</p>
         </div>
-        <a href="{{ panel_route('fees.index') }}" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+        <a href="{{ panel_route('fees.index') }}" class="btn btn-secondary">
             ← Back to Fee Management
         </a>
     </div>
 
     <!-- Filters -->
-    <div class="bg-white rounded-xl border border-gray-200 p-4">
+    <div class="mc-card p-4">
         <form method="GET" action="{{ panel_route('fees.collection-report') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1">From Date</label>
+                <label class="form-label">From Date</label>
                 <input type="date" name="from_date" value="{{ request('from_date') }}"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    class="form-input">
             </div>
             <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1">To Date</label>
+                <label class="form-label">To Date</label>
                 <input type="date" name="to_date" value="{{ request('to_date') }}"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    class="form-input">
             </div>
             <div>
-                <label class="block text-xs font-medium text-gray-500 mb-1">Class</label>
-                <select name="class" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                <label class="form-label">Class</label>
+                <select name="class" class="form-input">
                     <option value="">All Classes</option>
                     @for($i = 1; $i <= 12; $i++)
                         <option value="{{ $i }}" {{ request('class') == $i ? 'selected' : '' }}>Class {{ $i }}</option>
@@ -40,7 +40,7 @@
                 </select>
             </div>
             <div class="flex items-end">
-                <button type="submit" class="w-full px-4 py-2.5 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900 transition">
+                <button type="submit" class="btn btn-primary w-full">
                     Generate Report
                 </button>
             </div>
@@ -49,41 +49,41 @@
 
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-white rounded-xl border border-gray-200 p-5">
+        <div class="mc-card p-5">
             <p class="text-sm font-medium text-gray-500">Total Collected</p>
             <p class="mt-1 text-2xl font-bold text-green-600">₹{{ number_format($report['total_collected'] ?? 0) }}</p>
         </div>
-        <div class="bg-white rounded-xl border border-gray-200 p-5">
+        <div class="mc-card p-5">
             <p class="text-sm font-medium text-gray-500">Total Transactions</p>
             <p class="mt-1 text-2xl font-bold text-gray-900">{{ number_format($report['total_transactions'] ?? 0) }}</p>
         </div>
-        <div class="bg-white rounded-xl border border-gray-200 p-5">
+        <div class="mc-card p-5">
             <p class="text-sm font-medium text-gray-500">Average Per Student</p>
             <p class="mt-1 text-2xl font-bold text-gray-900">₹{{ number_format($report['average_per_student'] ?? 0) }}</p>
         </div>
     </div>
 
     <!-- Collection Table -->
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-200">
             <h3 class="text-sm font-semibold text-gray-900">Collection Details</h3>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b border-gray-200">
+                <thead class="bg-gray-50/80 border-b border-gray-200">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Receipt No</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Student</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Class</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Fee Type</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Payment Mode</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Date</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Receipt No</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Student</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Class</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Fee Type</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Amount</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Payment Mode</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($report['collections'] ?? [] as $collection)
-                        <tr class="hover:bg-gray-50 transition-colors">
+                        <tr class="hover:bg-primary-50/40 transition-colors">
                             <td class="px-6 py-4 text-gray-700">{{ $collection->date ?? '-' }}</td>
                             <td class="px-6 py-4 font-medium text-gray-900">{{ $collection->receipt_no ?? '-' }}</td>
                             <td class="px-6 py-4 text-gray-900">{{ $collection->student_name ?? '-' }}</td>

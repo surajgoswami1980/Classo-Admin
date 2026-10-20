@@ -20,41 +20,41 @@
 
     {{-- Summary --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Payslips ({{ $months[$month] }} {{ $year }})</p><p class="text-2xl font-bold text-gray-900 mt-1">{{ $summary->payslips ?? 0 }}</p></div>
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Total Net</p><p class="text-2xl font-bold text-blue-600 mt-1">₹{{ number_format($summary->total_net ?? 0) }}</p></div>
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Paid</p><p class="text-2xl font-bold text-green-600 mt-1">₹{{ number_format($summary->paid_net ?? 0) }}</p></div>
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Pending</p><p class="text-2xl font-bold text-amber-600 mt-1">₹{{ number_format($summary->pending_net ?? 0) }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Payslips ({{ $months[$month] }} {{ $year }})</p><p class="text-2xl font-bold text-gray-900 mt-1">{{ $summary->payslips ?? 0 }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Total Net</p><p class="text-2xl font-bold text-blue-600 mt-1">₹{{ number_format($summary->total_net ?? 0) }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Paid</p><p class="text-2xl font-bold text-green-600 mt-1">₹{{ number_format($summary->paid_net ?? 0) }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Pending</p><p class="text-2xl font-bold text-amber-600 mt-1">₹{{ number_format($summary->pending_net ?? 0) }}</p></div>
     </div>
 
     {{-- Period filter --}}
     <div class="flex flex-wrap items-center justify-between gap-3">
         <form method="GET" class="flex gap-2">
-            <select name="month" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            <select name="month" class="form-input">
                 @foreach($months as $m => $label)<option value="{{ $m }}" {{ $m == $month ? 'selected' : '' }}>{{ $label }}</option>@endforeach
             </select>
-            <select name="year" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            <select name="year" class="form-input">
                 @for($y = now()->year; $y >= now()->year - 3; $y--)<option value="{{ $y }}" {{ $y == $year ? 'selected' : '' }}>{{ $y }}</option>@endfor
             </select>
-            <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-lg text-sm font-medium hover:bg-gray-900">View</button>
+            <button type="submit" class="btn btn-primary">View</button>
         </form>
     </div>
 
     {{-- Staff & salary structures --}}
-    <div class="bg-white rounded-xl border overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <div class="px-4 py-3 border-b bg-gray-50"><h3 class="text-sm font-semibold text-gray-800">Staff & Salary Structures</h3></div>
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b"><tr>
-                <th class="px-4 py-3 text-left font-medium text-gray-600">Staff</th>
-                <th class="px-4 py-3 text-right font-medium text-gray-600">Basic</th>
-                <th class="px-4 py-3 text-right font-medium text-gray-600">HRA</th>
-                <th class="px-4 py-3 text-right font-medium text-gray-600">Allowances</th>
-                <th class="px-4 py-3 text-right font-medium text-gray-600">Deductions</th>
-                <th class="px-4 py-3 text-right font-medium text-gray-600">Net</th>
-                <th class="px-4 py-3 text-right font-medium text-gray-600">Actions</th>
+            <thead class="bg-gray-50/80 border-b border-gray-200"><tr>
+                <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Staff</th>
+                <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Basic</th>
+                <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">HRA</th>
+                <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Allowances</th>
+                <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Deductions</th>
+                <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Net</th>
+                <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Actions</th>
             </tr></thead>
-            <tbody class="divide-y">
+            <tbody class="divide-y divide-gray-100">
                 @forelse($staff as $s)
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-primary-50/40 transition-colors">
                     <td class="px-4 py-3">
                         <p class="font-medium text-gray-900">{{ $s->name }}</p>
                         <p class="text-xs text-gray-400">{{ $s->designation ?? '—' }}</p>
@@ -77,21 +77,21 @@
     </div>
 
     {{-- Payslips for the period --}}
-    <div class="bg-white rounded-xl border overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <div class="px-4 py-3 border-b bg-gray-50"><h3 class="text-sm font-semibold text-gray-800">Payslips — {{ $months[$month] }} {{ $year }}</h3></div>
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b"><tr>
-                <th class="px-4 py-3 text-left font-medium text-gray-600">Staff</th>
-                <th class="px-4 py-3 text-right font-medium text-gray-600">Gross</th>
-                <th class="px-4 py-3 text-center font-medium text-gray-600">LOP Days</th>
-                <th class="px-4 py-3 text-right font-medium text-gray-600">Deductions</th>
-                <th class="px-4 py-3 text-right font-medium text-gray-600">Net Pay</th>
-                <th class="px-4 py-3 text-center font-medium text-gray-600">Status</th>
-                <th class="px-4 py-3 text-right font-medium text-gray-600">Actions</th>
+            <thead class="bg-gray-50/80 border-b border-gray-200"><tr>
+                <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Staff</th>
+                <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Gross</th>
+                <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">LOP Days</th>
+                <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Deductions</th>
+                <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Net Pay</th>
+                <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
+                <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Actions</th>
             </tr></thead>
-            <tbody class="divide-y">
+            <tbody class="divide-y divide-gray-100">
                 @forelse($payslips as $p)
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-primary-50/40 transition-colors">
                     <td class="px-4 py-3">
                         <p class="font-medium text-gray-900">{{ $p->staff_name }}</p>
                         <p class="text-xs text-gray-400">{{ $p->designation ?? '—' }}</p>
@@ -104,7 +104,7 @@
                         <span class="text-xs font-medium px-2 py-0.5 rounded-full {{ $p->status === 'paid' ? 'text-green-700 bg-green-50' : 'text-amber-700 bg-amber-50' }}">{{ ucfirst($p->status) }}</span>
                     </td>
                     <td class="px-4 py-3 text-right whitespace-nowrap">
-                        <a href="{{ panel_route('payroll.payslip.document', $p->id) }}" target="_blank" class="text-xs font-medium text-teal-600 hover:underline">Payslip</a>
+                        <a href="{{ panel_route('payroll.payslip.document', $p->id) }}" target="_blank" class="text-xs font-medium text-cyan-600 hover:underline">Payslip</a>
                         @if($p->status !== 'paid')
                         <form method="POST" action="{{ panel_route('payroll.payslip.paid', $p->id) }}" class="inline">@csrf
                             <button type="submit" class="text-xs font-medium text-green-600 hover:underline ml-3">Mark Paid</button>
@@ -120,17 +120,17 @@
     </div>
 
     {{-- Salary Structure Modal --}}
-    <div x-show="showStructure" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" @click.self="showStructure=false">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6" @click.stop>
+    <div x-show="showStructure" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-[2px]" @click.self="showStructure=false">
+        <div class="modal-panel max-w-md p-6" @click.stop>
             <h3 class="text-base font-semibold text-gray-900 mb-1">Salary Structure</h3>
             <p class="text-sm text-gray-500 mb-4" x-text="sForm.name"></p>
             <form method="POST" action="{{ panel_route('payroll.structure.store') }}" class="space-y-4">@csrf
                 <input type="hidden" name="user_id" :value="sForm.user_id">
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="block text-xs font-medium text-gray-600 mb-1">Basic *</label><input type="number" name="basic" x-model="sForm.basic" min="0" step="0.01" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
-                    <div><label class="block text-xs font-medium text-gray-600 mb-1">HRA</label><input type="number" name="hra" x-model="sForm.hra" min="0" step="0.01" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
-                    <div><label class="block text-xs font-medium text-gray-600 mb-1">Allowances</label><input type="number" name="allowances" x-model="sForm.allowances" min="0" step="0.01" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
-                    <div><label class="block text-xs font-medium text-gray-600 mb-1">Deductions</label><input type="number" name="deductions" x-model="sForm.deductions" min="0" step="0.01" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                    <div><label class="form-label">Basic *</label><input type="number" name="basic" x-model="sForm.basic" min="0" step="0.01" required class="form-input"></div>
+                    <div><label class="form-label">HRA</label><input type="number" name="hra" x-model="sForm.hra" min="0" step="0.01" class="form-input"></div>
+                    <div><label class="form-label">Allowances</label><input type="number" name="allowances" x-model="sForm.allowances" min="0" step="0.01" class="form-input"></div>
+                    <div><label class="form-label">Deductions</label><input type="number" name="deductions" x-model="sForm.deductions" min="0" step="0.01" class="form-input"></div>
                 </div>
                 <div class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 text-sm">
                     <span class="text-gray-500">Gross: <span class="font-semibold text-gray-800">₹<span x-text="sGross.toLocaleString()"></span></span></span>
@@ -142,25 +142,25 @@
     </div>
 
     {{-- Generate Payslip Modal --}}
-    <div x-show="showPayslip" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" @click.self="showPayslip=false">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6" @click.stop>
+    <div x-show="showPayslip" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-[2px]" @click.self="showPayslip=false">
+        <div class="modal-panel max-w-md p-6" @click.stop>
             <h3 class="text-base font-semibold text-gray-900 mb-1">Generate Payslip</h3>
             <p class="text-sm text-gray-500 mb-4" x-text="pForm.name"></p>
             <form method="POST" action="{{ panel_route('payroll.payslip.generate') }}" class="space-y-4">@csrf
                 <input type="hidden" name="user_id" :value="pForm.user_id">
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="block text-xs font-medium text-gray-600 mb-1">Month *</label>
-                        <select name="month" x-model="pForm.month" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    <div><label class="form-label">Month *</label>
+                        <select name="month" x-model="pForm.month" class="form-input">
                             @foreach($months as $m => $label)<option value="{{ $m }}">{{ $label }}</option>@endforeach
                         </select></div>
-                    <div><label class="block text-xs font-medium text-gray-600 mb-1">Year *</label>
-                        <select name="year" x-model="pForm.year" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                    <div><label class="form-label">Year *</label>
+                        <select name="year" x-model="pForm.year" class="form-input">
                             @for($y = now()->year; $y >= now()->year - 3; $y--)<option value="{{ $y }}">{{ $y }}</option>@endfor
                         </select></div>
-                    <div><label class="block text-xs font-medium text-gray-600 mb-1">LOP Days</label><input type="number" name="lop_days" x-model="pForm.lop_days" min="0" max="31" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
-                    <div><label class="block text-xs font-medium text-gray-600 mb-1">Extra Deductions</label><input type="number" name="extra_deductions" x-model="pForm.extra_deductions" min="0" step="0.01" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                    <div><label class="form-label">LOP Days</label><input type="number" name="lop_days" x-model="pForm.lop_days" min="0" max="31" class="form-input"></div>
+                    <div><label class="form-label">Extra Deductions</label><input type="number" name="extra_deductions" x-model="pForm.extra_deductions" min="0" step="0.01" class="form-input"></div>
                 </div>
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Remarks</label><textarea name="remarks" x-model="pForm.remarks" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></textarea></div>
+                <div><label class="form-label">Remarks</label><textarea name="remarks" x-model="pForm.remarks" rows="2" class="form-input"></textarea></div>
                 <div class="flex justify-end gap-2"><button type="button" @click="showPayslip=false" class="px-4 py-2 border border-gray-300 rounded-lg text-sm">Cancel</button><button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Generate</button></div>
             </form>
         </div>

@@ -12,12 +12,12 @@
             $cards = [
                 ['label' => 'Total Leads', 'value' => $stats['total'], 'color' => 'from-blue-500 to-blue-600', 'icon' => 'inbox'],
                 ['label' => 'New', 'value' => $stats['new'], 'color' => 'from-amber-500 to-orange-600', 'icon' => 'bell'],
-                ['label' => 'Contacted', 'value' => $stats['contacted'], 'color' => 'from-violet-500 to-purple-600', 'icon' => 'clipboard-check'],
-                ['label' => 'Converted', 'value' => $stats['converted'], 'color' => 'from-emerald-500 to-green-600', 'icon' => 'chart-bar'],
+                ['label' => 'Contacted', 'value' => $stats['contacted'], 'color' => 'from-primary-500 to-primary-600', 'icon' => 'clipboard-check'],
+                ['label' => 'Converted', 'value' => $stats['converted'], 'color' => 'from-green-500 to-green-600', 'icon' => 'chart-bar'],
             ];
         @endphp
         @foreach($cards as $c)
-            <div class="card-hover relative overflow-hidden bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+            <div class="mc-card card-hover relative overflow-hidden p-5">
                 <div class="absolute -right-4 -top-4 w-20 h-20 rounded-full bg-gradient-to-br {{ $c['color'] }} opacity-10"></div>
                 <div class="flex items-center justify-between">
                     <div>
@@ -33,42 +33,42 @@
     </div>
 
     {{-- Filters --}}
-    <form method="GET" class="flex flex-wrap items-center gap-3 bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+    <form method="GET" class="mc-card flex flex-wrap items-center gap-3 p-4">
         <div class="relative flex-1 min-w-[220px]">
             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
             <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Search name, email, phone, school, city…"
-                   class="w-full pl-10 pr-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none">
+                   class="form-input pl-10 pr-3">
         </div>
-        <select name="status" class="px-3 py-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none">
+        <select name="status" class="form-input">
             <option value="">All statuses</option>
             @foreach($statuses as $s)
                 <option value="{{ $s }}" @selected(($filters['status'] ?? '') === $s)>{{ ucfirst($s) }}</option>
             @endforeach
         </select>
-        <button class="px-5 py-2.5 text-sm font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors">Filter</button>
+        <button class="btn btn-primary">Filter</button>
         @if(!empty($filters['search']) || !empty($filters['status']))
             <a href="{{ route('admin.enquiries.index') }}" class="px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900">Reset</a>
         @endif
     </form>
 
     {{-- Table --}}
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
                     <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide bg-gray-50 border-b border-gray-100">
-                        <th class="px-5 py-3">Lead</th>
-                        <th class="px-5 py-3">Organization</th>
-                        <th class="px-5 py-3">Size</th>
-                        <th class="px-5 py-3">Source</th>
-                        <th class="px-5 py-3">Status</th>
-                        <th class="px-5 py-3">Received</th>
-                        <th class="px-5 py-3 text-right">Action</th>
+                        <th class="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Lead</th>
+                        <th class="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Organization</th>
+                        <th class="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Size</th>
+                        <th class="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Source</th>
+                        <th class="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
+                        <th class="px-5 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Received</th>
+                        <th class="px-5 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
                     @forelse($enquiries as $e)
-                        <tr class="hover:bg-gray-50/70 transition-colors">
+                        <tr class="hover:bg-primary-50/40 transition-colors">
                             <td class="px-5 py-4">
                                 <p class="font-semibold text-gray-900">{{ $e->name }}</p>
                                 <p class="text-gray-500">{{ $e->email }}</p>
@@ -87,8 +87,8 @@
                                     $statusColors = [
                                         'new' => 'bg-amber-100 text-amber-700',
                                         'contacted' => 'bg-blue-100 text-blue-700',
-                                        'qualified' => 'bg-violet-100 text-violet-700',
-                                        'converted' => 'bg-emerald-100 text-emerald-700',
+                                        'qualified' => 'bg-primary-100 text-primary-700',
+                                        'converted' => 'bg-green-100 text-green-700',
                                         'closed' => 'bg-gray-100 text-gray-600',
                                     ];
                                 @endphp

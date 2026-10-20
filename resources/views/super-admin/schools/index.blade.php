@@ -8,36 +8,36 @@
     <!-- Header Actions -->
     <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-3">
-            <input type="text" placeholder="Search schools..." class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none w-64">
-            <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="text" placeholder="Search schools..." class="form-input w-64">
+            <select class="form-input">
                 <option value="">All Status</option>
                 <option value="active">Active</option>
                 <option value="trial">Trial</option>
                 <option value="expired">Expired</option>
             </select>
         </div>
-        <a href="{{ route('admin.schools.create') }}" class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+        <a href="{{ route('admin.schools.create') }}" class="btn btn-primary">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
             Onboard School
         </a>
     </div>
 
     <!-- Schools Table -->
-    <div class="bg-white rounded-xl border overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b">
+            <thead class="bg-gray-50/80 border-b border-gray-200">
                 <tr>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">School</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Code</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Board</th>
-                    <th class="px-4 py-3 text-center font-medium text-gray-600">Status</th>
-                    <th class="px-4 py-3 text-center font-medium text-gray-600">Students</th>
-                    <th class="px-4 py-3 text-right font-medium text-gray-600">Actions</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">School</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Code</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Board</th>
+                    <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
+                    <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Students</th>
+                    <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y">
+            <tbody class="divide-y divide-gray-100">
                 @forelse($schools as $school)
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-primary-50/40 transition-colors">
                     <td class="px-4 py-3">
                         <div class="flex items-center gap-3">
                             <div class="w-9 h-9 rounded-lg bg-blue-100 flex items-center justify-center text-sm font-bold text-blue-700">{{ strtoupper(substr($school->name, 0, 1)) }}</div>

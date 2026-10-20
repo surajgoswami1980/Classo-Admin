@@ -19,27 +19,27 @@
     <!-- ROUTES TAB -->
     <div x-show="tab === 'routes'" class="space-y-4">
         <div class="flex justify-end">
-            <button @click="showRouteModal = true" class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+            <button @click="showRouteModal = true" class="btn btn-primary">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 New Route
             </button>
         </div>
 
-        <div class="bg-white rounded-xl border overflow-hidden">
+        <div class="mc-card overflow-hidden">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b">
+                <thead class="bg-gray-50/80 border-b border-gray-200">
                     <tr>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Route</th>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Vehicle</th>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Driver</th>
-                        <th class="px-4 py-3 text-center font-medium text-gray-600">Stops</th>
-                        <th class="px-4 py-3 text-center font-medium text-gray-600">Students</th>
-                        <th class="px-4 py-3 text-right font-medium text-gray-600">Actions</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Route</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Vehicle</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Driver</th>
+                        <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Stops</th>
+                        <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Students</th>
+                        <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y">
+                <tbody class="divide-y divide-gray-100">
                     @forelse($routes as $route)
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-primary-50/40 transition-colors">
                         <td class="px-4 py-3 font-medium text-gray-900">{{ $route->name }}</td>
                         <td class="px-4 py-3 text-gray-600">
                             @if($route->vehicle_number)
@@ -57,7 +57,7 @@
                         </td>
                         <td class="px-4 py-3 text-right">
                             <button @click="stopsForRoute = stopsForRoute === {{ $route->id }} ? null : {{ $route->id }}" class="text-xs font-medium text-blue-600 hover:underline mr-3">Stops</button>
-                            <button @click="assignRouteId = '{{ $route->id }}'; showAssignModal = true" class="text-xs font-medium text-teal-600 hover:underline">Assign Student</button>
+                            <button @click="assignRouteId = '{{ $route->id }}'; showAssignModal = true" class="text-xs font-medium text-cyan-600 hover:underline">Assign Student</button>
                         </td>
                     </tr>
                     <tr x-show="stopsForRoute === {{ $route->id }}" x-cloak>
@@ -70,7 +70,7 @@
                                             <span class="w-5 h-5 rounded-full bg-blue-100 text-blue-700 text-xs flex items-center justify-center">{{ $stop->sequence_order }}</span>
                                             {{ $stop->name }}
                                             <span class="text-xs text-gray-400">{{ $stop->pickup_time }} / {{ $stop->drop_time }}</span>
-                                            <form method="POST" action="{{ panel_route('transport.stops.destroy', $stop->id) }}" onsubmit="return confirm('Remove this stop?')">@csrf @method('DELETE')
+                                            <form method="POST" action="{{ panel_route('transport.stops.destroy', $stop->id) }}" data-confirm="This action can't be undone." data-confirm-title="Remove this stop?" data-confirm-ok="Remove" data-confirm-tone="danger">@csrf @method('DELETE')
                                                 <button type="submit" class="text-red-500 hover:underline text-xs">Remove</button>
                                             </form>
                                         </div>
@@ -82,22 +82,22 @@
                                     @csrf
                                     <input type="hidden" name="route_id" value="{{ $route->id }}">
                                     <div>
-                                        <label class="block text-xs text-gray-500 mb-1">Stop name</label>
-                                        <input type="text" name="name" required class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm">
+                                        <label class="form-label">Stop name</label>
+                                        <input type="text" name="name" required class="form-input">
                                     </div>
                                     <div>
-                                        <label class="block text-xs text-gray-500 mb-1">Order</label>
-                                        <input type="number" name="sequence_order" min="1" required class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm w-16">
+                                        <label class="form-label">Order</label>
+                                        <input type="number" name="sequence_order" min="1" required class="form-input w-16">
                                     </div>
                                     <div>
-                                        <label class="block text-xs text-gray-500 mb-1">Pickup</label>
-                                        <input type="time" name="pickup_time" class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm">
+                                        <label class="form-label">Pickup</label>
+                                        <input type="time" name="pickup_time" class="form-input">
                                     </div>
                                     <div>
-                                        <label class="block text-xs text-gray-500 mb-1">Drop</label>
-                                        <input type="time" name="drop_time" class="border border-gray-300 rounded-lg px-2 py-1.5 text-sm">
+                                        <label class="form-label">Drop</label>
+                                        <input type="time" name="drop_time" class="form-input">
                                     </div>
-                                    <button type="submit" class="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Add Stop</button>
+                                    <button type="submit" class="btn btn-primary">Add Stop</button>
                                 </form>
                             </div>
                         </td>
@@ -113,31 +113,31 @@
     <!-- VEHICLES TAB -->
     <div x-show="tab === 'vehicles'" x-cloak class="space-y-4">
         <div class="flex justify-end">
-            <button @click="showVehicleModal = true" class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">
+            <button @click="showVehicleModal = true" class="btn btn-primary">
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 Add Vehicle
             </button>
         </div>
-        <div class="bg-white rounded-xl border overflow-hidden">
+        <div class="mc-card overflow-hidden">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b">
+                <thead class="bg-gray-50/80 border-b border-gray-200">
                     <tr>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Vehicle No.</th>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Type</th>
-                        <th class="px-4 py-3 text-center font-medium text-gray-600">Capacity</th>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Driver</th>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Conductor</th>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Insurance Expiry</th>
-                        <th class="px-4 py-3 text-left font-medium text-gray-600">Fitness Expiry</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Vehicle No.</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Type</th>
+                        <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Capacity</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Driver</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Conductor</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Insurance Expiry</th>
+                        <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Fitness Expiry</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y">
+                <tbody class="divide-y divide-gray-100">
                     @forelse($vehicles as $vehicle)
                     @php
                         $insuranceSoon = $vehicle->insurance_expiry && \Carbon\Carbon::parse($vehicle->insurance_expiry)->diffInDays(now(), false) > -30;
                         $fitnessSoon = $vehicle->fitness_expiry && \Carbon\Carbon::parse($vehicle->fitness_expiry)->diffInDays(now(), false) > -30;
                     @endphp
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-primary-50/40 transition-colors">
                         <td class="px-4 py-3 font-medium text-gray-900">{{ $vehicle->vehicle_number }}</td>
                         <td class="px-4 py-3 text-gray-600">{{ ucfirst($vehicle->vehicle_type) }}</td>
                         <td class="px-4 py-3 text-center text-gray-600">{{ $vehicle->capacity }}</td>
@@ -155,18 +155,18 @@
     </div>
 
     <!-- New Route Modal -->
-    <div x-show="showRouteModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" @click.self="showRouteModal = false">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6" @click.stop>
+    <div x-show="showRouteModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-[2px]" @click.self="showRouteModal = false">
+        <div class="modal-panel max-w-md p-6" @click.stop>
             <h3 class="text-base font-semibold text-gray-900 mb-4">New Route</h3>
             <form method="POST" action="{{ panel_route('transport.routes.store') }}" class="space-y-4">
                 @csrf
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Route Name</label>
-                    <input type="text" name="name" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="form-label">Route Name</label>
+                    <input type="text" name="name" required class="form-input">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Vehicle</label>
-                    <select name="vehicle_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="form-label">Vehicle</label>
+                    <select name="vehicle_id" class="form-input">
                         <option value="">Unassigned</option>
                         @foreach($vehicles as $vehicle)
                             <option value="{{ $vehicle->id }}">{{ $vehicle->vehicle_number }} (cap. {{ $vehicle->capacity }})</option>
@@ -175,41 +175,41 @@
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Driver Name</label>
-                        <input type="text" name="driver_name" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Driver Name</label>
+                        <input type="text" name="driver_name" class="form-input">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Driver Phone</label>
-                        <input type="text" name="driver_phone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Driver Phone</label>
+                        <input type="text" name="driver_phone" class="form-input">
                     </div>
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" @click="showRouteModal = false" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Create</button>
+                    <button type="button" @click="showRouteModal = false" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- New Vehicle Modal -->
-    <div x-show="showVehicleModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" @click.self="showVehicleModal = false">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6" @click.stop>
+    <div x-show="showVehicleModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-[2px]" @click.self="showVehicleModal = false">
+        <div class="modal-panel max-w-md p-6" @click.stop>
             <h3 class="text-base font-semibold text-gray-900 mb-4">Add Vehicle</h3>
             <form method="POST" action="{{ panel_route('transport.vehicles.store') }}" class="space-y-4">
                 @csrf
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Vehicle Number</label>
-                        <input type="text" name="vehicle_number" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Vehicle Number</label>
+                        <input type="text" name="vehicle_number" required class="form-input">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Capacity</label>
-                        <input type="number" name="capacity" min="1" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Capacity</label>
+                        <input type="number" name="capacity" min="1" required class="form-input">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Type</label>
-                    <select name="vehicle_type" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="form-label">Type</label>
+                    <select name="vehicle_type" required class="form-input">
                         <option value="bus">Bus</option>
                         <option value="van">Van</option>
                         <option value="auto">Auto</option>
@@ -217,53 +217,53 @@
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Driver Name</label>
-                        <input type="text" name="driver_name" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Driver Name</label>
+                        <input type="text" name="driver_name" class="form-input">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Driver Phone</label>
-                        <input type="text" name="driver_phone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Conductor Name</label>
-                        <input type="text" name="conductor_name" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Conductor Phone</label>
-                        <input type="text" name="conductor_phone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Driver Phone</label>
+                        <input type="text" name="driver_phone" class="form-input">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Insurance Expiry</label>
-                        <input type="date" name="insurance_expiry" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Conductor Name</label>
+                        <input type="text" name="conductor_name" class="form-input">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Fitness Expiry</label>
-                        <input type="date" name="fitness_expiry" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Conductor Phone</label>
+                        <input type="text" name="conductor_phone" class="form-input">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="form-label">Insurance Expiry</label>
+                        <input type="date" name="insurance_expiry" class="form-input">
+                    </div>
+                    <div>
+                        <label class="form-label">Fitness Expiry</label>
+                        <input type="date" name="fitness_expiry" class="form-input">
                     </div>
                 </div>
                 <div class="flex justify-end gap-2">
-                    <button type="button" @click="showVehicleModal = false" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Add</button>
+                    <button type="button" @click="showVehicleModal = false" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
                 </div>
             </form>
         </div>
     </div>
 
     <!-- Assign Student Modal -->
-    <div x-show="showAssignModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" @click.self="showAssignModal = false">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6" @click.stop>
+    <div x-show="showAssignModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-[2px]" @click.self="showAssignModal = false">
+        <div class="modal-panel max-w-md p-6" @click.stop>
             <h3 class="text-base font-semibold text-gray-900 mb-4">Assign Student to Route</h3>
             <form method="POST" action="{{ panel_route('transport.assign') }}">
                 @csrf
                 <input type="hidden" name="route_id" :value="assignRouteId">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Student</label>
-                        <select name="student_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Student</label>
+                        <select name="student_id" required class="form-input">
                             <option value="">Select student...</option>
                             @foreach($students as $student)
                                 <option value="{{ $student->id }}">{{ $student->name }} ({{ $student->class_name }}-{{ $student->section_name }})</option>
@@ -271,8 +271,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Stop</label>
-                        <select name="stop_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="form-label">Stop</label>
+                        <select name="stop_id" required class="form-input">
                             <option value="">Select stop...</option>
                             <template x-for="stop in (stopsByRoute[assignRouteId] || [])" :key="stop.id">
                                 <option :value="stop.id" x-text="stop.name"></option>
@@ -281,8 +281,8 @@
                     </div>
                 </div>
                 <div class="flex justify-end gap-2 mt-5">
-                    <button type="button" @click="showAssignModal = false" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Assign</button>
+                    <button type="button" @click="showAssignModal = false" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Assign</button>
                 </div>
             </form>
         </div>

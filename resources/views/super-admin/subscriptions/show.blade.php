@@ -4,13 +4,13 @@
 @section('content')
 <div class="max-w-3xl space-y-6">
 
-    <div class="bg-white rounded-xl border p-6">
+    <div class="mc-card p-6">
         <div class="flex items-start justify-between">
             <div>
                 <h3 class="text-lg font-semibold text-gray-900">{{ $school->name }}</h3>
                 <p class="text-xs text-gray-400 font-mono">{{ $school->code }}</p>
             </div>
-            <a href="{{ route('admin.subscriptions.edit', $school) }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Edit</a>
+            <a href="{{ route('admin.subscriptions.edit', $school) }}" class="btn btn-primary">Edit</a>
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
@@ -42,15 +42,15 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-white rounded-xl border p-5">
+        <div class="mc-card p-5">
             <p class="text-sm text-gray-500">Total Collected</p>
             <p class="text-2xl font-bold text-gray-900 mt-1">₹{{ number_format($revenue['total']) }}</p>
         </div>
-        <div class="bg-white rounded-xl border p-5">
+        <div class="mc-card p-5">
             <p class="text-sm text-gray-500">Platform Commission</p>
             <p class="text-2xl font-bold text-blue-600 mt-1">₹{{ number_format($revenue['commission']) }}</p>
         </div>
-        <div class="bg-white rounded-xl border p-5">
+        <div class="mc-card p-5">
             <p class="text-sm text-gray-500">Successful Transactions</p>
             <p class="text-2xl font-bold text-gray-900 mt-1">{{ number_format($revenue['transactions']) }}</p>
         </div>

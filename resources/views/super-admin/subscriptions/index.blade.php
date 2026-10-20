@@ -5,12 +5,12 @@
 <div class="space-y-6">
 
     {{-- Plan reference cards --}}
-    <div class="bg-white rounded-xl border p-6">
+    <div class="mc-card p-6">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-base font-semibold text-gray-900">Plans</h3>
             <div class="flex gap-2">
-                <a href="{{ route('admin.revenue') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Revenue</a>
-                <a href="{{ route('admin.subscriptions.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">Assign Subscription</a>
+                <a href="{{ route('admin.revenue') }}" class="btn btn-secondary">Revenue</a>
+                <a href="{{ route('admin.subscriptions.create') }}" class="btn btn-primary">Assign Subscription</a>
             </div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -25,14 +25,14 @@
     </div>
 
     {{-- Filters --}}
-    <form method="GET" class="bg-white rounded-xl border p-4 flex flex-wrap gap-3 items-end">
+    <form method="GET" class="mc-card p-4 flex flex-wrap gap-3 items-end">
         <div class="flex-1 min-w-[180px]">
-            <label class="block text-xs font-medium text-gray-600 mb-1">Search</label>
-            <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="School name or code" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <label class="form-label">Search</label>
+            <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="School name or code" class="form-input">
         </div>
         <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">Plan</label>
-            <select name="plan" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <label class="form-label">Plan</label>
+            <select name="plan" class="form-input">
                 <option value="">All</option>
                 @foreach($plans as $key => $plan)
                     <option value="{{ $key }}" {{ ($filters['plan'] ?? '') === $key ? 'selected' : '' }}>{{ $plan['label'] }}</option>
@@ -40,36 +40,36 @@
             </select>
         </div>
         <div>
-            <label class="block text-xs font-medium text-gray-600 mb-1">Status</label>
-            <select name="status" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-input">
                 <option value="">All</option>
                 <option value="active" {{ ($filters['status'] ?? '') === 'active' ? 'selected' : '' }}>Active</option>
                 <option value="inactive" {{ ($filters['status'] ?? '') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                 <option value="expired" {{ ($filters['status'] ?? '') === 'expired' ? 'selected' : '' }}>Expired</option>
             </select>
         </div>
-        <button type="submit" class="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800">Filter</button>
+        <button type="submit" class="btn btn-primary">Filter</button>
     </form>
 
     {{-- Subscriptions table --}}
-    <div class="bg-white rounded-xl border overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 text-gray-600">
+            <thead class="bg-gray-50/80 border-b border-gray-200 text-gray-600">
                 <tr>
-                    <th class="text-left px-4 py-3 font-medium">School</th>
-                    <th class="text-left px-4 py-3 font-medium">Plan</th>
-                    <th class="text-left px-4 py-3 font-medium">Period</th>
-                    <th class="text-left px-4 py-3 font-medium">Limits</th>
-                    <th class="text-left px-4 py-3 font-medium">Status</th>
-                    <th class="text-right px-4 py-3 font-medium">Actions</th>
+                    <th class="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">School</th>
+                    <th class="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Plan</th>
+                    <th class="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Period</th>
+                    <th class="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Limits</th>
+                    <th class="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
+                    <th class="text-right px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y">
+            <tbody class="divide-y divide-gray-100">
                 @forelse($subscriptions as $school)
                     @php
                         $expired = $school->subscription_end && \Carbon\Carbon::parse($school->subscription_end)->isPast();
                     @endphp
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-primary-50/40 transition-colors">
                         <td class="px-4 py-3">
                             <p class="font-medium text-gray-900">{{ $school->name }}</p>
                             <p class="text-xs text-gray-400 font-mono">{{ $school->code }}</p>
@@ -100,7 +100,7 @@
                         <td class="px-4 py-3 text-right whitespace-nowrap">
                             <a href="{{ route('admin.subscriptions.show', $school) }}" class="text-blue-600 hover:underline text-xs">View</a>
                             <a href="{{ route('admin.subscriptions.edit', $school) }}" class="text-gray-600 hover:underline text-xs ml-3">Edit</a>
-                            <form action="{{ route('admin.subscriptions.destroy', $school) }}" method="POST" class="inline ml-3" onsubmit="return confirm('Cancel this subscription? The school will be deactivated.');">
+                            <form action="{{ route('admin.subscriptions.destroy', $school) }}" method="POST" class="inline ml-3" data-confirm="The school will be deactivated." data-confirm-title="Cancel this subscription?" data-confirm-ok="Yes, cancel" data-confirm-tone="danger">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-500 hover:underline text-xs">Cancel</button>

@@ -22,16 +22,16 @@
         @if(!empty($needsTo))
             <input x-model="to" type="{{ $needsTo === 'email' ? 'email' : 'tel' }}" placeholder="{{ $needsTo === 'email' ? 'Send test to… you@company.com' : 'Send test to… +91 98765 43210' }}"
                    aria-label="Test recipient"
-                   class="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm focus:outline-none focus:ring-4 focus:ring-primary-500/15 focus:border-primary-500 sm:max-w-xs">
+                   class="form-input sm:max-w-xs">
         @endif
-        <button type="button" @click="run" :disabled="busy" class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 disabled:opacity-60">
+        <button type="button" @click="run" :disabled="busy" class="btn btn-secondary">
             <svg x-show="busy" x-cloak class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z"/></svg>
             <svg x-show="!busy" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
             <span x-text="busy ? 'Testing…' : '{{ $label }}'"></span>
         </button>
     </div>
     <p x-show="result" x-cloak role="status" class="flex items-start gap-2 rounded-lg px-3 py-2 text-sm"
-       :class="result?.ok ? 'bg-emerald-50 text-emerald-800' : 'bg-red-50 text-red-700'">
+       :class="result?.ok ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-700'">
         <span x-text="result?.ok ? '✓' : '✕'" class="font-bold"></span>
         <span x-text="result?.message"></span>
     </p>

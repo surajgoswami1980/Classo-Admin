@@ -27,7 +27,7 @@
             <p class="mt-1 text-sm text-gray-500">Global credentials for every school. Saved here, encrypted, and used by the admin panel and the API — no <code class="rounded bg-gray-100 px-1 text-[12px]">.env</code> edits needed.</p>
         </div>
         <div class="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs text-gray-600 shadow-sm">
-            <svg class="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+            <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
             Secrets encrypted with AES-256-GCM
         </div>
     </div>
@@ -195,7 +195,7 @@
         </section>
 
         <div class="sticky bottom-4 z-10 flex justify-end">
-            <button type="submit" @disabled(!$cryptoReady) class="rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-600/25 transition hover:bg-primary-700 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50">Save payment settings</button>
+            <button type="submit" @disabled(!$cryptoReady) class="btn btn-primary">Save payment settings</button>
         </div>
     </form>
     @endif
@@ -220,7 +220,7 @@
             <div class="grid gap-5 p-6 sm:grid-cols-2">
                 <div class="sm:col-span-2">{!! $f('firebase', 'enabled') !!}</div>
                 @if($firebaseProject)
-                    <div class="sm:col-span-2 flex items-center gap-3 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                    <div class="sm:col-span-2 flex items-center gap-3 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-800">
                         <svg class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
                         Saved service account for project <strong class="font-mono">{{ $firebaseProject }}</strong>
                     </div>
@@ -233,7 +233,7 @@
             </div>
         </section>
         <div class="sticky bottom-4 z-10 flex justify-end">
-            <button type="submit" @disabled(!$cryptoReady) class="rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-600/25 transition hover:bg-primary-700 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50">Save Firebase settings</button>
+            <button type="submit" @disabled(!$cryptoReady) class="btn btn-primary">Save Firebase settings</button>
         </div>
     </form>
     @endif
@@ -288,7 +288,7 @@
             </div>
         </section>
         <div class="sticky bottom-4 z-10 flex justify-end">
-            <button type="submit" @disabled(!$cryptoReady) class="rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-600/25 transition hover:bg-primary-700 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50">Save email settings</button>
+            <button type="submit" @disabled(!$cryptoReady) class="btn btn-primary">Save email settings</button>
         </div>
     </form>
     @endif
@@ -300,7 +300,7 @@
         <section class="{{ $card }} overflow-hidden">
             <header class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-6 py-4">
                 <div class="flex items-center gap-3">
-                    <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500 text-white">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-green-500 text-white">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $tabs['sms'][1] }}"/></svg>
                     </span>
                     <div>
@@ -331,7 +331,7 @@
             </div>
         </section>
         <div class="sticky bottom-4 z-10 flex justify-end">
-            <button type="submit" @disabled(!$cryptoReady) class="rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-600/25 transition hover:bg-primary-700 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50">Save SMS settings</button>
+            <button type="submit" @disabled(!$cryptoReady) class="btn btn-primary">Save SMS settings</button>
         </div>
     </form>
     @endif

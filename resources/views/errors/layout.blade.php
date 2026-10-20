@@ -4,22 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('code', 'Error') · {{ config('app.name', 'Quilo') }}</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    @include('layouts.partials.head-assets')
     <script>
-        tailwind.config = { theme: { extend: {
-            fontFamily: { sans: ['Inter', 'sans-serif'] },
-            colors: { primary: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' } },
-            keyframes: {
-                floaty: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-12px)' } },
-                popin: { '0%': { opacity: 0, transform: 'scale(.9)' }, '100%': { opacity: 1, transform: 'scale(1)' } },
-            },
-            animation: { floaty: 'floaty 4s ease-in-out infinite', popin: 'popin .4s ease-out' },
-        } } }
+        Object.assign(tailwind.config.theme.extend.keyframes, {
+            floaty: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-12px)' } },
+            popin: { '0%': { opacity: 0, transform: 'scale(.9)' }, '100%': { opacity: 1, transform: 'scale(1)' } },
+        });
+        Object.assign(tailwind.config.theme.extend.animation, { floaty: 'floaty 4s ease-in-out infinite', popin: 'popin .4s ease-out' });
     </script>
 </head>
-<body class="h-full font-sans antialiased bg-gradient-to-br from-slate-50 via-white to-blue-50">
+<body class="h-full font-sans antialiased bg-canvas">
     <div class="min-h-full flex items-center justify-center px-4 py-16">
         <div class="w-full max-w-lg text-center animate-popin">
             {{-- MyClasses mark --}}
@@ -37,7 +31,7 @@
             </div>
 
             {{-- Big code --}}
-            <p class="text-7xl sm:text-8xl font-black tracking-tight bg-gradient-to-br @yield('code-gradient', 'from-blue-600 to-indigo-600') bg-clip-text text-transparent">
+            <p class="text-7xl sm:text-8xl font-black tracking-tight bg-gradient-to-br @yield('code-gradient', 'from-primary-600 to-navy-800') bg-clip-text text-transparent">
                 @yield('code', 'Error')
             </p>
 
@@ -45,10 +39,10 @@
             <p class="mt-2 text-sm text-gray-500 max-w-sm mx-auto">@yield('message', 'An unexpected error occurred. Please try again.')</p>
 
             <div class="mt-8 flex items-center justify-center gap-3">
-                <a href="{{ url('/') }}" class="px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-semibold shadow-sm hover:bg-primary-700 transition active:scale-95">
+                <a href="{{ url('/') }}" class="btn btn-primary">
                     Go to Home
                 </a>
-                <button onclick="history.back()" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl text-sm font-semibold hover:bg-gray-50 transition active:scale-95">
+                <button onclick="history.back()" class="btn btn-secondary">
                     Go Back
                 </button>
             </div>

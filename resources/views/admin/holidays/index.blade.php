@@ -9,10 +9,10 @@
     $typeColor = [
         'holiday' => 'bg-rose-50 text-rose-700 ring-rose-600/20',
         'vacation' => 'bg-amber-50 text-amber-700 ring-amber-600/20',
-        'exam_break' => 'bg-violet-50 text-violet-700 ring-violet-600/20',
+        'exam_break' => 'bg-primary-50 text-primary-700 ring-primary-600/20',
         'other' => 'bg-gray-100 text-gray-700 ring-gray-500/20',
     ];
-    $cellColor = ['holiday' => 'bg-rose-500', 'vacation' => 'bg-amber-500', 'exam_break' => 'bg-violet-500', 'other' => 'bg-gray-500'];
+    $cellColor = ['holiday' => 'bg-rose-500', 'vacation' => 'bg-amber-500', 'exam_break' => 'bg-primary-500', 'other' => 'bg-gray-500'];
     $audience = ['all' => 'Everyone', 'students' => 'Students only', 'staff' => 'Staff only'];
     $dows = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     $range = fn ($h) => $h->start_date === $h->end_date
@@ -39,7 +39,7 @@
             <h2 class="text-2xl font-bold tracking-tight text-gray-900">Holidays</h2>
             <p class="mt-1 text-sm text-gray-500">Shown on every student, parent and staff calendar. Attendance can't be marked on these days and they don't lower anyone's percentage.</p>
         </div>
-        <button type="button" @click="add()" class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary-600/20 transition hover:bg-primary-700 active:scale-[.98]">
+        <button type="button" @click="add()" class="btn btn-primary">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             Add holiday
         </button>
@@ -116,7 +116,7 @@
                         @endforeach
                     </div>
                 </div>
-                <button class="mt-5 w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition hover:bg-gray-50">Save weekly offs</button>
+                <button class="btn btn-secondary mt-5 w-full">Save weekly offs</button>
             </form>
 
             <div class="grid grid-cols-2 gap-3">
@@ -157,8 +157,8 @@
                             <p class="mt-0.5 text-sm text-gray-500">{{ $range($h) }} · {{ $len($h) }} {{ $len($h) === 1 ? 'day' : 'days' }}{{ $h->description ? ' · ' . $h->description : '' }}</p>
                         </div>
                         <div class="flex gap-2">
-                            <button type="button" @click='edit(@json($h))' class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50">Edit</button>
-                            <form method="POST" action="{{ route($prefix . '.holidays.destroy', $h->id) }}" onsubmit="return confirm('Delete {{ addslashes($h->title) }}?')">
+                            <button type="button" @click='edit(@json($h))' class="btn btn-secondary btn-sm">Edit</button>
+                            <form method="POST" action="{{ route($prefix . '.holidays.destroy', $h->id) }}" data-confirm="This action can't be undone." data-confirm-title="Delete “{{ $h->title }}”?" data-confirm-ok="Delete" data-confirm-tone="danger">
                                 @csrf @method('DELETE')
                                 <button class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:border-red-200 hover:bg-red-50">Delete</button>
                             </form>
@@ -232,13 +232,13 @@
                         <textarea id="h-desc" name="description" x-model="form.description" rows="2" maxlength="500" placeholder="School reopens on Monday" class="{{ $input }}"></textarea>
                     </div>
                     <label x-show="!editing" class="flex items-start gap-3 rounded-xl bg-gray-50 p-3.5 text-sm">
-                        <input type="checkbox" name="notify" value="1" checked class="mt-0.5 rounded border-gray-300 text-primary-600">
+                        <input type="checkbox" name="notify" value="1" checked class="form-check mt-0.5">
                         <span><span class="font-medium text-gray-900">Notify everyone</span><span class="block text-xs text-gray-500">Push + in-app message to the selected people</span></span>
                     </label>
                 </div>
                 <div class="flex gap-3 border-t border-gray-100 bg-gray-50/60 px-6 py-4">
-                    <button type="button" @click="open = false" class="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50">Cancel</button>
-                    <button type="submit" class="flex-[2] rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-primary-600/20 hover:bg-primary-700" x-text="editing ? 'Save changes' : 'Add holiday'"></button>
+                    <button type="button" @click="open = false" class="btn btn-secondary flex-1">Cancel</button>
+                    <button type="submit" class="btn btn-primary flex-[2] shadow-md" x-text="editing ? 'Save changes' : 'Add holiday'"></button>
                 </div>
             </form>
         </div>

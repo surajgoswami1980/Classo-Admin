@@ -16,23 +16,23 @@
         <a href="{{ panel_route('library.index') }}" class="text-sm text-gray-600 hover:underline">&larr; Back to catalog</a>
     </div>
 
-    <div class="bg-white rounded-xl border overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b">
+            <thead class="bg-gray-50/80 border-b border-gray-200">
                 <tr>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Book</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Borrower</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Issued</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Due</th>
-                    <th class="px-4 py-3 text-center font-medium text-gray-600">Days Left</th>
-                    <th class="px-4 py-3 text-right font-medium text-gray-600">Fine</th>
-                    <th class="px-4 py-3 text-center font-medium text-gray-600">Status</th>
-                    <th class="px-4 py-3 text-right font-medium text-gray-600">Actions</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Book</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Borrower</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Issued</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Due</th>
+                    <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Days Left</th>
+                    <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Fine</th>
+                    <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
+                    <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y">
+            <tbody class="divide-y divide-gray-100">
                 @forelse($issues as $issue)
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-primary-50/40 transition-colors">
                     <td class="px-4 py-3">
                         <p class="font-medium text-gray-900">{{ $issue->book_title }}</p>
                         <p class="text-xs text-gray-400">{{ $issue->book_author }}</p>
@@ -65,9 +65,9 @@
                     </td>
                     <td class="px-4 py-3 text-right whitespace-nowrap">
                         @if($issue->status !== 'returned')
-                        <form method="POST" action="{{ panel_route('library.issues.return', $issue->id) }}" class="inline" onsubmit="return confirm('Mark this book as returned?')">
+                        <form method="POST" action="{{ panel_route('library.issues.return', $issue->id) }}" class="inline" data-confirm="Please confirm to continue." data-confirm-title="Mark this book as returned?" data-confirm-ok="Confirm" data-confirm-tone="success">
                             @csrf
-                            <button type="submit" class="text-xs font-medium text-teal-600 hover:underline">Return</button>
+                            <button type="submit" class="text-xs font-medium text-cyan-600 hover:underline">Return</button>
                         </form>
                         @endif
                         @if($issue->fine_amount > 0 && !$issue->fine_paid)

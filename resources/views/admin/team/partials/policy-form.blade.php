@@ -4,16 +4,16 @@
 @endphp
 <div class="space-y-4">
     <div>
-        <label class="block text-xs font-medium text-gray-600 mb-1">Policy Name</label>
+        <label class="form-label">Policy Name</label>
         <input type="text" name="name" required maxlength="150" value="{{ $policy->name ?? '' }}"
             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
     </div>
     <div>
-        <label class="block text-xs font-medium text-gray-600 mb-1">Description</label>
-        <textarea name="description" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">{{ $policy->description ?? '' }}</textarea>
+        <label class="form-label">Description</label>
+        <textarea name="description" rows="2" class="form-input">{{ $policy->description ?? '' }}</textarea>
     </div>
     <div>
-        <label class="block text-xs font-medium text-gray-600 mb-2">Permissions</label>
+        <label class="form-label">Permissions</label>
         <div class="border rounded-lg divide-y max-h-80 overflow-y-auto">
             @foreach($resources as $resource)
                 @if($resource->actions->isNotEmpty())

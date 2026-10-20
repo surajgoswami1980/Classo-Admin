@@ -34,8 +34,8 @@
             <p class="mt-1 text-sm text-gray-500">School timings, late rule and how teachers & staff mark their own attendance.</p>
         </div>
         <div class="flex gap-2">
-            <a href="{{ route($p . '.holidays.index') }}" class="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50">Holidays</a>
-            <a href="{{ route($p . '.attendance.staff') }}" class="rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50">Staff attendance</a>
+            <a href="{{ route($p . '.holidays.index') }}" class="btn btn-secondary">Holidays</a>
+            <a href="{{ route($p . '.attendance.staff') }}" class="btn btn-secondary">Staff attendance</a>
         </div>
     </div>
 
@@ -165,7 +165,7 @@
                     <h3 class="font-semibold text-gray-900">School location</h3>
                     <p class="text-sm text-gray-500">Drag the pin to the school gate. Staff must be inside the circle.</p>
                 </div>
-                <button type="button" @click="locate()" class="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">
+                <button type="button" @click="locate()" class="btn btn-secondary">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
                     <span x-text="locating ? 'Locating…' : 'Use my current location'"></span>
                 </button>
@@ -194,7 +194,7 @@
         </section>
 
         <div class="sticky bottom-4 z-10 flex justify-end">
-            <button type="submit" class="rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-600/25 transition hover:bg-primary-700 active:scale-[.98]">Save settings</button>
+            <button type="submit" class="btn btn-primary">Save settings</button>
         </div>
     </form>
     @endif
@@ -213,7 +213,7 @@
                     <p class="font-semibold text-gray-900">{{ $f->name }} <span class="font-normal text-gray-400">{{ $f->employee_id ? '· ' . $f->employee_id : '' }}</span></p>
                     <p class="text-sm text-gray-500">Submitted {{ \Carbon\Carbon::parse($f->updated_at)->diffForHumans() }}</p>
                     @if($f->status === 'approved')
-                        <span class="mt-1 inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Approved</span>
+                        <span class="mt-1 inline-flex rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Approved</span>
                     @elseif($f->status === 'rejected')
                         <span class="mt-1 inline-flex rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">Rejected — {{ $f->reject_reason }}</span>
                     @else
@@ -224,18 +224,18 @@
                     @if($f->status !== 'approved')
                         <form method="POST" action="{{ route($p . '.attendance.settings.faces.review', $f->id) }}">@csrf
                             <input type="hidden" name="decision" value="approve">
-                            <button class="rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white hover:bg-emerald-700">Approve</button>
+                            <button class="btn btn-success btn-sm">Approve</button>
                         </form>
-                        <button type="button" @click="rej = !rej" class="rounded-lg border border-gray-200 px-3.5 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50">Reject</button>
+                        <button type="button" @click="rej = !rej" class="btn btn-secondary btn-sm">Reject</button>
                     @endif
-                    <form method="POST" action="{{ route($p . '.attendance.settings.faces.review', $f->id) }}" onsubmit="return confirm('Delete this face? They will need to register again.')">@csrf
+                    <form method="POST" action="{{ route($p . '.attendance.settings.faces.review', $f->id) }}" data-confirm="They will need to register again." data-confirm-title="Delete this face?" data-confirm-ok="Delete" data-confirm-tone="danger">@csrf
                         <input type="hidden" name="decision" value="reset">
                         <button class="rounded-lg border border-gray-200 px-3.5 py-2 text-xs font-semibold text-red-600 hover:border-red-200 hover:bg-red-50">Delete</button>
                     </form>
                     <form x-show="rej" x-cloak method="POST" action="{{ route($p . '.attendance.settings.faces.review', $f->id) }}" class="flex w-full gap-2">@csrf
                         <input type="hidden" name="decision" value="reject">
                         <input name="reason" placeholder="Reason (e.g. blurry, wearing sunglasses)" maxlength="255" class="{{ $input }} py-2">
-                        <button class="rounded-lg bg-red-600 px-3.5 py-2 text-xs font-semibold text-white">Send</button>
+                        <button class="btn btn-danger btn-sm">Send</button>
                     </form>
                 </div>
             </div>
@@ -264,8 +264,8 @@
                     <p class="font-semibold text-gray-900">{{ $d->name }} <span class="font-normal text-gray-400">{{ $d->employee_id ? '· ' . $d->employee_id : '' }}</span></p>
                     <p class="text-sm text-gray-500">{{ $d->device_name ?: 'Unknown phone' }}{{ $d->platform ? ' · ' . ucfirst($d->platform) : '' }} · last used {{ $d->last_used_at ? \Carbon\Carbon::parse($d->last_used_at)->diffForHumans() : 'never' }}</p>
                 </div>
-                <form method="POST" action="{{ route($p . '.attendance.settings.devices.reset', $d->id) }}" onsubmit="return confirm('Unlink this phone? Their next check-in will link the new phone.')">@csrf @method('DELETE')
-                    <button class="rounded-lg border border-gray-200 px-3.5 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50">Unlink</button>
+                <form method="POST" action="{{ route($p . '.attendance.settings.devices.reset', $d->id) }}" data-confirm="Their next check-in will link the new phone." data-confirm-title="Unlink this phone?" data-confirm-ok="Unlink" data-confirm-tone="warning">@csrf @method('DELETE')
+                    <button class="btn btn-secondary btn-sm">Unlink</button>
                 </form>
             </div>
         @empty
@@ -307,13 +307,13 @@
                     <div class="flex items-center gap-4 border-b border-gray-100 px-6 py-4 last:border-0">
                         <span class="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gray-50 text-gray-600">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0 1 19.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 0 0 4.5 10.5a7.464 7.464 0 0 1-1.15 3.993m1.989 3.559A11.209 11.209 0 0 0 8.25 10.5a3.75 3.75 0 1 1 7.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 0 1-3.6 9.75m6.633-4.596a18.666 18.666 0 0 1-2.485 5.33"/></svg>
-                            <span class="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full ring-2 ring-white {{ $online ? 'bg-emerald-500' : 'bg-gray-300' }}"></span>
+                            <span class="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full ring-2 ring-white {{ $online ? 'bg-green-500' : 'bg-gray-300' }}"></span>
                         </span>
                         <div class="min-w-0 flex-1">
                             <p class="font-semibold text-gray-900">{{ $m->name }} <span class="font-mono text-xs font-normal text-gray-400">{{ $m->serial_number }}</span></p>
                             <p class="text-sm text-gray-500">{{ $m->location ?: '—' }} · {{ $online ? 'Online' : ($m->last_seen_at ? 'Last seen ' . \Carbon\Carbon::parse($m->last_seen_at)->diffForHumans() : 'Never connected') }}</p>
                         </div>
-                        <form method="POST" action="{{ route($p . '.attendance.settings.machines.destroy', $m->id) }}" onsubmit="return confirm('Remove this machine?')">@csrf @method('DELETE')
+                        <form method="POST" action="{{ route($p . '.attendance.settings.machines.destroy', $m->id) }}" data-confirm="This action can't be undone." data-confirm-title="Remove this machine?" data-confirm-ok="Remove" data-confirm-tone="danger">@csrf @method('DELETE')
                             <button class="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-red-600 hover:border-red-200 hover:bg-red-50">Remove</button>
                         </form>
                     </div>
@@ -325,7 +325,7 @@
                     <input name="serial_number" required placeholder="Serial no. (SN)" value="{{ old('serial_number') }}" class="{{ $input }} font-mono uppercase @error('serial_number') border-red-400 @enderror" aria-label="Machine serial number">
                     <input name="name" required placeholder="Name (Main gate)" value="{{ old('name') }}" class="{{ $input }}" aria-label="Machine name">
                     <input name="location" placeholder="Location (optional)" value="{{ old('location') }}" class="{{ $input }}" aria-label="Machine location">
-                    <button class="rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700">Add machine</button>
+                    <button class="btn btn-primary">Add machine</button>
                     @error('serial_number')<p class="text-xs text-red-600 sm:col-span-4">{{ $message }}</p>@enderror
                 </form>
             </section>
@@ -371,7 +371,7 @@
                 @endforeach
             </div>
             <div class="flex justify-end border-t border-gray-100 bg-gray-50/60 px-6 py-4">
-                <button class="rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-700">Save machine IDs</button>
+                <button class="btn btn-primary">Save machine IDs</button>
             </div>
         </form>
     </div>

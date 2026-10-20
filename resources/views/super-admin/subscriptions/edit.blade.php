@@ -17,15 +17,15 @@
             </div>
         @endif
 
-        <div class="bg-white rounded-xl border p-6">
+        <div class="mc-card p-6">
             <div class="mb-4">
                 <p class="text-base font-semibold text-gray-900">{{ $school->name }}</p>
                 <p class="text-xs text-gray-400 font-mono">{{ $school->code }}</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Plan *</label>
-                    <select name="subscription_plan" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                    <label class="form-label">Plan *</label>
+                    <select name="subscription_plan" required class="form-input">
                         @foreach($plans as $key => $plan)
                             <option value="{{ $key }}" {{ $school->subscription_plan === $key ? 'selected' : '' }}>{{ $plan['label'] }} (₹{{ number_format($plan['price']) }}/mo)</option>
                         @endforeach
@@ -39,27 +39,27 @@
                     </label>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Start Date *</label>
+                    <label class="form-label">Start Date *</label>
                     <input type="date" name="subscription_start" value="{{ old('subscription_start', optional($school->subscription_start)->toDateString()) }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">End Date *</label>
+                    <label class="form-label">End Date *</label>
                     <input type="date" name="subscription_end" value="{{ old('subscription_end', optional($school->subscription_end)->toDateString()) }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Max Students</label>
+                    <label class="form-label">Max Students</label>
                     <input type="number" name="max_students" value="{{ old('max_students', $school->max_students) }}" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Max Staff</label>
+                    <label class="form-label">Max Staff</label>
                     <input type="number" name="max_staff" value="{{ old('max_staff', $school->max_staff) }}" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
             </div>
         </div>
 
         <div class="flex items-center justify-end gap-3">
-            <a href="{{ route('admin.subscriptions.index') }}" class="px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</a>
-            <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">Update Subscription</button>
+            <a href="{{ route('admin.subscriptions.index') }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Update Subscription</button>
         </div>
     </form>
 </div>

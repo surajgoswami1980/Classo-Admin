@@ -17,16 +17,16 @@
     @if($errors->any())<div class="rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-sm">{{ $errors->first() }}</div>@endif
 
     <!-- Class summary -->
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b border-gray-200">
+                <thead class="bg-gray-50/80 border-b border-gray-200">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Class</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Students with Dues</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Pending Invoices</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Pending Amount</th>
-                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Action</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Class</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Students with Dues</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Pending Invoices</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Pending Amount</th>
+                        <th class="px-6 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -41,7 +41,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="px-6 py-10 text-center text-gray-400">No pending dues. 🎉</td></tr>
+                        <tr><td colspan="5" class="px-6 py-10 text-center text-gray-400">No pending dues.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -50,25 +50,25 @@
 
     <!-- Student pending list for selected class -->
     @if($classId)
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100">
             <h3 class="font-semibold text-gray-900">Pending — {{ $classes[$classId] ?? 'Class' }}</h3>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b border-gray-200">
+                <thead class="bg-gray-50/80 border-b border-gray-200">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Student</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Invoice</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Category</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Amount</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Due</th>
-                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Action</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Student</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Invoice</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Category</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Amount</th>
+                        <th class="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Due</th>
+                        <th class="px-6 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($rows as $r)
-                        <tr class="hover:bg-gray-50">
+                        <tr class="hover:bg-primary-50/40 transition-colors">
                             <td class="px-6 py-4">
                                 <div class="font-medium text-gray-900">{{ $r->student_name }}</div>
                                 <div class="text-xs text-gray-400">Roll {{ $r->roll_number ?? '—' }} · {{ $r->phone ?? '' }}</div>
@@ -79,7 +79,7 @@
                             <td class="px-6 py-4 text-gray-600">{{ \Carbon\Carbon::parse($r->due_date)->format('d M Y') }}</td>
                             <td class="px-6 py-4 text-right">
                                 <button @click="payId={{ $r->id }}; payInvoice='{{ $r->invoice_number }}'; showPay=true"
-                                        class="px-3 py-1.5 text-xs font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700">
+                                        class="px-3 py-1.5 text-xs font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">
                                     Record Payment
                                 </button>
                             </td>
@@ -94,24 +94,24 @@
     @endif
 
     <!-- Manual pay modal -->
-    <div x-show="showPay" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div x-show="showPay" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-[2px]">
         <div class="bg-white rounded-xl w-full max-w-md p-6" @click.outside="showPay=false">
             <h3 class="text-lg font-semibold text-gray-900 mb-1">Record Manual Payment</h3>
             <p class="text-xs text-gray-400 mb-4" x-text="payInvoice"></p>
             <form method="POST" :action="`{{ url(panel_prefix().'/fees/invoices') }}/${payId}/pay-offline`" class="space-y-3">
                 @csrf
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Method</label>
-                    <select name="payment_method" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <div><label class="form-label">Method</label>
+                    <select name="payment_method" class="form-input">
                         <option value="cash">Cash</option>
                         <option value="cheque">Cheque</option>
                     </select></div>
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Reference (optional)</label>
-                    <input name="reference_number" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder="Cheque no / receipt no"></div>
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Remarks (optional)</label>
-                    <input name="remarks" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                <div><label class="form-label">Reference (optional)</label>
+                    <input name="reference_number" class="form-input" placeholder="Cheque no / receipt no"></div>
+                <div><label class="form-label">Remarks (optional)</label>
+                    <input name="remarks" class="form-input"></div>
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" @click="showPay=false" class="px-4 py-2 border border-gray-300 rounded-lg text-sm">Cancel</button>
-                    <button class="px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm">Mark Paid</button>
+                    <button class="btn btn-success">Mark Paid</button>
                 </div>
             </form>
         </div>

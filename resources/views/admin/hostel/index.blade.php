@@ -12,10 +12,10 @@
 
     {{-- Stats --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Blocks</p><p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['blocks'] }}</p></div>
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Rooms</p><p class="text-2xl font-bold text-blue-600 mt-1">{{ $stats['rooms'] }}</p></div>
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Capacity</p><p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['capacity'] }}</p></div>
-        <div class="bg-white rounded-xl border p-4"><p class="text-xs text-gray-500">Occupied</p><p class="text-2xl font-bold text-teal-600 mt-1">{{ $stats['occupied'] }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Blocks</p><p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['blocks'] }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Rooms</p><p class="text-2xl font-bold text-blue-600 mt-1">{{ $stats['rooms'] }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Capacity</p><p class="text-2xl font-bold text-gray-900 mt-1">{{ $stats['capacity'] }}</p></div>
+        <div class="mc-card p-4"><p class="text-xs text-gray-500">Occupied</p><p class="text-2xl font-bold text-cyan-600 mt-1">{{ $stats['occupied'] }}</p></div>
     </div>
 
     <div class="border-b border-gray-200">
@@ -28,19 +28,19 @@
 
     {{-- BLOCKS --}}
     <div x-show="tab==='blocks'" class="space-y-4">
-        <div class="flex justify-end"><button @click="showBlock=true" class="px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">+ New Block</button></div>
-        <div class="bg-white rounded-xl border overflow-hidden">
+        <div class="flex justify-end"><button @click="showBlock=true" class="btn btn-primary">+ New Block</button></div>
+        <div class="mc-card overflow-hidden">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b"><tr>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Block</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Type</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Warden</th>
-                    <th class="px-4 py-3 text-center font-medium text-gray-600">Rooms</th>
-                    <th class="px-4 py-3 text-center font-medium text-gray-600">Occupied</th>
+                <thead class="bg-gray-50/80 border-b border-gray-200"><tr>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Block</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Type</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Warden</th>
+                    <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Rooms</th>
+                    <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Occupied</th>
                 </tr></thead>
-                <tbody class="divide-y">
+                <tbody class="divide-y divide-gray-100">
                     @forelse($blocks as $b)
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-primary-50/40 transition-colors">
                         <td class="px-4 py-3 font-medium text-gray-900">{{ $b->name }}</td>
                         <td class="px-4 py-3 text-gray-600 capitalize">{{ $b->type }}</td>
                         <td class="px-4 py-3 text-gray-600">{{ $b->warden_name ?? '—' }} @if($b->warden_phone)<span class="text-xs text-gray-400">{{ $b->warden_phone }}</span>@endif</td>
@@ -55,19 +55,19 @@
 
     {{-- ROOMS --}}
     <div x-show="tab==='rooms'" x-cloak class="space-y-4">
-        <div class="flex justify-end"><button @click="showRoom=true" class="px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">+ New Room</button></div>
-        <div class="bg-white rounded-xl border overflow-hidden">
+        <div class="flex justify-end"><button @click="showRoom=true" class="btn btn-primary">+ New Room</button></div>
+        <div class="mc-card overflow-hidden">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b"><tr>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Room</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Block</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Type</th>
-                    <th class="px-4 py-3 text-center font-medium text-gray-600">Occupancy</th>
-                    <th class="px-4 py-3 text-right font-medium text-gray-600">Fee/mo</th>
+                <thead class="bg-gray-50/80 border-b border-gray-200"><tr>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Room</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Block</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Type</th>
+                    <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Occupancy</th>
+                    <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Fee/mo</th>
                 </tr></thead>
-                <tbody class="divide-y">
+                <tbody class="divide-y divide-gray-100">
                     @forelse($rooms as $r)
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-primary-50/40 transition-colors">
                         <td class="px-4 py-3 font-medium text-gray-900">{{ $r->room_number }}</td>
                         <td class="px-4 py-3 text-gray-600">{{ $r->block_name }}</td>
                         <td class="px-4 py-3 text-gray-600 capitalize">{{ $r->room_type }}</td>
@@ -84,23 +84,23 @@
 
     {{-- ALLOCATIONS --}}
     <div x-show="tab==='allocations'" x-cloak class="space-y-4">
-        <div class="flex justify-end"><button @click="showAllocate=true" class="px-4 py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">+ Allocate Student</button></div>
-        <div class="bg-white rounded-xl border overflow-hidden">
+        <div class="flex justify-end"><button @click="showAllocate=true" class="btn btn-primary">+ Allocate Student</button></div>
+        <div class="mc-card overflow-hidden">
             <table class="w-full text-sm">
-                <thead class="bg-gray-50 border-b"><tr>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Student</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Block / Room</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">From</th>
-                    <th class="px-4 py-3 text-right font-medium text-gray-600">Actions</th>
+                <thead class="bg-gray-50/80 border-b border-gray-200"><tr>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Student</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Block / Room</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">From</th>
+                    <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Actions</th>
                 </tr></thead>
-                <tbody class="divide-y">
+                <tbody class="divide-y divide-gray-100">
                     @forelse($allocations as $a)
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-primary-50/40 transition-colors">
                         <td class="px-4 py-3 font-medium text-gray-900">{{ $a->student_name }} @if($a->roll_number)<span class="text-xs text-gray-400">Roll {{ $a->roll_number }}</span>@endif</td>
                         <td class="px-4 py-3 text-gray-600">{{ $a->block_name }} · {{ $a->room_number }}</td>
                         <td class="px-4 py-3 text-gray-600 text-xs">{{ \Carbon\Carbon::parse($a->allocated_from)->format('d M Y') }}</td>
                         <td class="px-4 py-3 text-right">
-                            <form method="POST" action="{{ panel_route('hostel.vacate', $a->id) }}" class="inline" onsubmit="return confirm('Vacate this allocation?')">@csrf @method('DELETE')
+                            <form method="POST" action="{{ panel_route('hostel.vacate', $a->id) }}" class="inline" data-confirm="This action can't be undone." data-confirm-title="Vacate this allocation?" data-confirm-ok="Vacate" data-confirm-tone="warning">@csrf @method('DELETE')
                                 <button type="submit" class="text-xs font-medium text-red-500 hover:underline">Vacate</button>
                             </form>
                         </td>
@@ -112,41 +112,41 @@
     </div>
 
     {{-- Block Modal --}}
-    <div x-show="showBlock" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" @click.self="showBlock=false">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6" @click.stop>
+    <div x-show="showBlock" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-[2px]" @click.self="showBlock=false">
+        <div class="modal-panel max-w-md p-6" @click.stop>
             <h3 class="text-base font-semibold text-gray-900 mb-4">New Block</h3>
             <form method="POST" action="{{ panel_route('hostel.blocks.store') }}" class="space-y-4">@csrf
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Name *</label><input type="text" name="name" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Type</label>
-                    <select name="type" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"><option value="boys">Boys</option><option value="girls">Girls</option><option value="mixed">Mixed</option></select></div>
+                <div><label class="form-label">Name *</label><input type="text" name="name" required class="form-input"></div>
+                <div><label class="form-label">Type</label>
+                    <select name="type" class="form-input"><option value="boys">Boys</option><option value="girls">Girls</option><option value="mixed">Mixed</option></select></div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="block text-xs font-medium text-gray-600 mb-1">Warden</label><input type="text" name="warden_name" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
-                    <div><label class="block text-xs font-medium text-gray-600 mb-1">Warden Phone</label><input type="text" name="warden_phone" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                    <div><label class="form-label">Warden</label><input type="text" name="warden_name" class="form-input"></div>
+                    <div><label class="form-label">Warden Phone</label><input type="text" name="warden_phone" class="form-input"></div>
                 </div>
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Address</label><textarea name="address" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></textarea></div>
+                <div><label class="form-label">Address</label><textarea name="address" rows="2" class="form-input"></textarea></div>
                 <div class="flex justify-end gap-2"><button type="button" @click="showBlock=false" class="px-4 py-2 border border-gray-300 rounded-lg text-sm">Cancel</button><button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Create</button></div>
             </form>
         </div>
     </div>
 
     {{-- Room Modal --}}
-    <div x-show="showRoom" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" @click.self="showRoom=false">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6" @click.stop>
+    <div x-show="showRoom" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-[2px]" @click.self="showRoom=false">
+        <div class="modal-panel max-w-md p-6" @click.stop>
             <h3 class="text-base font-semibold text-gray-900 mb-4">New Room</h3>
             <form method="POST" action="{{ panel_route('hostel.rooms.store') }}" class="space-y-4">@csrf
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Block *</label>
-                    <select name="block_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <div><label class="form-label">Block *</label>
+                    <select name="block_id" required class="form-input">
                         <option value="">Select block</option>
                         @foreach($blocks as $b)<option value="{{ $b->id }}">{{ $b->name }}</option>@endforeach
                     </select></div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="block text-xs font-medium text-gray-600 mb-1">Room No. *</label><input type="text" name="room_number" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
-                    <div><label class="block text-xs font-medium text-gray-600 mb-1">Capacity *</label><input type="number" name="capacity" min="1" value="2" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                    <div><label class="form-label">Room No. *</label><input type="text" name="room_number" required class="form-input"></div>
+                    <div><label class="form-label">Capacity *</label><input type="number" name="capacity" min="1" value="2" required class="form-input"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="block text-xs font-medium text-gray-600 mb-1">Type</label>
-                        <select name="room_type" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"><option value="single">Single</option><option value="double" selected>Double</option><option value="triple">Triple</option><option value="dormitory">Dormitory</option></select></div>
-                    <div><label class="block text-xs font-medium text-gray-600 mb-1">Fee / month</label><input type="number" name="fee_per_month" min="0" step="0.01" value="0" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                    <div><label class="form-label">Type</label>
+                        <select name="room_type" class="form-input"><option value="single">Single</option><option value="double" selected>Double</option><option value="triple">Triple</option><option value="dormitory">Dormitory</option></select></div>
+                    <div><label class="form-label">Fee / month</label><input type="number" name="fee_per_month" min="0" step="0.01" value="0" class="form-input"></div>
                 </div>
                 <div class="flex justify-end gap-2"><button type="button" @click="showRoom=false" class="px-4 py-2 border border-gray-300 rounded-lg text-sm">Cancel</button><button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Add</button></div>
             </form>
@@ -154,23 +154,23 @@
     </div>
 
     {{-- Allocate Modal --}}
-    <div x-show="showAllocate" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4" @click.self="showAllocate=false">
-        <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6" @click.stop>
+    <div x-show="showAllocate" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-[2px]" @click.self="showAllocate=false">
+        <div class="modal-panel max-w-md p-6" @click.stop>
             <h3 class="text-base font-semibold text-gray-900 mb-4">Allocate Student</h3>
             <form method="POST" action="{{ panel_route('hostel.allocate') }}" class="space-y-4">@csrf
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Student *</label>
-                    <select name="student_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <div><label class="form-label">Student *</label>
+                    <select name="student_id" required class="form-input">
                         <option value="">Select student</option>
                         @foreach($students as $s)<option value="{{ $s->id }}">{{ $s->name }} ({{ $s->class_name }}-{{ $s->section_name }})</option>@endforeach
                     </select></div>
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Room *</label>
-                    <select name="room_id" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <div><label class="form-label">Room *</label>
+                    <select name="room_id" required class="form-input">
                         <option value="">Select room</option>
                         <template x-for="r in rooms" :key="r.id">
                             <option :value="r.id" x-text="r.block_name + ' · ' + r.room_number + ' (' + r.occupied + '/' + r.capacity + ')'" :disabled="r.occupied >= r.capacity"></option>
                         </template>
                     </select></div>
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Allocated From</label><input type="date" name="allocated_from" value="{{ now()->toDateString() }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
+                <div><label class="form-label">Allocated From</label><input type="date" name="allocated_from" value="{{ now()->toDateString() }}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></div>
                 <div class="flex justify-end gap-2"><button type="button" @click="showAllocate=false" class="px-4 py-2 border border-gray-300 rounded-lg text-sm">Cancel</button><button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">Allocate</button></div>
             </form>
         </div>

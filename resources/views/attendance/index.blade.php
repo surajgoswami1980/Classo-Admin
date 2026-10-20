@@ -22,11 +22,11 @@
 
     {{-- ═══ STUDENT TAB ═══ --}}
     <div x-show="tab === 'student'" x-transition class="space-y-6">
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div class="mc-card p-5">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Class</label>
-                    <select x-model="classId" @change="onClassChange()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none transition">
+                    <label class="form-label">Class</label>
+                    <select x-model="classId" @change="onClassChange()" class="form-input">
                         <option value="">Select Class</option>
                         @foreach($navClasses ?? [] as $id => $name)
                             <option value="{{ $id }}">{{ $name }}</option>
@@ -34,8 +34,8 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Section</label>
-                    <select x-model="sectionId" @change="loadStudents()" :disabled="!classId" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none transition disabled:bg-gray-50 disabled:text-gray-400">
+                    <label class="form-label">Section</label>
+                    <select x-model="sectionId" @change="loadStudents()" :disabled="!classId" class="form-input disabled:bg-gray-50 disabled:text-gray-400">
                         <option value="">Select Section</option>
                         <template x-for="s in filteredSections" :key="s.id">
                             <option :value="s.id" x-text="s.name"></option>
@@ -43,11 +43,11 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Date</label>
-                    <input type="date" x-model="date" :max="today" @change="loadStudents()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none transition">
+                    <label class="form-label">Date</label>
+                    <input type="date" x-model="date" :max="today" @change="loadStudents()" class="form-input">
                 </div>
                 <div class="flex items-end gap-2">
-                    <button type="button" @click="markAll('present')" :disabled="!students.length" class="flex-1 px-3 py-2.5 text-xs font-semibold bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition disabled:opacity-40">All Present</button>
+                    <button type="button" @click="markAll('present')" :disabled="!students.length" class="flex-1 px-3 py-2.5 text-xs font-semibold bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition disabled:opacity-40">All Present</button>
                     <button type="button" @click="markAll('absent')" :disabled="!students.length" class="flex-1 px-3 py-2.5 text-xs font-semibold bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition disabled:opacity-40">All Absent</button>
                 </div>
             </div>
@@ -59,7 +59,7 @@
 
         <div x-show="students.length > 0" x-cloak class="grid grid-cols-2 sm:grid-cols-5 gap-3">
             <template x-for="pill in studentPills" :key="pill.key">
-                <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center justify-between">
+                <div class="mc-card px-4 py-3 flex items-center justify-between">
                     <span class="text-xs font-medium text-gray-500" x-text="pill.label"></span>
                     <span class="text-lg font-bold" :class="pill.color" x-text="pill.count"></span>
                 </div>
@@ -75,21 +75,21 @@
             <input type="hidden" name="class_id" :value="classId">
             <input type="hidden" name="section_id" :value="sectionId">
             <input type="hidden" name="date" :value="date">
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div class="mc-card overflow-hidden">
                 <table class="w-full text-sm">
-                    <thead class="bg-gray-50 border-b border-gray-100">
+                    <thead class="bg-gray-50/80 border-b border-gray-200">
                         <tr class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                            <th class="px-4 py-3 text-left">Roll</th>
-                            <th class="px-4 py-3 text-left">Name</th>
-                            <th class="px-4 py-3 text-center">Present</th>
-                            <th class="px-4 py-3 text-center">Absent</th>
-                            <th class="px-4 py-3 text-center">Late</th>
-                            <th class="px-4 py-3 text-center">Half Day</th>
+                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Roll</th>
+                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Name</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Present</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Absent</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Late</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Half Day</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
                         <template x-for="(s, i) in students" :key="s.id">
-                            <tr class="hover:bg-gray-50/70 transition-colors">
+                            <tr class="hover:bg-primary-50/40 transition-colors">
                                 <td class="px-4 py-2.5 text-gray-500" x-text="s.roll_number || '—'"></td>
                                 <td class="px-4 py-2.5"><span class="font-medium text-gray-900" x-text="s.name"></span></td>
                                 <input type="hidden" :name="'attendance['+i+'][student_id]'" :value="s.id">
@@ -109,14 +109,14 @@
                 </table>
                 <div class="px-4 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
                     <p class="text-xs text-gray-500"><span class="font-semibold text-gray-700" x-text="students.length"></span> students</p>
-                    <button type="submit" class="px-6 py-2.5 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-700 transition active:scale-95 shadow-lg shadow-primary-600/20">
+                    <button type="submit" class="btn btn-primary">
                         <span x-text="studentHasRecord ? 'Update Attendance' : 'Save Attendance'"></span>
                     </button>
                 </div>
             </div>
         </form>
 
-        <div x-show="!loading && students.length === 0 && classId && sectionId" x-cloak class="text-center py-16 bg-white rounded-2xl border border-gray-100">
+        <div x-show="!loading && students.length === 0 && classId && sectionId" x-cloak class="mc-card text-center py-16">
             <p class="text-gray-500 font-medium">No students found for this class & section</p>
         </div>
         <div x-show="!classId || !sectionId" x-cloak class="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-200">
@@ -126,14 +126,14 @@
 
     {{-- ═══ STAFF TAB ═══ --}}
     <div x-show="tab === 'staff'" x-transition class="space-y-6">
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div class="mc-card p-5">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Date</label>
-                    <input type="date" x-model="staffDate" :max="today" @change="loadStaff()" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none transition">
+                    <label class="form-label">Date</label>
+                    <input type="date" x-model="staffDate" :max="today" @change="loadStaff()" class="form-input">
                 </div>
                 <div class="flex items-end gap-2 md:col-span-2">
-                    <button type="button" @click="markAllStaff('present')" :disabled="!staff.length" class="px-3 py-2.5 text-xs font-semibold bg-emerald-50 text-emerald-700 rounded-lg hover:bg-emerald-100 transition disabled:opacity-40">All Present</button>
+                    <button type="button" @click="markAllStaff('present')" :disabled="!staff.length" class="px-3 py-2.5 text-xs font-semibold bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition disabled:opacity-40">All Present</button>
                     <button type="button" @click="markAllStaff('absent')" :disabled="!staff.length" class="px-3 py-2.5 text-xs font-semibold bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition disabled:opacity-40">All Absent</button>
                     <button type="button" @click="markAllStaff('leave')" :disabled="!staff.length" class="px-3 py-2.5 text-xs font-semibold bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition disabled:opacity-40">All Leave</button>
                 </div>
@@ -146,7 +146,7 @@
 
         <div x-show="staff.length > 0" x-cloak class="grid grid-cols-2 sm:grid-cols-5 gap-3">
             <template x-for="pill in staffPills" :key="pill.key">
-                <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 flex items-center justify-between">
+                <div class="mc-card px-4 py-3 flex items-center justify-between">
                     <span class="text-xs font-medium text-gray-500" x-text="pill.label"></span>
                     <span class="text-lg font-bold" :class="pill.color" x-text="pill.count"></span>
                 </div>
@@ -160,22 +160,22 @@
         <form method="POST" action="{{ panel_route('attendance.staff.mark') }}" x-show="!staffLoading && staff.length > 0" x-cloak>
             @csrf
             <input type="hidden" name="date" :value="staffDate">
-            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div class="mc-card overflow-hidden">
                 <table class="w-full text-sm">
-                    <thead class="bg-gray-50 border-b border-gray-100">
+                    <thead class="bg-gray-50/80 border-b border-gray-200">
                         <tr class="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                            <th class="px-4 py-3 text-left">Emp ID</th>
-                            <th class="px-4 py-3 text-left">Name</th>
-                            <th class="px-4 py-3 text-center">Present</th>
-                            <th class="px-4 py-3 text-center">Absent</th>
-                            <th class="px-4 py-3 text-center">Leave</th>
-                            <th class="px-4 py-3 text-center">Late</th>
-                            <th class="px-4 py-3 text-center">Half Day</th>
+                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Emp ID</th>
+                            <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Name</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Present</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Absent</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Leave</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Late</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Half Day</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
                         <template x-for="(m, i) in staff" :key="m.id">
-                            <tr class="hover:bg-gray-50/70 transition-colors">
+                            <tr class="hover:bg-primary-50/40 transition-colors">
                                 <td class="px-4 py-2.5 text-gray-500" x-text="m.employee_id || '—'"></td>
                                 <td class="px-4 py-2.5"><span class="font-medium text-gray-900" x-text="m.name"></span></td>
                                 <input type="hidden" :name="'attendance['+i+'][user_id]'" :value="m.id">
@@ -195,14 +195,14 @@
                 </table>
                 <div class="px-4 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
                     <p class="text-xs text-gray-500"><span class="font-semibold text-gray-700" x-text="staff.length"></span> staff members</p>
-                    <button type="submit" class="px-6 py-2.5 bg-primary-600 text-white text-sm font-semibold rounded-lg hover:bg-primary-700 transition active:scale-95 shadow-lg shadow-primary-600/20">
+                    <button type="submit" class="btn btn-primary">
                         <span x-text="staffHasRecord ? 'Update Attendance' : 'Save Staff Attendance'"></span>
                     </button>
                 </div>
             </div>
         </form>
 
-        <div x-show="!staffLoading && staff.length === 0" x-cloak class="text-center py-16 bg-white rounded-2xl border border-gray-100">
+        <div x-show="!staffLoading && staff.length === 0" x-cloak class="mc-card text-center py-16">
             <p class="text-gray-500 font-medium">No staff found for this school</p>
         </div>
     </div>
@@ -221,7 +221,7 @@ function attendanceHub() {
         date: new Date().toISOString().split('T')[0],
         students: [], attendance: {}, loading: false, studentHasRecord: false,
         studentOptions: [
-            { val:'present',  active:'bg-emerald-500 border-emerald-500' },
+            { val:'present',  active:'bg-green-500 border-green-500' },
             { val:'absent',   active:'bg-rose-500 border-rose-500' },
             { val:'late',     active:'bg-amber-500 border-amber-500' },
             { val:'half_day', active:'bg-orange-500 border-orange-500' },
@@ -231,7 +231,7 @@ function attendanceHub() {
         staff: [], staffAtt: {}, staffLoading: false, staffHasRecord: false, staffLoaded: false,
         staffDate: new Date().toISOString().split('T')[0],
         staffOptions: [
-            { val:'present',  active:'bg-emerald-500 border-emerald-500' },
+            { val:'present',  active:'bg-green-500 border-green-500' },
             { val:'absent',   active:'bg-rose-500 border-rose-500' },
             { val:'leave',    active:'bg-blue-500 border-blue-500' },
             { val:'late',     active:'bg-amber-500 border-amber-500' },
@@ -244,7 +244,7 @@ function attendanceHub() {
             const c = (st) => this.students.filter(s => this.attendance[s.id] === st).length;
             return [
                 { key:'t', label:'Total',    count:this.students.length, color:'text-gray-900' },
-                { key:'p', label:'Present',  count:c('present'),  color:'text-emerald-600' },
+                { key:'p', label:'Present',  count:c('present'),  color:'text-green-600' },
                 { key:'a', label:'Absent',   count:c('absent'),   color:'text-rose-600' },
                 { key:'l', label:'Late',     count:c('late'),     color:'text-amber-600' },
                 { key:'h', label:'Half Day', count:c('half_day'), color:'text-orange-600' },
@@ -254,7 +254,7 @@ function attendanceHub() {
             const c = (st) => this.staff.filter(m => this.staffAtt[m.id] === st).length;
             return [
                 { key:'t', label:'Total',   count:this.staff.length, color:'text-gray-900' },
-                { key:'p', label:'Present', count:c('present'), color:'text-emerald-600' },
+                { key:'p', label:'Present', count:c('present'), color:'text-green-600' },
                 { key:'a', label:'Absent',  count:c('absent'),  color:'text-rose-600' },
                 { key:'lv',label:'Leave',   count:c('leave'),   color:'text-blue-600' },
                 { key:'l', label:'Late',    count:c('late'),    color:'text-amber-600' },

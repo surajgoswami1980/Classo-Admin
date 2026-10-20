@@ -4,12 +4,12 @@
 @endphp
 <div class="space-y-4">
     <div>
-        <label class="block text-xs font-medium text-gray-600 mb-1">Role Name</label>
+        <label class="form-label">Role Name</label>
         <input type="text" name="name" required maxlength="100" value="{{ $role->name ?? '' }}"
             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
     </div>
     <div>
-        <label class="block text-xs font-medium text-gray-600 mb-2">Policies granted to this role</label>
+        <label class="form-label">Policies granted to this role</label>
         <div class="border rounded-lg divide-y max-h-64 overflow-y-auto">
             @forelse($policies as $policy)
             <label class="flex items-center gap-2 px-3 py-2 text-sm text-gray-700">

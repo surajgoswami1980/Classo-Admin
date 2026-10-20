@@ -7,28 +7,16 @@
 
     <title>Admin Login - {{ config('app.name', 'MyClasses') }}</title>
 
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800,900" rel="stylesheet" />
-
-    <script src="https://cdn.tailwindcss.com"></script>
+    @include('layouts.partials.head-assets')
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        primary: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' },
-                        cyanx: { 400: '#22d3ee', 500: '#06d6c4' },
-                    }
-                }
-            }
-        }
+        // Login-only accent used by the decorative blobs.
+        tailwind.config.theme.extend.colors.cyanx = { 400: '#22d3ee', 500: '#06d6c4' };
     </script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
-        .mc-bg { background: linear-gradient(135deg, #eef5ff 0%, #e6f7fb 55%, #f3f9ff 100%); }
-        .mc-hero-gradient { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 45%, #06d6c4 100%); }
+        .mc-bg { background: linear-gradient(135deg, #F4F8FE 0%, #EAF2FE 55%, #F4F8FE 100%); }
+        .mc-hero-gradient { background: linear-gradient(135deg, #061D40 0%, #082B5B 45%, #2563EB 100%); }
         .float { animation: float 6s ease-in-out infinite; }
         .float:nth-child(2){animation-delay:-1.5s} .float:nth-child(3){animation-delay:-3s} .float:nth-child(4){animation-delay:-4.5s}
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-16px)} }

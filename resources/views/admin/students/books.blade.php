@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="space-y-5">
-    <div class="bg-white rounded-xl border p-5 flex items-center justify-between">
+    <div class="mc-card p-5 flex items-center justify-between">
         <div>
             <h2 class="text-lg font-semibold text-gray-900">{{ $student->user_name }}</h2>
             <p class="text-sm text-gray-500">{{ $student->class_name }} - {{ $student->section_name }} · Roll {{ $student->roll_number ?? '—' }}</p>
@@ -13,20 +13,20 @@
         <a href="{{ panel_route('students.index') }}" class="text-sm text-gray-600 hover:underline">&larr; Back to students</a>
     </div>
 
-    <div class="bg-white rounded-xl border overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b">
+            <thead class="bg-gray-50/80 border-b border-gray-200">
                 <tr>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Book</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Issued</th>
-                    <th class="px-4 py-3 text-left font-medium text-gray-600">Due</th>
-                    <th class="px-4 py-3 text-center font-medium text-gray-600">Status</th>
-                    <th class="px-4 py-3 text-right font-medium text-gray-600">Fine</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Book</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Issued</th>
+                    <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Due</th>
+                    <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
+                    <th class="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Fine</th>
                 </tr>
             </thead>
-            <tbody class="divide-y">
+            <tbody class="divide-y divide-gray-100">
                 @forelse($issues as $issue)
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-primary-50/40 transition-colors">
                     <td class="px-4 py-3">
                         <p class="font-medium text-gray-900">{{ $issue->book_title }}</p>
                         <p class="text-xs text-gray-400">{{ $issue->book_author }}</p>

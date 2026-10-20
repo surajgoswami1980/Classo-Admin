@@ -10,7 +10,7 @@
     $statusMap = [
         'created' => ['Awaiting payment', 'bg-amber-50 text-amber-700 ring-amber-600/20', 'bg-amber-500'],
         'partially_paid' => ['Partly paid', 'bg-sky-50 text-sky-700 ring-sky-600/20', 'bg-sky-500'],
-        'paid' => ['Paid', 'bg-emerald-50 text-emerald-700 ring-emerald-600/20', 'bg-emerald-500'],
+        'paid' => ['Paid', 'bg-green-50 text-green-700 ring-green-600/20', 'bg-green-500'],
         'expired' => ['Expired', 'bg-gray-100 text-gray-600 ring-gray-500/20', 'bg-gray-400'],
         'cancelled' => ['Cancelled', 'bg-gray-100 text-gray-600 ring-gray-500/20', 'bg-gray-400'],
         'failed' => ['Failed', 'bg-red-50 text-red-700 ring-red-600/20', 'bg-red-500'],
@@ -29,7 +29,7 @@
             <p class="mt-1 text-sm text-gray-500">Send a secure {{ $gwName }} link for onboarding, setup or subscription fees. Paid in full into your platform account.</p>
         </div>
         <button type="button" @click="open = true" @disabled(!$gatewayReady)
-                class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary-600/20 transition hover:bg-primary-700 active:scale-[.98] disabled:cursor-not-allowed disabled:opacity-50">
+                class="btn btn-primary">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             New payment link
         </button>
@@ -45,7 +45,7 @@
     {{-- Stats --}}
     <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
         @foreach([
-            ['Collected', $inr($stats->collected ?? 0), (int) ($stats->paid_count ?? 0) . ' paid links', 'text-emerald-700'],
+            ['Collected', $inr($stats->collected ?? 0), (int) ($stats->paid_count ?? 0) . ' paid links', 'text-green-700'],
             ['Awaiting payment', $inr($stats->pending_amount ?? 0), (int) ($stats->pending_count ?? 0) . ' open links', 'text-amber-700'],
             ['Links sent', (int) ($stats->total ?? 0), 'All time', 'text-gray-900'],
             ['Conversion', ($stats->total ?? 0) ? round(($stats->paid_count / $stats->total) * 100) . '%' : '—', 'Paid ÷ sent', 'text-gray-900'],
@@ -83,7 +83,7 @@
             @endphp
             <div class="flex flex-col gap-4 border-b border-gray-100 p-5 last:border-0 lg:flex-row lg:items-center {{ $createdId === $link->id ? 'bg-primary-50/50' : '' }}">
                 <div class="flex min-w-0 flex-1 items-start gap-4">
-                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl {{ $link->status === 'paid' ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-50 text-gray-500' }}">
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl {{ $link->status === 'paid' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-500' }}">
                         @if($link->status === 'paid')
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
                         @else
@@ -129,7 +129,7 @@
                             </form>
                         @endif
                         @if($link->status === 'created')
-                            <form method="POST" action="{{ route('admin.payment-links.cancel', $link->id) }}" onsubmit="return confirm('Cancel this payment link? The customer will no longer be able to pay it.')">@csrf
+                            <form method="POST" action="{{ route('admin.payment-links.cancel', $link->id) }}" data-confirm="The customer will no longer be able to pay it." data-confirm-title="Cancel this payment link?" data-confirm-ok="Yes, cancel" data-confirm-tone="danger">@csrf
                                 <button title="Cancel link" aria-label="Cancel link" class="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-400 hover:border-red-200 hover:bg-red-50 hover:text-red-600">
                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
                                 </button>
@@ -146,7 +146,7 @@
                 <p class="mt-4 font-semibold text-gray-900">{{ $q || $status ? 'No links match' : 'No payment links yet' }}</p>
                 <p class="mt-1 text-sm text-gray-500">Create one to collect an onboarding or setup fee from a new client.</p>
                 @unless($q || $status)
-                    <button type="button" @click="open = true" class="mt-5 rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-700">New payment link</button>
+                    <button type="button" @click="open = true" class="btn btn-primary mt-5">New payment link</button>
                 @endunless
             </div>
         @endforelse
@@ -259,8 +259,8 @@
                         <div>
                             <span class="{{ $label }}">{{ $gwName }} also sends</span>
                             <div class="flex gap-4 pt-2.5 text-sm text-gray-700">
-                                <label class="inline-flex items-center gap-2"><input type="checkbox" name="notify_sms" value="1" @checked(old('notify_sms', true)) class="rounded border-gray-300 text-primary-600"> SMS</label>
-                                <label class="inline-flex items-center gap-2"><input type="checkbox" name="notify_email" value="1" @checked(old('notify_email', true)) class="rounded border-gray-300 text-primary-600"> Email</label>
+                                <label class="inline-flex items-center gap-2"><input type="checkbox" name="notify_sms" value="1" @checked(old('notify_sms', true)) class="form-check"> SMS</label>
+                                <label class="inline-flex items-center gap-2"><input type="checkbox" name="notify_email" value="1" @checked(old('notify_email', true)) class="form-check"> Email</label>
                             </div>
                         </div>
                     </div>
@@ -272,8 +272,8 @@
                 </div>
 
                 <div class="flex gap-3 border-t border-gray-100 bg-gray-50/60 px-6 py-4">
-                    <button type="button" @click="open = false" class="flex-1 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50">Cancel</button>
-                    <button type="submit" class="flex-[2] rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-primary-600/20 transition hover:bg-primary-700 active:scale-[.98]">
+                    <button type="button" @click="open = false" class="btn btn-secondary flex-1">Cancel</button>
+                    <button type="submit" class="btn btn-primary flex-[2] shadow-md">
                         Create link<span x-show="amount" x-text="' · ₹' + Number(amount).toLocaleString('en-IN')"></span>
                     </button>
                 </div>

@@ -9,19 +9,19 @@
         <a href="{{ panel_route('inventory.index') }}" class="text-sm text-gray-600 hover:underline">&larr; Back to inventory</a>
     </div>
 
-    <div class="bg-white rounded-xl border overflow-hidden">
+    <div class="mc-card overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-gray-50 border-b"><tr>
-                <th class="px-4 py-3 text-left font-medium text-gray-600">Date</th>
-                <th class="px-4 py-3 text-left font-medium text-gray-600">Item</th>
-                <th class="px-4 py-3 text-center font-medium text-gray-600">Type</th>
-                <th class="px-4 py-3 text-center font-medium text-gray-600">Qty</th>
-                <th class="px-4 py-3 text-left font-medium text-gray-600">Reference</th>
-                <th class="px-4 py-3 text-left font-medium text-gray-600">By</th>
+            <thead class="bg-gray-50/80 border-b border-gray-200"><tr>
+                <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Date</th>
+                <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Item</th>
+                <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Type</th>
+                <th class="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Qty</th>
+                <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Reference</th>
+                <th class="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">By</th>
             </tr></thead>
-            <tbody class="divide-y">
+            <tbody class="divide-y divide-gray-100">
                 @forelse($transactions as $t)
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-primary-50/40 transition-colors">
                     <td class="px-4 py-3 text-gray-600 text-xs">{{ \Carbon\Carbon::parse($t->created_at)->format('d M Y, h:i A') }}</td>
                     <td class="px-4 py-3 font-medium text-gray-900">{{ $t->item_name }}</td>
                     <td class="px-4 py-3 text-center">
