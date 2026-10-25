@@ -6,7 +6,7 @@ return [
     'debug' => (bool) env('APP_DEBUG', false),
     'url' => env('APP_URL', 'http://localhost'),
     // Public marketing site that hosts /privacy, /terms, /refund-policy, /cookies.
-    'website_url' => env('WEBSITE_URL', 'https://myclasses.app'),
+    'website_url' => env('WEBSITE_URL', 'https://myclasses.in'),
     'timezone' => 'Asia/Kolkata',
     'locale' => 'en',
     'fallback_locale' => 'en',
