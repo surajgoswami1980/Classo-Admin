@@ -48,37 +48,37 @@
 
         <aside id="app-sidebar"
                :class="[sidebarOpen ? 'translate-x-0' : '-translate-x-full', sidebarCollapsed ? 'lg:w-[76px]' : 'lg:w-[264px]']"
-               class="fixed inset-y-0 left-0 z-50 flex w-[264px] -translate-x-full flex-col bg-gradient-to-b from-navy-800 to-navy-900 text-sidebar-text shadow-2xl shadow-navy-950/30 transition-[transform,width] duration-300 ease-out lg:static lg:z-auto lg:translate-x-0 lg:shadow-none"
+               class="fixed inset-y-0 left-0 z-50 flex w-[264px] -translate-x-full flex-col border-r border-gray-200 bg-white text-gray-600 shadow-2xl shadow-navy-950/10 transition-[transform,width] duration-300 ease-out lg:static lg:z-auto lg:translate-x-0 lg:shadow-none"
                aria-label="Main navigation">
 
             <!-- Brand -->
-            <div class="flex h-16 shrink-0 items-center gap-3 border-b border-white/[.06] px-4" :class="sidebarCollapsed && 'lg:justify-center lg:px-0'">
-                <a href="{{ route($prefix . '.dashboard') }}" class="flex min-w-0 items-center gap-3 rounded-xl focus-visible:ring-2 focus-visible:ring-white/40">
-                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white shadow-lg shadow-navy-950/30">
+            <div class="flex h-16 shrink-0 items-center gap-3 border-b border-gray-100 px-4" :class="sidebarCollapsed && 'lg:justify-center lg:px-0'">
+                <a href="{{ route($prefix . '.dashboard') }}" class="flex min-w-0 items-center gap-3 rounded-xl focus-visible:ring-2 focus-visible:ring-primary-500/40">
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 ring-1 ring-primary-100">
                         <x-quilo-logo :size="28" />
                     </span>
                     <span class="min-w-0" :class="sidebarCollapsed && 'lg:hidden'">
-                        <span class="block truncate text-[15px] font-bold leading-tight text-white">{{ $brandName }}</span>
-                        <span class="block truncate text-[11px] font-medium text-sidebar-text">{{ $panelLabel }}</span>
+                        <span class="block truncate text-[15px] font-bold leading-tight text-gray-900">{{ $brandName }}</span>
+                        <span class="block truncate text-[11px] font-medium text-gray-400">{{ $panelLabel }}</span>
                     </span>
                 </a>
-                <button type="button" @click="sidebarOpen = false" class="ml-auto rounded-lg p-1.5 text-sidebar-text hover:bg-white/5 hover:text-white lg:hidden" aria-label="Close menu">
+                <button type="button" @click="sidebarOpen = false" class="ml-auto rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 lg:hidden" aria-label="Close menu">
                     @include('components.icons.x-mark', ['class' => 'w-5 h-5'])
                 </button>
             </div>
 
             <!-- Navigation -->
-            <nav class="mc-scroll-dark flex-1 space-y-1 overflow-y-auto overflow-x-hidden px-3 py-4">
+            <nav class="mc-scroll flex-1 space-y-1 overflow-y-auto overflow-x-hidden px-3 py-4">
                 @foreach($navGroups as $group)
                     @php $groupActive = collect($group['items'])->contains('active', true); @endphp
                     <div x-data="{ open: {{ $groupActive || $loop->first ? 'true' : (count($group['items']) <= 4 ? 'true' : 'false') }} }" class="pb-1">
                         <button type="button" @click="open = !open"
-                                class="flex w-full items-center justify-between rounded-md px-3 pb-1.5 pt-3 text-[10.5px] font-semibold uppercase tracking-[.12em] text-sidebar-text/70 transition hover:text-white"
+                                class="flex w-full items-center justify-between rounded-md px-3 pb-1.5 pt-3 text-[10.5px] font-semibold uppercase tracking-[.12em] text-gray-400 transition hover:text-gray-600"
                                 :class="sidebarCollapsed && 'lg:hidden'" :aria-expanded="open.toString()">
                             <span>{{ $group['label'] }}</span>
                             <svg class="h-3.5 w-3.5 transition-transform duration-200" :class="open ? 'rotate-0' : '-rotate-90'" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
                         </button>
-                        <div x-show="sidebarCollapsed" x-cloak class="mx-3 my-2 hidden h-px bg-white/[.07] lg:block" aria-hidden="true"></div>
+                        <div x-show="sidebarCollapsed" x-cloak class="mx-3 my-2 hidden h-px bg-gray-100 lg:block" aria-hidden="true"></div>
 
                         <div x-show="open || sidebarCollapsed"
                              x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0"
@@ -86,11 +86,11 @@
                             @foreach($group['items'] as $item)
                                 <a href="{{ $item['url'] }}"
                                    @if($item['active']) aria-current="page" @endif
-                                   class="group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40
-                                          {{ $item['active'] ? 'bg-primary-600 text-white shadow-lg shadow-primary-900/40' : 'text-sidebar-text hover:bg-white/[.06] hover:text-white' }}"
+                                   class="group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40
+                                          {{ $item['active'] ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}"
                                    :class="sidebarCollapsed && 'lg:justify-center lg:px-0'">
-                                    @if($item['active'])<span class="absolute -left-3 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-white" aria-hidden="true"></span>@endif
-                                    <span class="shrink-0 {{ $item['active'] ? 'text-white' : 'text-sidebar-text/80 group-hover:text-white' }}">
+                                    @if($item['active'])<span class="absolute -left-3 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-primary-600" aria-hidden="true"></span>@endif
+                                    <span class="shrink-0 {{ $item['active'] ? 'text-primary-600' : 'text-gray-400 group-hover:text-gray-600' }}">
                                         @include('components.icons.' . $item['icon'], ['class' => 'w-5 h-5'])
                                     </span>
                                     <span class="truncate" :class="sidebarCollapsed && 'lg:sr-only'">{{ $item['name'] }}</span>
@@ -113,9 +113,9 @@
             </nav>
 
             <!-- Collapse toggle (desktop) -->
-            <div class="hidden shrink-0 border-t border-white/[.06] p-3 lg:block">
+            <div class="hidden shrink-0 border-t border-gray-100 p-3 lg:block">
                 <button type="button" @click="toggleCollapse()"
-                        class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium text-sidebar-text transition hover:bg-white/[.06] hover:text-white"
+                        class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"
                         :class="sidebarCollapsed && 'justify-center px-0'"
                         :aria-label="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
                     <svg class="h-5 w-5 shrink-0 transition-transform duration-300" :class="sidebarCollapsed && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" /></svg>
@@ -311,6 +311,17 @@
                     <div class="animate-fade-in">
                         @yield('content')
                     </div>
+
+                    @php $site = rtrim(config('app.website_url'), '/'); @endphp
+                    <footer class="mt-10 flex flex-col items-center justify-between gap-2 border-t border-gray-200/80 pt-5 text-xs text-gray-500 sm:flex-row">
+                        <span>&copy; {{ date('Y') }} {{ config('app.name', 'MyClasses') }}</span>
+                        <nav aria-label="Legal" class="flex flex-wrap justify-center gap-x-4 gap-y-1">
+                            <a href="{{ $site }}/privacy" target="_blank" rel="noopener" class="hover:text-primary-600">Privacy</a>
+                            <a href="{{ $site }}/terms" target="_blank" rel="noopener" class="hover:text-primary-600">Terms</a>
+                            <a href="{{ $site }}/refund-policy" target="_blank" rel="noopener" class="hover:text-primary-600">Refunds</a>
+                            <a href="{{ $site }}/cookies" target="_blank" rel="noopener" class="hover:text-primary-600">Cookies</a>
+                        </nav>
+                    </footer>
                 </div>
             </main>
         </div>

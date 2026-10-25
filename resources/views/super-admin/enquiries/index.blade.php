@@ -39,14 +39,19 @@
             <input type="text" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Search name, email, phone, school, city…"
                    class="form-input pl-10 pr-3">
         </div>
-        <select name="status" class="form-input">
+        <select name="type" class="form-input w-auto" aria-label="Request type">
+            <option value="">All requests</option>
+            <option value="leads" @selected(($filters['type'] ?? '') === 'leads')>Sales leads</option>
+            <option value="privacy" @selected(($filters['type'] ?? '') === 'privacy')>Account deletion / privacy</option>
+        </select>
+        <select name="status" class="form-input w-auto" aria-label="Status">
             <option value="">All statuses</option>
             @foreach($statuses as $s)
                 <option value="{{ $s }}" @selected(($filters['status'] ?? '') === $s)>{{ ucfirst($s) }}</option>
             @endforeach
         </select>
         <button class="btn btn-primary">Filter</button>
-        @if(!empty($filters['search']) || !empty($filters['status']))
+        @if(!empty($filters['search']) || !empty($filters['status']) || !empty($filters['type']))
             <a href="{{ route('admin.enquiries.index') }}" class="px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900">Reset</a>
         @endif
     </form>
@@ -80,7 +85,11 @@
                             </td>
                             <td class="px-5 py-4 text-gray-700">{{ $e->student_count ? number_format($e->student_count) : '—' }}</td>
                             <td class="px-5 py-4">
-                                <span class="inline-block px-2 py-0.5 text-xs font-medium text-gray-600 bg-gray-100 rounded">{{ $e->source }}</span>
+                                @if(in_array($e->source, ['account_deletion', 'privacy_request']))
+                                    <span class="badge badge-danger">{{ $e->source === 'account_deletion' ? 'Delete account' : 'Privacy request' }}</span>
+                                @else
+                                    <span class="inline-block px-2 py-0.5 text-xs font-medium text-gray-600 bg-gray-100 rounded">{{ $e->source }}</span>
+                                @endif
                             </td>
                             <td class="px-5 py-4">
                                 @php

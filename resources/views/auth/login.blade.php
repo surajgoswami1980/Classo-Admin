@@ -203,7 +203,13 @@
                         </div>
                     </div>
 
-                    <p class="mt-8 text-center text-xs text-gray-400">&copy; {{ date('Y') }} {{ config('app.name', 'MyClasses') }}. All rights reserved.</p>
+                    @php $site = rtrim(config('app.website_url'), '/'); @endphp
+                    <p class="mt-6 text-center text-xs text-gray-500">
+                        By signing in you agree to our
+                        <a href="{{ $site }}/terms" target="_blank" rel="noopener" class="font-medium text-primary-600 hover:underline">Terms</a>
+                        and <a href="{{ $site }}/privacy" target="_blank" rel="noopener" class="font-medium text-primary-600 hover:underline">Privacy Policy</a>.
+                    </p>
+                    <p class="mt-3 text-center text-xs text-gray-400">&copy; {{ date('Y') }} {{ config('app.name', 'MyClasses') }}. All rights reserved.</p>
                 </div>
             </div>
         </div>

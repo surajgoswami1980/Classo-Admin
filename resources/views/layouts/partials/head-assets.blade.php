@@ -1,6 +1,8 @@
 {{-- MyClasses design system: fonts, Tailwind tokens, shared component classes.
      Used by the app layout, the login page and the error layout so every screen
      shares one visual language. --}}
+<link rel="icon" type="image/svg+xml" href="{{ asset('images/myclasses-logo.svg') }}">
+<link rel="apple-touch-icon" href="{{ asset('images/myclasses-logo.jpg') }}">
 <link rel="preconnect" href="https://fonts.bunny.net">
 <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet" />
 

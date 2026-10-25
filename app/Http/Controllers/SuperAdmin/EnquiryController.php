@@ -14,11 +14,14 @@ class EnquiryController extends Controller
 {
     public function index(Request $request)
     {
-        $filters = $request->only(['search', 'status']);
+        $filters = $request->only(['search', 'status', 'type']);
 
         $enquiries = Enquiry::query()
             ->search($filters['search'] ?? null)
             ->status($filters['status'] ?? null)
+            // type=privacy → account deletion / privacy requests; type=leads → everything else.
+            ->when(($filters['type'] ?? '') === 'privacy', fn ($q) => $q->whereIn('source', ['account_deletion', 'privacy_request']))
+            ->when(($filters['type'] ?? '') === 'leads', fn ($q) => $q->whereNotIn('source', ['account_deletion', 'privacy_request']))
             ->latest()
             ->paginate(15)
             ->appends($filters);

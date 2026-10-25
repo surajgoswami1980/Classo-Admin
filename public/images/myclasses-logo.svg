@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none">
+  <defs>
+    <linearGradient id="blue" x1="250" y1="280" x2="700" y2="800" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#05B8F2"/>
+      <stop offset=".48" stop-color="#0877F9"/>
+      <stop offset="1" stop-color="#102CEB"/>
+    </linearGradient>
+    <linearGradient id="blueDeep" x1="390" y1="220" x2="650" y2="450" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#08B9F3"/>
+      <stop offset="1" stop-color="#1237F4"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="680" y1="390" x2="850" y2="810" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#04E4C4"/>
+      <stop offset="1" stop-color="#00B7D8"/>
+    </linearGradient>
+    <linearGradient id="leftBlue" x1="230" y1="410" x2="350" y2="820" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0787FA"/>
+      <stop offset="1" stop-color="#1237F4"/>
+    </linearGradient>
+    <linearGradient id="pageBlue" x1="340" y1="610" x2="510" y2="790" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#DDF7FF"/>
+      <stop offset="1" stop-color="#A5E9FC"/>
+    </linearGradient>
+    <linearGradient id="pageTeal" x1="510" y1="610" x2="680" y2="790" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#D8FBFF"/>
+      <stop offset="1" stop-color="#A0F1F7"/>
+    </linearGradient>
+    <filter id="softShadow" x="60" y="60" width="904" height="904" filterUnits="userSpaceOnUse">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+
+  <!-- Optional soft app-tile backdrop; remove this rect for a transparent standalone mark -->
+  <rect x="64" y="64" width="896" height="896" rx="190" fill="#FFFFFF"/>
+  <rect x="78" y="78" width="868" height="868" rx="178" stroke="#EAF4FF" stroke-width="3"/>
+
+  <!-- Graduation cap -->
+  <path d="M348 264 L500 184 Q512 178 524 184 L676 264 Q687 270 676 277 L524 357 Q512 364 500 357 L348 277 Q337 270 348 264Z" fill="url(#blueDeep)"/>
+  <path d="M414 315 L512 367 L610 315 L610 363 Q610 376 597 383 L527 421 Q512 429 497 421 L427 383 Q414 376 414 363Z" fill="#073DEB"/>
+  <path d="M414 315 L512 367 L610 315" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M664 271 L664 334" stroke="#0643F3" stroke-width="9" stroke-linecap="round"/>
+  <path d="M664 328 C650 350 648 367 664 371 C680 367 678 350 664 328Z" fill="#0643F3"/>
+
+  <!-- Left upright book cover / ribbon -->
+  <path d="M162 421 C162 363 207 325 258 326 C306 327 348 356 391 393 L512 510 L512 810 L369 686 L300 642 L300 777 C300 822 270 849 230 849 C190 849 162 819 162 778Z" fill="url(#leftBlue)"/>
+  <path d="M162 421 C162 363 207 325 258 326 C306 327 348 356 391 393 L512 510 L512 621 C472 570 423 531 369 504 C294 466 228 446 162 421Z" fill="url(#blue)"/>
+  <path d="M300 504 C371 521 440 570 512 649 L512 810 L369 686 L300 642Z" fill="#FFFFFF"/>
+
+  <!-- Right upright book cover / ribbon -->
+  <path d="M862 421 C862 363 817 325 766 326 C718 327 676 356 633 393 L512 510 L512 810 L655 686 L724 642 L724 777 C724 822 754 849 794 849 C834 849 862 819 862 778Z" fill="url(#teal)"/>
+  <path d="M862 421 C862 363 817 325 766 326 C718 327 676 356 633 393 L512 510 L512 621 C552 570 601 531 655 504 C730 466 796 446 862 421Z" fill="url(#teal)"/>
+  <path d="M724 504 C653 521 584 570 512 649 L512 810 L655 686 L724 642Z" fill="#FFFFFF"/>
+
+  <!-- Open pages, layered chevrons -->
+  <path d="M300 642 C376 652 446 694 512 760 C578 694 648 652 724 642 L724 708 C648 721 579 760 512 824 C445 760 376 721 300 708Z" fill="url(#pageBlue)"/>
+  <path d="M300 708 C377 724 448 767 512 824 C576 767 647 724 724 708 L724 746 C647 763 577 804 512 858 C447 804 377 763 300 746Z" fill="url(#blue)"/>
+  <path d="M300 642 C376 652 446 694 512 760 C578 694 648 652 724 642 L724 708 C648 721 579 760 512 824 C445 760 376 721 300 708Z" fill="url(#pageBlue)" opacity=".92"/>
+  <path d="M512 760 C578 694 648 652 724 642 L724 708 C648 721 579 760 512 824Z" fill="url(#pageTeal)"/>
+  <path d="M300 708 C377 724 448 767 512 824 L512 858 C447 804 377 763 300 746Z" fill="#0753F2"/>
+  <path d="M512 824 C576 767 647 724 724 708 L724 746 C647 763 577 804 512 858Z" fill="#0753F2"/>
+
+  <!-- Central page valley and clean highlights -->
+  <path d="M300 642 C377 653 447 695 512 760 C577 695 647 653 724 642" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M300 708 C377 724 448 767 512 824 C576 767 647 724 724 708" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
