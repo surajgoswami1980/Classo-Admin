@@ -26,8 +26,8 @@ class PlatformSettings
         return [
             'payment' => [
                 'gateway' => ['label' => 'Default gateway', 'type' => 'select', 'options' => ['razorpay' => 'Razorpay', 'cashfree' => 'Cashfree'], 'env' => 'PAYMENT_GATEWAY', 'default' => 'razorpay'],
-                'platform_fee_percent' => ['label' => 'Platform fee (%)', 'type' => 'number', 'env' => 'PLATFORM_FEE_PERCENT', 'default' => '1.5', 'hint' => 'Kept by the platform on every online payment.'],
-                'gateway_fee_percent' => ['label' => 'Route / split fee (%)', 'type' => 'number', 'env' => 'GATEWAY_FEE_PERCENT', 'default' => '2', 'hint' => 'Recovers the gateway charge. Deducted from the school share.'],
+                'platform_fee_percent' => ['label' => 'Platform commission (%)', 'type' => 'number', 'env' => 'PLATFORM_FEE_PERCENT', 'default' => '0', 'hint' => 'Platform profit. Keep at 0 to take no commission (only the gateway/split charge is recovered).'],
+                'gateway_fee_percent' => ['label' => 'Gateway + split fee (%)', 'type' => 'number', 'env' => 'GATEWAY_FEE_PERCENT', 'default' => '2', 'hint' => 'Recovers the Razorpay/Cashfree charge and the Route/Split transfer cost. Deducted from the school share.'],
             ],
             'razorpay' => [
                 'mode' => ['label' => 'Mode', 'type' => 'select', 'options' => ['test' => 'Test', 'live' => 'Live'], 'default' => 'test'],
@@ -64,6 +64,16 @@ class PlatformSettings
                 'api_url' => ['label' => 'API URL template', 'type' => 'text', 'env' => 'SMS_API_URL', 'placeholder' => 'https://api.provider.com/send?to={phone}&msg={message}&key={key}&sender={sender}', 'hint' => 'Placeholders: {phone} {message} {key} {sender}', 'show_when' => 'http'],
                 'api_key' => ['label' => 'API key', 'type' => 'secret', 'env' => 'SMS_API_KEY', 'show_when' => 'http'],
                 'sender_id' => ['label' => 'Sender ID', 'type' => 'text', 'env' => 'SMS_SENDER_ID', 'placeholder' => 'SCHERP', 'show_when' => 'http'],
+            ],
+            'storage' => [
+                'enabled' => ['label' => 'Store uploads on Amazon S3', 'type' => 'toggle', 'default' => '0', 'hint' => 'When off, uploads stay on local disk. Public assets are never moved.'],
+                'key' => ['label' => 'AWS access key ID', 'type' => 'text', 'env' => 'AWS_ACCESS_KEY_ID'],
+                'secret' => ['label' => 'AWS secret access key', 'type' => 'secret', 'env' => 'AWS_SECRET_ACCESS_KEY'],
+                'region' => ['label' => 'Region', 'type' => 'text', 'env' => 'AWS_DEFAULT_REGION', 'default' => 'ap-south-1', 'placeholder' => 'ap-south-1'],
+                'bucket' => ['label' => 'Bucket name', 'type' => 'text', 'env' => 'AWS_BUCKET', 'placeholder' => 'my-school-erp'],
+                'url' => ['label' => 'Public base URL / CDN (optional)', 'type' => 'text', 'placeholder' => 'https://cdn.yourdomain.com', 'hint' => 'Leave blank to use the default S3 URL.'],
+                'endpoint' => ['label' => 'Custom endpoint (optional)', 'type' => 'text', 'placeholder' => 'https://s3.ap-south-1.amazonaws.com', 'hint' => 'For S3-compatible providers (MinIO, Wasabi, DigitalOcean Spaces).'],
+                'path_style' => ['label' => 'Use path-style endpoint', 'type' => 'toggle', 'default' => '0', 'hint' => 'Enable for MinIO and some S3-compatible providers.'],
             ],
         ];
     }
@@ -184,6 +194,9 @@ class PlatformSettings
                 default => 'log',
             },
             'sms' => self::get('sms', 'provider') === 'http' && self::get('sms', 'api_url') ? 'connected' : 'log',
+            'storage' => !self::bool('storage', 'enabled')
+                ? 'disabled'
+                : (self::get('storage', 'key') && self::get('storage', 'secret') && self::get('storage', 'bucket') && self::get('storage', 'region') ? 'connected' : 'not_configured'),
             default => 'connected',
         };
     }

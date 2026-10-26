@@ -34,6 +34,9 @@ class AttendanceRules
         ],
         'face' => ['threshold' => 90],
         'biometric' => ['enabled' => false],
+        // Shared-device kiosk. engine: 'free' (on-device liveness + name/PIN,
+        // no cloud cost) or 'aws' (Rekognition face identification).
+        'kiosk' => ['enabled' => false, 'engine' => 'free'],
     ];
 
     public static function forSchool(?int $schoolId): array
@@ -57,6 +60,7 @@ class AttendanceRules
             'timing' => array_merge($d['timing'], $saved['timing'] ?? []),
             'face' => array_merge($d['face'], $saved['face'] ?? []),
             'biometric' => array_merge($d['biometric'], $saved['biometric'] ?? []),
+            'kiosk' => array_merge($d['kiosk'], $saved['kiosk'] ?? []),
         ];
     }
 

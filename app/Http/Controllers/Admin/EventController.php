@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Models\Banner;
+use App\Support\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Event management for the admin/client panel. Schools create events (free or
@@ -134,7 +134,7 @@ class EventController extends Controller
     private function storeUpload(Request $request, string $field, int $schoolId): ?string
     {
         if (!$request->hasFile($field)) return null;
-        return $request->file($field)->store("events/{$schoolId}", 'public');
+        return UploadService::store($request->file($field), 'events', $schoolId);
     }
 
     public function destroy($id)

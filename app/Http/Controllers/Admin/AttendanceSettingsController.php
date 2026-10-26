@@ -26,8 +26,13 @@ class AttendanceSettingsController extends Controller
     {
         $schoolId = $this->schoolId();
         $rules = AttendanceRules::forSchool($schoolId);
-        $tab = in_array($request->query('tab'), ['rules', 'faces', 'devices', 'biometric'], true) ? $request->query('tab') : 'rules';
+        $tab = in_array($request->query('tab'), ['rules', 'faces', 'devices', 'biometric', 'kiosk'], true) ? $request->query('tab') : 'rules';
 
+        $hasKioskPin = \Illuminate\Support\Facades\Schema::hasColumn('users', 'kiosk_pin');
+        $staffCols = ['id', 'name', 'employee_id', 'phone'];
+        if ($hasKioskPin) {
+            $staffCols[] = 'kiosk_pin';
+        }
         $staff = DB::table('users')
             ->where('school_id', $schoolId)
             ->whereIn('id', fn ($q) => $q->select('model_id')->from('model_has_roles')
@@ -35,7 +40,7 @@ class AttendanceSettingsController extends Controller
                 ->whereIn('roles.name', ['teacher', 'incharge', 'staff', 'sub-admin', 'school-admin']))
             ->where('is_active', true)
             ->orderBy('name')
-            ->get(['id', 'name', 'employee_id', 'phone']);
+            ->get($staffCols);
 
         $faces = DB::table('staff_face_profiles as f')
             ->join('users as u', 'u.id', '=', 'f.user_id')
@@ -99,6 +104,8 @@ class AttendanceSettingsController extends Controller
             'self_checkin.require_face' => 'nullable|boolean',
             'self_checkin.require_checkout' => 'nullable|boolean',
             'self_checkin.bind_device' => 'nullable|boolean',
+            'kiosk.enabled' => 'nullable|boolean',
+            'kiosk.engine' => 'nullable|in:free,aws',
             'location.lat' => 'nullable|numeric|between:-90,90',
             'location.lng' => 'nullable|numeric|between:-180,180',
             'location.radius_m' => 'required|integer|min:30|max:5000',
@@ -140,6 +147,16 @@ class AttendanceSettingsController extends Controller
             'require_checkout' => $request->boolean('self_checkin.require_checkout'),
             'bind_device' => $request->boolean('self_checkin.bind_device'),
         ];
+        // Shared-device kiosk. engine: 'free' (on-device liveness + name/PIN,
+        // no cloud cost) or 'aws' (Rekognition 1:N identification).
+        $kioskEngine = $v['kiosk']['engine'] ?? 'free';
+        if ($kioskEngine === 'aws' && !PlatformSettings::get('email', 'ses_access_key')) {
+            return back()->withInput()->withErrors(['kiosk.engine' => 'The AWS kiosk engine needs AWS keys (Integrations → Email). Use the Free engine, or add the keys.']);
+        }
+        $rules['kiosk'] = [
+            'enabled' => $request->boolean('kiosk.enabled'),
+            'engine' => $kioskEngine,
+        ];
         $rules['location'] = [
             'lat' => $lat !== null ? round((float) $lat, 7) : null,
             'lng' => $lng !== null ? round((float) $lng, 7) : null,
@@ -152,6 +169,39 @@ class AttendanceSettingsController extends Controller
         AttendanceRules::save($schoolId, $rules);
 
         return back()->with('success', 'Attendance settings saved. Apps pick them up within a minute.');
+    }
+
+    /**
+     * Save per-staff kiosk PINs. Blank clears the PIN (no PIN required).
+     * PINs are 4–10 digits.
+     */
+    public function saveKioskPins(Request $request)
+    {
+        $schoolId = $this->schoolId();
+        abort_unless($schoolId, 422, 'Select a school first.');
+
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'kiosk_pin')) {
+            return back()->withErrors(['pins' => 'Run the kiosk PIN migration first (add_kiosk_pin_to_users).']);
+        }
+
+        $v = $request->validate([
+            'pins' => 'nullable|array',
+            'pins.*' => 'nullable|digits_between:4,10',
+        ]);
+
+        // Only allow setting PINs for users in THIS school.
+        $allowed = DB::table('users')->where('school_id', $schoolId)->pluck('id')->all();
+        foreach (($v['pins'] ?? []) as $userId => $pin) {
+            if (!in_array((int) $userId, $allowed, true)) {
+                continue;
+            }
+            DB::table('users')->where('id', (int) $userId)->update([
+                'kiosk_pin' => ($pin === null || $pin === '') ? null : $pin,
+                'updated_at' => now(),
+            ]);
+        }
+
+        return back()->with('success', 'Kiosk PINs updated.');
     }
 
     // ─── Face approvals ─────────────────────────────────────────

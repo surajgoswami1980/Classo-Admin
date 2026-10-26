@@ -113,6 +113,7 @@ Route::middleware(['auth', 'super.admin'])
             Route::delete('/machines/{id}', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'destroyMachine'])->whereNumber('id')->name('settings.machines.destroy');
             Route::post('/machine-users', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'saveMaps'])->name('settings.machines.maps');
             Route::get('/attempts', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'attempts'])->name('settings.attempts');
+            Route::post('/kiosk-pins', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'saveKioskPins'])->name('settings.kiosk.pins');
         });
 
         // Holidays & weekly offs
@@ -323,9 +324,9 @@ Route::middleware(['auth', 'super.admin'])
         Route::prefix('integrations')->name('integrations.')->group(function () {
             Route::get('/', [\App\Http\Controllers\SuperAdmin\IntegrationsController::class, 'index'])->name('index');
             Route::put('/{section}', [\App\Http\Controllers\SuperAdmin\IntegrationsController::class, 'update'])
-                ->whereIn('section', ['payments', 'firebase', 'email', 'sms'])->name('update');
+                ->whereIn('section', ['payments', 'firebase', 'email', 'sms', 'storage'])->name('update');
             Route::post('/test/{target}', [\App\Http\Controllers\SuperAdmin\IntegrationsController::class, 'test'])
-                ->whereIn('target', ['razorpay', 'cashfree', 'firebase', 'email', 'sms'])
+                ->whereIn('target', ['razorpay', 'cashfree', 'firebase', 'email', 'sms', 'storage'])
                 ->middleware('throttle:10,1')->name('test');
         });
 
@@ -388,6 +389,7 @@ Route::middleware(['auth', 'school.tenant', 'resource.permission'])
             Route::delete('/machines/{id}', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'destroyMachine'])->whereNumber('id')->name('settings.machines.destroy');
             Route::post('/machine-users', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'saveMaps'])->name('settings.machines.maps');
             Route::get('/attempts', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'attempts'])->name('settings.attempts');
+            Route::post('/kiosk-pins', [\App\Http\Controllers\Admin\AttendanceSettingsController::class, 'saveKioskPins'])->name('settings.kiosk.pins');
         });
 
         // Holidays & weekly offs

@@ -148,8 +148,8 @@
                 <p class="mt-0.5 text-sm text-gray-500">Leave blank to use the platform defaults ({{ $pct($defaults['platform_fee_percent']) }}% + {{ $pct($defaults['gateway_fee_percent']) }}%).</p>
                 <div class="mt-5 grid gap-5 sm:grid-cols-2">
                     @foreach([
-                        ['platform_fee_percent', 'Platform fee', 'platform', $defaults['platform_fee_percent']],
-                        ['gateway_fee_percent', 'Route / split fee', 'route', $defaults['gateway_fee_percent']],
+                        ['platform_fee_percent', 'Platform commission', 'platform', $defaults['platform_fee_percent']],
+                        ['gateway_fee_percent', 'Gateway + split fee', 'route', $defaults['gateway_fee_percent']],
                     ] as [$field, $label, $model, $def])
                         <div>
                             <label for="{{ $field }}" class="form-label">{{ $label }}</label>
@@ -185,11 +185,11 @@
                     </div>
                     <dl class="space-y-2.5 text-sm">
                         <div class="flex items-center justify-between">
-                            <dt class="flex items-center gap-2 text-gray-600"><span class="h-2.5 w-2.5 rounded-full bg-primary-500"></span>Platform fee (<span x-text="p"></span>%)</dt>
+                            <dt class="flex items-center gap-2 text-gray-600"><span class="h-2.5 w-2.5 rounded-full bg-primary-500"></span>Platform commission (<span x-text="p"></span>%)</dt>
                             <dd class="font-semibold text-gray-900" x-text="money(pf)"></dd>
                         </div>
                         <div class="flex items-center justify-between">
-                            <dt class="flex items-center gap-2 text-gray-600"><span class="h-2.5 w-2.5 rounded-full bg-amber-400"></span>Route fee (<span x-text="r"></span>%)</dt>
+                            <dt class="flex items-center gap-2 text-gray-600"><span class="h-2.5 w-2.5 rounded-full bg-amber-400"></span>Gateway + split fee (<span x-text="r"></span>%)</dt>
                             <dd class="font-semibold text-gray-900" x-text="money(rf)"></dd>
                         </div>
                         <div class="flex items-center justify-between border-t border-dashed border-gray-200 pt-2.5">

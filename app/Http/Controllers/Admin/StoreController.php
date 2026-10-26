@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * School Store admin: manage sellable items and fulfil orders. Students buy
@@ -179,13 +179,11 @@ class StoreController extends Controller
     private function storeUpload(Request $request, int $schoolId): ?string
     {
         if (!$request->hasFile('image')) return null;
-        return $request->file('image')->store("store/{$schoolId}", 'public');
+        return UploadService::store($request->file('image'), 'store', $schoolId);
     }
 
     private function deleteFile(?string $path): void
     {
-        if ($path && !str_starts_with($path, 'http') && Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->delete($path);
-        }
+        UploadService::delete($path);
     }
 }

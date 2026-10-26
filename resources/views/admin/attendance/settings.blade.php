@@ -13,6 +13,7 @@
         'rules' => ['Rules & timing', null],
         'faces' => ['Face approvals', $pendingFaces ?: null],
         'devices' => ['Linked phones', $devices->count() ?: null],
+        'kiosk' => ['Kiosk PINs', null],
         'biometric' => ['Fingerprint machines', $machines->count() ?: null],
     ];
     $methodLabel = ['manual' => 'Admin', 'app' => 'App', 'geo' => 'Location', 'face' => 'Face', 'face_geo' => 'Face + location', 'biometric' => 'Fingerprint'];
@@ -74,6 +75,7 @@
             selfOn: {{ old('self_checkin.enabled', $r['self_checkin']['enabled']) ? 'true' : 'false' }},
             needLoc: {{ old('self_checkin.require_location', $r['self_checkin']['require_location']) ? 'true' : 'false' }},
             needFace: {{ old('self_checkin.require_face', $r['self_checkin']['require_face']) ? 'true' : 'false' }},
+            kioskOn: {{ old('kiosk.enabled', $r['kiosk']['enabled']) ? 'true' : 'false' }},
             start: '{{ old('timing.start', $r['timing']['start']) }}',
             grace: {{ (int) old('timing.grace_minutes', $r['timing']['grace_minutes']) }},
             opens: {{ (int) old('timing.checkin_opens_minutes', $r['timing']['checkin_opens_minutes']) }},
@@ -152,6 +154,20 @@
                     <label for="f-th" class="{{ $label }}">Face match strictness (%)</label>
                     <input id="f-th" type="number" min="80" max="99" name="face[threshold]" value="{{ old('face.threshold', $r['face']['threshold']) }}" class="{{ $input }}">
                     <p class="mt-1.5 text-xs text-gray-500">90 is a good balance. Higher = stricter.</p>
+                </div>
+
+                {{-- Shared-device kiosk --}}
+                <div class="mt-4 border-t border-gray-100 pt-4">
+                    {!! $toggle('kiosk[enabled]', (bool) old('kiosk.enabled', $r['kiosk']['enabled']), 'Shared entrance kiosk', 'One tablet at the gate: staff pick their name and show a live face to mark entry/exit.', 'kioskOn') !!}
+                    <div x-show="kioskOn" x-cloak class="mt-3 sm:max-w-md">
+                        <label for="k-engine" class="{{ $label }}">Kiosk engine</label>
+                        <select id="k-engine" name="kiosk[engine]" class="{{ $input }}">
+                            <option value="free" @selected(old('kiosk.engine', $r['kiosk']['engine']) === 'free')>Free — on-device liveness + name/PIN (no cloud cost)</option>
+                            <option value="aws" @selected(old('kiosk.engine', $r['kiosk']['engine']) === 'aws')>AWS — face recognition (paid, higher security)</option>
+                        </select>
+                        @error('kiosk.engine')<p class="mt-1.5 text-sm text-red-600">{{ $message }}</p>@enderror
+                        <p class="mt-1.5 text-xs text-gray-500">Free is zero-cost but a photo could pass. AWS recognises faces (≈$1 / 1,000 scans). Set per-staff PINs under <strong>Staff</strong> for stronger free-mode identity.</p>
+                    </div>
                 </div>
             </div>
         </section>
@@ -271,6 +287,41 @@
         @empty
             <div class="px-6 py-14 text-center text-sm text-gray-500">No phones linked yet.</div>
         @endforelse
+    </section>
+    @endif
+
+    {{-- ═══════════ KIOSK PINS ═══════════ --}}
+    @if($tab === 'kiosk')
+    <section class="{{ $card }} overflow-hidden">
+        <div class="border-b border-gray-100 px-6 py-4">
+            <h3 class="font-semibold text-gray-900">Kiosk PINs</h3>
+            <p class="text-sm text-gray-500">Optional 4–10 digit PIN per staff member for the shared entrance kiosk. When set, the person must enter it after picking their name — so a colleague can't mark attendance for them. Leave blank for no PIN.</p>
+        </div>
+        <form method="POST" action="{{ route($p . '.attendance.settings.kiosk.pins') }}" class="p-6">
+            @csrf
+            @error('pins')<p class="mb-3 text-sm text-red-600">{{ $message }}</p>@enderror
+            <div class="divide-y divide-gray-100">
+                @forelse($staff as $s)
+                    <div class="flex items-center justify-between gap-4 py-3">
+                        <div class="min-w-0">
+                            <p class="truncate text-sm font-medium text-gray-900">{{ $s->name }}</p>
+                            <p class="text-xs text-gray-400">{{ $s->employee_id ?: $s->phone }}</p>
+                        </div>
+                        <input type="text" inputmode="numeric" maxlength="10" name="pins[{{ $s->id }}]"
+                               value="{{ old('pins.' . $s->id, $s->kiosk_pin ?? '') }}"
+                               placeholder="No PIN"
+                               class="w-32 rounded-lg border border-gray-200 px-3 py-2 text-sm text-center tracking-widest focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 outline-none">
+                    </div>
+                @empty
+                    <div class="py-14 text-center text-sm text-gray-500">No staff found.</div>
+                @endforelse
+            </div>
+            @if($staff->count())
+                <div class="mt-5 flex justify-end">
+                    <button type="submit" class="btn btn-primary">Save PINs</button>
+                </div>
+            @endif
+        </form>
     </section>
     @endif
 

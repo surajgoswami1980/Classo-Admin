@@ -13,6 +13,7 @@
         'firebase' => ['Firebase push', 'M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0', $status['firebase']],
         'email' => ['Email', 'M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75', $status['email']],
         'sms' => ['SMS', 'M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z', $status['sms']],
+        'storage' => ['Storage (S3)', 'M2.25 15a4.5 4.5 0 0 0 4.5 4.5H18a3.75 3.75 0 0 0 1.332-7.257 3 3 0 0 0-3.758-3.848 5.25 5.25 0 0 0-10.233 2.33A4.502 4.502 0 0 0 2.25 15Z', $status['storage']],
     ];
     $card = 'rounded-2xl border border-gray-200/80 bg-white shadow-[0_1px_2px_rgba(16,24,40,.04)]';
 @endphp
@@ -61,6 +62,7 @@
                         @case('firebase') {{ $firebaseProject ?: 'No service account' }} @break
                         @case('email') {{ ['smtp' => 'SMTP', 'ses' => 'Amazon SES', 'log' => 'Log only'][$values['email']['driver'] ?? 'log'] ?? 'Log only' }} @break
                         @case('sms') {{ ($values['sms']['provider'] ?? 'log') === 'http' ? 'HTTP gateway' : 'Log only' }} @break
+                        @case('storage') {{ ($values['storage']['enabled'] ?? '0') == '1' ? ('Bucket: ' . ($values['storage']['bucket'] ?? '—')) : 'Local disk' }} @break
                     @endswitch
                 </p>
             </a>
@@ -332,6 +334,51 @@
         </section>
         <div class="sticky bottom-4 z-10 flex justify-end">
             <button type="submit" @disabled(!$cryptoReady) class="btn btn-primary">Save SMS settings</button>
+        </div>
+    </form>
+    @endif
+
+    {{-- ═══════════════════════ STORAGE (S3) ═══════════════════════ --}}
+    @if($tab === 'storage')
+    <form method="POST" action="{{ route('admin.integrations.update', 'storage') }}" class="space-y-6" x-data="{ on: {{ ($values['storage']['enabled'] ?? '0') == '1' ? 'true' : 'false' }} }">
+        @csrf @method('PUT')
+        <section class="{{ $card }} overflow-hidden">
+            <header class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-6 py-4">
+                <div class="flex items-center gap-3">
+                    <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#ff9900] text-white">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $tabs['storage'][1] }}"/></svg>
+                    </span>
+                    <div>
+                        <h3 class="font-semibold text-gray-900">Amazon S3 storage</h3>
+                        <p class="text-xs text-gray-500">Uploads (assignments, events, banners, store, logos) stored on S3, organised per school</p>
+                    </div>
+                </div>
+                @include('super-admin.integrations._status', ['s' => $status['storage']])
+            </header>
+            <div class="grid gap-5 p-6 sm:grid-cols-2">
+                <div class="sm:col-span-2" x-on:change="on = !!document.getElementById('f-storage-enabled')?.checked">
+                    {!! $f('storage', 'enabled') !!}
+                </div>
+                <div x-show="on" x-cloak class="sm:col-span-2 rounded-xl bg-amber-50 p-4 text-xs leading-relaxed text-amber-800">
+                    Files are stored per school: <code class="rounded bg-white px-1">{school-code}/assignments/…</code>, <code class="rounded bg-white px-1">{school-code}/events/…</code>, etc. Super-admin uploads go under <code class="rounded bg-white px-1">superadmin/…</code>. The full S3 URL is saved in the database. Existing local/public files are not moved.
+                </div>
+                <template x-if="on"><div class="contents">
+                    {!! $f('storage', 'key') !!}
+                    {!! $f('storage', 'secret') !!}
+                    {!! $f('storage', 'region') !!}
+                    {!! $f('storage', 'bucket') !!}
+                    {!! $f('storage', 'url') !!}
+                    {!! $f('storage', 'endpoint') !!}
+                    <div class="sm:col-span-2">{!! $f('storage', 'path_style') !!}</div>
+                    <div class="sm:col-span-2 rounded-xl bg-gray-50 p-4 text-xs leading-relaxed text-gray-600">
+                        The IAM user needs <code class="rounded bg-white px-1">s3:PutObject</code>, <code class="rounded bg-white px-1">s3:GetObject</code> and <code class="rounded bg-white px-1">s3:DeleteObject</code> on the bucket, and objects must be publicly readable (bucket policy or ACL) for the saved URLs to load. The server also needs the <code class="rounded bg-white px-1">league/flysystem-aws-s3-v3</code> composer package.
+                    </div>
+                    <div class="sm:col-span-2">@include('super-admin.integrations._test', ['target' => 'storage', 'label' => 'Test S3 connection', 'needsTo' => null])</div>
+                </div></template>
+            </div>
+        </section>
+        <div class="sticky bottom-4 z-10 flex justify-end">
+            <button type="submit" @disabled(!$cryptoReady) class="btn btn-primary">Save storage settings</button>
         </div>
     </form>
     @endif

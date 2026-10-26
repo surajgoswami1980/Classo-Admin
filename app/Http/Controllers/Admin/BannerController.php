@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use App\Support\UploadService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Banner management for a school: slider (carousel, many active) and popup
@@ -190,13 +190,11 @@ class BannerController extends Controller
         if (!$request->hasFile($field)) {
             return null;
         }
-        return $request->file($field)->store("banners/{$schoolId}", 'public');
+        return UploadService::store($request->file($field), 'banners', $schoolId);
     }
 
     private function deleteFile(?string $path): void
     {
-        if ($path && !str_starts_with($path, 'http') && Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->delete($path);
-        }
+        UploadService::delete($path);
     }
 }

@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Mail;
  */
 class IntegrationsController extends Controller
 {
-    private const TABS = ['payments', 'firebase', 'email', 'sms'];
+    private const TABS = ['payments', 'firebase', 'email', 'sms', 'storage'];
 
     public function index(Request $request)
     {
@@ -37,7 +37,7 @@ class IntegrationsController extends Controller
         }
 
         $status = [];
-        foreach (['razorpay', 'cashfree', 'firebase', 'email', 'sms'] as $g) {
+        foreach (['razorpay', 'cashfree', 'firebase', 'email', 'sms', 'storage'] as $g) {
             $status[$g] = PlatformSettings::status($g);
         }
 
@@ -139,6 +139,7 @@ class IntegrationsController extends Controller
                 'firebase' => $this->testFirebase(),
                 'email' => $this->testEmail($request),
                 'sms' => $this->testSms($request),
+                'storage' => $this->testStorage(),
                 default => abort(404),
             };
         } catch (\Throwable $e) {
@@ -231,6 +232,22 @@ class IntegrationsController extends Controller
             fn ($m) => $m->to($to)->subject('Test email — email settings are working'),
         );
         return response()->json(['ok' => true, 'message' => "Test email sent to {$to}. Check the inbox (and spam)."]);
+    }
+
+    /** Upload and delete a tiny probe object to confirm S3 credentials work. */
+    private function testStorage()
+    {
+        if (!\App\Support\UploadService::usingS3()) {
+            return response()->json(['ok' => false, 'message' => 'Turn on S3 and save the access key, secret, region and bucket first.'], 422);
+        }
+        \App\Support\UploadService::bootS3Disk();
+        $disk = \Illuminate\Support\Facades\Storage::disk('s3');
+        $key = 'healthcheck/connection-' . time() . '.txt';
+        $disk->put($key, 'ok', 'public');
+        $url = $disk->url($key);
+        $disk->delete($key);
+
+        return response()->json(['ok' => true, 'message' => 'Connected to S3. Test object URL: ' . $url]);
     }
 
     private function testSms(Request $request)

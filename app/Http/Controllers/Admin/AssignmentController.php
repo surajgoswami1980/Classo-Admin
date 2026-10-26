@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Support\UploadService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Admin-side assignment management. Reads/writes the same tables the API/app
@@ -72,7 +72,7 @@ class AssignmentController extends Controller
         $attachmentType = null;
         if ($request->hasFile('attachment')) {
             $file = $request->file('attachment');
-            $attachmentUrl = $file->store("assignments/{$schoolId}", 'public');
+            $attachmentUrl = UploadService::store($file, 'assignments', $schoolId);
             $ext = strtolower($file->getClientOriginalExtension());
             $attachmentType = in_array($ext, ['jpg', 'jpeg', 'png', 'webp']) ? 'image' : ($ext === 'pdf' ? 'pdf' : 'doc');
         }
