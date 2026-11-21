@@ -5,9 +5,9 @@
 
 @section('content')
 @php $greeting = now()->hour < 12 ? 'Good morning' : (now()->hour < 17 ? 'Good afternoon' : 'Good evening'); @endphp
-<div class="space-y-6">
+<div class="space-y-5 sm:space-y-6">
     <!-- Welcome -->
-    <section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-navy-800 to-navy-900 px-6 py-6 text-white shadow-card sm:px-8">
+    <section class="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-navy-800 to-navy-950 px-5 py-6 text-white shadow-card sm:px-8 sm:py-7">
         <div class="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-primary-500/20 blur-3xl" aria-hidden="true"></div>
         <div class="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -90,12 +90,12 @@
             <section class="mc-card" aria-labelledby="att-title">
                 <div class="mc-card-header"><h3 id="att-title" class="mc-card-title">Needs attention</h3></div>
                 <div class="space-y-2 p-5">
-                    <a href="{{ route('admin.enquiries.index') }}" class="flex items-center gap-3 rounded-xl border border-gray-100 px-3 py-3 transition hover:border-primary-200 hover:bg-primary-50/40">
+                    <a href="{{ route('admin.enquiries.index') }}" class="group flex items-center gap-3 rounded-xl border border-gray-200/70 px-3 py-3 transition duration-150 hover:-translate-y-0.5 hover:border-primary-200 hover:bg-primary-50/40 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
                         <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-50 text-cyan-600">@include('components.icons.inbox', ['class' => 'w-[18px] h-[18px]'])</span>
                         <span class="flex-1 text-sm font-medium text-gray-700">New enquiries</span>
                         <span class="badge {{ ($stats['new_enquiries'] ?? 0) ? 'badge-info' : 'badge-neutral' }}">{{ $stats['new_enquiries'] ?? 0 }}</span>
                     </a>
-                    <a href="{{ route('admin.subscriptions.index') }}" class="flex items-center gap-3 rounded-xl border border-gray-100 px-3 py-3 transition hover:border-primary-200 hover:bg-primary-50/40">
+                    <a href="{{ route('admin.subscriptions.index') }}" class="group flex items-center gap-3 rounded-xl border border-gray-200/70 px-3 py-3 transition duration-150 hover:-translate-y-0.5 hover:border-primary-200 hover:bg-primary-50/40 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
                         <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-50 text-amber-600">@include('components.icons.clock', ['class' => 'w-[18px] h-[18px]'])</span>
                         <span class="flex-1 text-sm font-medium text-gray-700">Renewals in 30 days</span>
                         <span class="badge {{ ($stats['expiring_soon'] ?? 0) ? 'badge-warning' : 'badge-neutral' }}">{{ $stats['expiring_soon'] ?? 0 }}</span>
@@ -115,7 +115,7 @@
                 @endphp
                 <div class="grid grid-cols-2 gap-3 p-5">
                     @foreach($qa as $l)
-                        <a href="{{ route($l['route']) }}" class="group flex flex-col gap-2 rounded-xl border border-gray-100 p-3 transition hover:border-primary-200 hover:bg-primary-50/40">
+                        <a href="{{ route($l['route']) }}" class="group flex min-h-[100px] flex-col gap-3 rounded-xl border border-gray-200/70 bg-white p-3 transition duration-150 hover:-translate-y-0.5 hover:border-primary-200 hover:bg-primary-50/40 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
                             <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-50 text-primary-600 transition-transform group-hover:scale-105">@include('components.icons.' . $l['icon'], ['class' => 'w-[18px] h-[18px]'])</span>
                             <span class="text-[13px] font-medium text-gray-700 group-hover:text-primary-700">{{ $l['label'] }}</span>
                         </a>

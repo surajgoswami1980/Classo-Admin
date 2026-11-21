@@ -38,7 +38,7 @@
 
     <div class="flex flex-col h-full">
         @include('components.impersonation-banner')
-    <div class="flex flex-1 min-h-0">
+    <div class="flex min-h-0 flex-1 overflow-hidden">
 
         <!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
         <div x-show="sidebarOpen" x-cloak
@@ -48,37 +48,37 @@
 
         <aside id="app-sidebar"
                :class="[sidebarOpen ? 'translate-x-0' : '-translate-x-full', sidebarCollapsed ? 'lg:w-[76px]' : 'lg:w-[264px]']"
-               class="fixed inset-y-0 left-0 z-50 flex w-[264px] -translate-x-full flex-col border-r border-gray-200 bg-white text-gray-600 shadow-2xl shadow-navy-950/10 transition-[transform,width] duration-300 ease-out lg:static lg:z-auto lg:translate-x-0 lg:shadow-none"
+               class="mc-sidebar fixed inset-y-0 left-0 z-50 flex w-[264px] -translate-x-full flex-col text-sidebar-text shadow-2xl shadow-navy-950/25 transition-[transform,width] duration-300 ease-out lg:static lg:z-auto lg:translate-x-0 lg:shadow-shell"
                aria-label="Main navigation">
 
             <!-- Brand -->
-            <div class="flex h-16 shrink-0 items-center gap-3 border-b border-gray-100 px-4" :class="sidebarCollapsed && 'lg:justify-center lg:px-0'">
-                <a href="{{ route($prefix . '.dashboard') }}" class="flex min-w-0 items-center gap-3 rounded-xl focus-visible:ring-2 focus-visible:ring-primary-500/40">
-                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 ring-1 ring-primary-100">
+            <div class="relative z-10 flex h-[72px] shrink-0 items-center gap-3 border-b border-white/10 px-4" :class="sidebarCollapsed && 'lg:justify-center lg:px-0'">
+                <a href="{{ route($prefix . '.dashboard') }}" class="flex min-w-0 items-center gap-3 rounded-xl focus-visible:ring-2 focus-visible:ring-primary-300/70">
+                    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white shadow-md shadow-black/10 ring-1 ring-white/80">
                         <x-quilo-logo :size="28" />
                     </span>
                     <span class="min-w-0" :class="sidebarCollapsed && 'lg:hidden'">
-                        <span class="block truncate text-[15px] font-bold leading-tight text-gray-900">{{ $brandName }}</span>
-                        <span class="block truncate text-[11px] font-medium text-gray-400">{{ $panelLabel }}</span>
+                        <span class="block truncate text-[15px] font-bold leading-tight tracking-[-.01em] text-white">{{ $brandName }}</span>
+                        <span class="mt-0.5 block truncate text-[10px] font-semibold uppercase tracking-[.11em] text-slate-400">{{ $panelLabel }}</span>
                     </span>
                 </a>
-                <button type="button" @click="sidebarOpen = false" class="ml-auto rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 lg:hidden" aria-label="Close menu">
+                <button type="button" @click="sidebarOpen = false" class="ml-auto rounded-lg p-1.5 text-slate-400 transition hover:bg-white/10 hover:text-white lg:hidden" aria-label="Close menu">
                     @include('components.icons.x-mark', ['class' => 'w-5 h-5'])
                 </button>
             </div>
 
             <!-- Navigation -->
-            <nav class="mc-scroll flex-1 space-y-1 overflow-y-auto overflow-x-hidden px-3 py-4">
+            <nav class="mc-scroll-dark relative z-10 flex-1 space-y-1 overflow-y-auto overflow-x-hidden px-3 py-4">
                 @foreach($navGroups as $group)
                     @php $groupActive = collect($group['items'])->contains('active', true); @endphp
                     <div x-data="{ open: {{ $groupActive || $loop->first ? 'true' : (count($group['items']) <= 4 ? 'true' : 'false') }} }" class="pb-1">
                         <button type="button" @click="open = !open"
-                                class="flex w-full items-center justify-between rounded-md px-3 pb-1.5 pt-3 text-[10.5px] font-semibold uppercase tracking-[.12em] text-gray-400 transition hover:text-gray-600"
+                                class="flex w-full items-center justify-between rounded-lg px-3 pb-2 pt-3.5 text-[10px] font-bold uppercase tracking-[.14em] text-slate-500 transition hover:text-slate-300"
                                 :class="sidebarCollapsed && 'lg:hidden'" :aria-expanded="open.toString()">
                             <span>{{ $group['label'] }}</span>
                             <svg class="h-3.5 w-3.5 transition-transform duration-200" :class="open ? 'rotate-0' : '-rotate-90'" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
                         </button>
-                        <div x-show="sidebarCollapsed" x-cloak class="mx-3 my-2 hidden h-px bg-gray-100 lg:block" aria-hidden="true"></div>
+                        <div x-show="sidebarCollapsed" x-cloak class="mx-3 my-2 hidden h-px bg-white/10 lg:block" aria-hidden="true"></div>
 
                         <div x-show="open || sidebarCollapsed"
                              x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0"
@@ -86,11 +86,11 @@
                             @foreach($group['items'] as $item)
                                 <a href="{{ $item['url'] }}"
                                    @if($item['active']) aria-current="page" @endif
-                                   class="group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40
-                                          {{ $item['active'] ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}"
+                                   class="group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13.5px] font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300/70
+                                          {{ $item['active'] ? 'mc-nav-active bg-sidebar-active text-sidebar-textActive' : 'text-sidebar-text hover:bg-sidebar-hover hover:text-white' }}"
                                    :class="sidebarCollapsed && 'lg:justify-center lg:px-0'">
-                                    @if($item['active'])<span class="absolute -left-3 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-primary-600" aria-hidden="true"></span>@endif
-                                    <span class="shrink-0 {{ $item['active'] ? 'text-primary-600' : 'text-gray-400 group-hover:text-gray-600' }}">
+                                    @if($item['active'])<span class="absolute -left-3 top-1/2 h-6 w-[3px] -translate-y-1/2 rounded-r-full bg-primary-400 shadow-[0_0_12px_rgba(94,140,245,.65)]" aria-hidden="true"></span>@endif
+                                    <span class="shrink-0 transition-colors {{ $item['active'] ? 'text-primary-300' : 'text-slate-400 group-hover:text-white' }}">
                                         @include('components.icons.' . $item['icon'], ['class' => 'w-5 h-5'])
                                     </span>
                                     <span class="truncate" :class="sidebarCollapsed && 'lg:sr-only'">{{ $item['name'] }}</span>
@@ -102,7 +102,7 @@
                                     @endif
                                     <!-- Tooltip when collapsed -->
                                     <span x-show="sidebarCollapsed" x-cloak role="tooltip"
-                                          class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-lg bg-navy-950 px-2.5 py-1.5 text-xs font-medium text-white opacity-0 shadow-pop transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 lg:block">
+                                          class="pointer-events-none absolute left-full top-1/2 z-50 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-lg border border-white/10 bg-navy-950 px-2.5 py-1.5 text-xs font-medium text-white opacity-0 shadow-pop transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100 lg:block">
                                         {{ $item['name'] }}
                                     </span>
                                 </a>
@@ -113,9 +113,9 @@
             </nav>
 
             <!-- Collapse toggle (desktop) -->
-            <div class="hidden shrink-0 border-t border-gray-100 p-3 lg:block">
+            <div class="relative z-10 hidden shrink-0 border-t border-white/10 p-3 lg:block">
                 <button type="button" @click="toggleCollapse()"
-                        class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium text-gray-500 transition hover:bg-gray-100 hover:text-gray-900"
+                        class="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium text-slate-400 transition hover:bg-white/10 hover:text-white"
                         :class="sidebarCollapsed && 'justify-center px-0'"
                         :aria-label="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
                     <svg class="h-5 w-5 shrink-0 transition-transform duration-300" :class="sidebarCollapsed && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke-width="1.75" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" /></svg>
@@ -125,10 +125,10 @@
         </aside>
 
         <!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
-        <div class="flex min-w-0 flex-1 flex-col">
-            <header class="sticky top-0 z-30 border-b border-gray-200/80 bg-white/85 backdrop-blur-md supports-[backdrop-filter]:bg-white/75">
-                <div class="flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
-                    <button type="button" @click="sidebarOpen = true" class="-ml-1 rounded-xl p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 lg:hidden" aria-label="Open menu" aria-controls="app-sidebar">
+        <div class="mc-shell-canvas flex min-w-0 flex-1 flex-col">
+            <header class="mc-topbar sticky top-0 z-30 border-b border-white/80 bg-white/90 backdrop-blur-xl supports-[backdrop-filter]:bg-white/78">
+                <div class="flex h-[72px] items-center gap-3 px-4 sm:px-6 lg:px-8">
+                    <button type="button" @click="sidebarOpen = true" class="-ml-1 rounded-xl border border-transparent p-2 text-gray-500 transition hover:border-gray-200 hover:bg-white hover:text-gray-900 hover:shadow-sm lg:hidden" aria-label="Open menu" aria-controls="app-sidebar">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
                     </button>
 
@@ -136,7 +136,7 @@
                     <div class="min-w-0 flex-1">
                         @if($activeGroup && $activeItem && $activeItem['name'] !== 'Dashboard')
                             <nav aria-label="Breadcrumb" class="hidden sm:block">
-                                <ol class="flex items-center gap-1.5 text-xs font-medium text-gray-500">
+                                <ol class="mb-1 flex items-center gap-1.5 text-[11px] font-semibold text-gray-500">
                                     <li><a href="{{ route($prefix . '.dashboard') }}" class="hover:text-primary-600">Home</a></li>
                                     <li aria-hidden="true">@include('components.icons.chevron-right', ['class' => 'w-3 h-3 text-gray-300'])</li>
                                     <li>{{ $activeGroup['label'] }}</li>
@@ -147,7 +147,7 @@
                                 </ol>
                             </nav>
                         @endif
-                        <h1 class="truncate text-[17px] font-semibold leading-tight text-gray-900 lg:text-lg">{!! $pageTitle !!}</h1>
+                        <h1 class="truncate text-[17px] font-bold leading-tight tracking-[-.015em] text-gray-900 lg:text-[19px]">{!! $pageTitle !!}</h1>
                     </div>
 
                     <!-- Quick navigation search (jumps to any module in the menu) -->
@@ -164,10 +164,10 @@
                                @keydown.down.prevent="idx = Math.min(idx + 1, results.length - 1)" @keydown.up.prevent="idx = Math.max(idx - 1, 0)"
                                @keydown.enter.prevent="go(results[idx])" @keydown.escape="open = false; $el.blur()"
                                role="combobox" :aria-expanded="(open && results.length > 0).toString()" aria-controls="mc-search-list"
-                               class="h-10 w-56 rounded-xl border border-gray-200 bg-gray-50 pl-9 pr-12 text-sm text-gray-900 placeholder:text-gray-400 transition focus:w-72 focus:border-primary-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary-500/15 lg:w-64">
+                               class="h-10 w-56 rounded-xl border border-gray-200/90 bg-gray-50/80 pl-9 pr-12 text-sm text-gray-900 shadow-inner shadow-gray-900/[.02] placeholder:text-gray-400 transition focus:w-72 focus:border-primary-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary-500/10 lg:w-64">
                         <kbd class="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded-md border border-gray-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold text-gray-400 lg:block">Ctrl K</kbd>
                         <ul id="mc-search-list" x-show="open && results.length" x-cloak x-transition.opacity.duration.100ms role="listbox"
-                            class="absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-xl border border-gray-200 bg-white py-1.5 shadow-pop">
+                            class="mc-menu absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-gray-200/80 bg-white py-1.5">
                             <template x-for="(r, i) in results" :key="r.url">
                                 <li role="option" :aria-selected="(i === idx).toString()">
                                     <a :href="r.url" @mouseenter="idx = i" :class="i === idx ? 'bg-primary-50 text-primary-700' : 'text-gray-700'" class="flex items-center justify-between px-3.5 py-2 text-sm">
@@ -192,7 +192,7 @@
                                 <div x-show="open" x-cloak @click.outside="open = false"
                                      x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 -translate-y-1 scale-[.98]" x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                                      x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                                     class="absolute right-0 z-50 mt-2 w-80 origin-top-right overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-pop">
+                                     class="mc-menu absolute right-0 z-50 mt-2 w-80 origin-top-right overflow-hidden rounded-2xl border border-gray-200/80 bg-white">
                                     <div class="border-b border-gray-100 p-3">
                                         <p class="mb-2 px-1 text-[11px] font-semibold uppercase tracking-wider text-gray-500">View as school admin</p>
                                         <input x-ref="sf" x-model="f" type="search" placeholder="Filter schools…" aria-label="Filter schools" class="form-input py-2">
@@ -220,7 +220,7 @@
                         @if(\Illuminate\Support\Facades\Route::has($prefix . '.notifications.index'))
                             <!-- Notifications: opens the existing Notifications module -->
                             <a href="{{ route($prefix . '.notifications.index') }}" title="Notifications"
-                               class="relative flex h-10 w-10 items-center justify-center rounded-xl text-gray-500 transition hover:bg-gray-100 hover:text-gray-900">
+                               class="relative flex h-10 w-10 items-center justify-center rounded-xl border border-transparent text-gray-500 transition hover:border-gray-200 hover:bg-white hover:text-gray-900 hover:shadow-sm">
                                 <span class="sr-only">Notifications</span>
                                 @include('components.icons.bell', ['class' => 'w-5 h-5'])
                             </a>
@@ -229,8 +229,8 @@
                         <!-- Profile menu -->
                         <div x-data="{ open: false }" class="relative" @keydown.escape="open = false">
                             <button type="button" @click="open = !open" :aria-expanded="open.toString()" aria-haspopup="true"
-                                    class="flex items-center gap-2.5 rounded-xl p-1 pr-1.5 transition hover:bg-gray-100 sm:pr-2.5">
-                                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 text-[13px] font-bold text-white shadow-sm">{{ $initials ?: 'A' }}</span>
+                                    class="flex items-center gap-2.5 rounded-xl border border-transparent p-1 pr-1.5 transition hover:border-gray-200 hover:bg-white hover:shadow-sm sm:pr-2.5">
+                                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary-400 via-primary-600 to-primary-800 text-[13px] font-bold text-white shadow-md shadow-primary-700/20 ring-1 ring-white">{{ $initials ?: 'A' }}</span>
                                 <span class="hidden text-left sm:block">
                                     <span class="block max-w-[140px] truncate text-sm font-semibold leading-tight text-gray-900">{{ $authUser?->name ?? 'Admin' }}</span>
                                     <span class="block max-w-[140px] truncate text-[11px] capitalize leading-tight text-gray-500">{{ str_replace('-', ' ', $authUser?->roles?->first()?->name ?? 'admin') }}</span>
@@ -240,7 +240,7 @@
                             <div x-show="open" x-cloak @click.outside="open = false"
                                  x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 -translate-y-1 scale-[.98]" x-transition:enter-end="opacity-100 translate-y-0 scale-100"
                                  x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                                 class="absolute right-0 z-50 mt-2 w-64 origin-top-right overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-pop" role="menu">
+                                 class="mc-menu absolute right-0 z-50 mt-2 w-64 origin-top-right overflow-hidden rounded-2xl border border-gray-200/80 bg-white" role="menu">
                                 <div class="flex items-center gap-3 border-b border-gray-100 px-4 py-3.5">
                                     <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-sm font-bold text-primary-700">{{ $initials ?: 'A' }}</span>
                                     <div class="min-w-0">
@@ -274,11 +274,11 @@
             </header>
 
             <main id="main-content" class="mc-content mc-scroll flex-1 overflow-auto" tabindex="-1">
-                <div class="mx-auto w-full max-w-[1440px] px-4 py-5 sm:px-6 sm:py-6 lg:px-8 lg:py-7">
+                <div class="mx-auto w-full max-w-[1520px] px-4 py-5 sm:px-6 sm:py-7 lg:px-8 lg:py-8">
                     <!-- Flash messages -->
                     @if(session('success'))
                         <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 6000)" x-transition.opacity.duration.200ms role="status"
-                             class="mb-5 flex items-center gap-3 rounded-2xl border border-green-200 bg-green-50 px-4 py-3.5">
+                             class="mb-5 flex items-center gap-3 rounded-2xl border border-green-200/80 bg-white px-4 py-3.5 shadow-card ring-1 ring-green-500/5">
                             @include('components.icons.check-circle', ['class' => 'w-5 h-5 shrink-0 text-green-600'])
                             <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
                             <button type="button" @click="show = false" class="ml-auto rounded-lg p-1 text-green-600 hover:bg-green-100" aria-label="Dismiss">@include('components.icons.x-mark', ['class' => 'w-4 h-4'])</button>
@@ -287,7 +287,7 @@
 
                     @if(session('error'))
                         <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.200ms role="alert"
-                             class="mb-5 flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3.5">
+                             class="mb-5 flex items-center gap-3 rounded-2xl border border-red-200/80 bg-white px-4 py-3.5 shadow-card ring-1 ring-red-500/5">
                             @include('components.icons.exclamation', ['class' => 'w-5 h-5 shrink-0 text-red-600'])
                             <p class="text-sm font-medium text-red-800">{{ session('error') }}</p>
                             <button type="button" @click="show = false" class="ml-auto rounded-lg p-1 text-red-600 hover:bg-red-100" aria-label="Dismiss">@include('components.icons.x-mark', ['class' => 'w-4 h-4'])</button>
@@ -296,7 +296,7 @@
 
                     @if($errors->any())
                         <div x-data="{ show: true }" x-show="show" x-transition.opacity.duration.200ms role="alert"
-                             class="mb-5 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3.5">
+                             class="mb-5 flex items-start gap-3 rounded-2xl border border-red-200/80 bg-white px-4 py-3.5 shadow-card ring-1 ring-red-500/5">
                             @include('components.icons.exclamation', ['class' => 'w-5 h-5 shrink-0 mt-0.5 text-red-600'])
                             <div class="flex-1">
                                 <p class="text-sm font-semibold text-red-800">Please fix the following:</p>
@@ -308,7 +308,7 @@
                         </div>
                     @endif
 
-                    <div class="animate-fade-in">
+                    <div class="mc-content-panel">
                         @yield('content')
                     </div>
 

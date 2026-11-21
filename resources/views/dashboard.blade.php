@@ -12,7 +12,7 @@
     $hasTrend = collect($trend)->sum('marked') > 0;
 @endphp
 
-<div class="space-y-6">
+<div class="space-y-5 sm:space-y-6">
     <x-school-banner :banner="$banner ?? null" />
 
     <!-- KPIs -->
@@ -70,16 +70,16 @@
         <section class="mc-card flex flex-col" aria-labelledby="dues-title">
             <div class="mc-card-header">
                 <h3 id="dues-title" class="mc-card-title">Fee dues</h3>
-                <a href="{{ panel_route('fees.pending') }}" class="text-sm font-semibold text-primary-600 hover:text-primary-700">Details</a>
+                <a href="{{ panel_route('fees.pending') }}" class="mc-link text-sm">Details</a>
             </div>
             <div class="mc-card-body flex-1 space-y-4">
                 <div class="grid grid-cols-2 gap-3">
-                    <div class="rounded-xl bg-amber-50 p-4">
+                    <div class="rounded-xl border border-amber-100 bg-amber-50/80 p-4 ring-1 ring-amber-500/5">
                         <p class="text-xs font-medium text-amber-700">Pending</p>
                         <p class="mt-1 text-lg font-bold text-amber-800">₹{{ number_format($pending->amount ?? 0) }}</p>
                         <p class="text-[11px] text-amber-700/80">{{ number_format($pending->invoices ?? 0) }} invoices</p>
                     </div>
-                    <div class="rounded-xl bg-red-50 p-4">
+                    <div class="rounded-xl border border-red-100 bg-red-50/80 p-4 ring-1 ring-red-500/5">
                         <p class="text-xs font-medium text-red-700">Overdue</p>
                         <p class="mt-1 text-lg font-bold text-red-700">₹{{ number_format($pending->overdue ?? 0) }}</p>
                         <p class="text-[11px] text-red-700/80">past due date</p>
@@ -98,7 +98,7 @@
                         <div class="mb-2 flex items-center gap-3 rounded-xl border px-3 py-2.5 {{ $a['tone'] === 'danger' ? 'border-red-100 bg-red-50/60' : 'border-amber-100 bg-amber-50/60' }}">
                             @include('components.icons.exclamation', ['class' => 'w-4 h-4 shrink-0 ' . ($a['tone'] === 'danger' ? 'text-red-600' : 'text-amber-600')])
                             <p class="flex-1 text-[13px] text-gray-700">{{ $a['text'] }}</p>
-                            @if($a['href'])<a href="{{ $a['href'] }}" class="shrink-0 text-xs font-semibold text-primary-600 hover:text-primary-700">{{ $a['cta'] }}</a>@endif
+                            @if($a['href'])<a href="{{ $a['href'] }}" class="mc-link shrink-0 text-xs">{{ $a['cta'] }}</a>@endif
                         </div>
                     @empty
                         <div class="flex items-center gap-2 rounded-xl bg-green-50 px-3 py-2.5 text-[13px] text-green-700">
@@ -116,12 +116,12 @@
         <section class="mc-card xl:col-span-1" aria-labelledby="pay-title">
             <div class="mc-card-header">
                 <h3 id="pay-title" class="mc-card-title">Recent payments</h3>
-                <a href="{{ panel_route('fees.collection-report') }}" class="text-sm font-semibold text-primary-600 hover:text-primary-700">Report</a>
+                <a href="{{ panel_route('fees.collection-report') }}" class="mc-link text-sm">Report</a>
             </div>
             @if(($ins['recentPayments'] ?? collect())->count())
                 <ul class="divide-y divide-gray-100">
                     @foreach($ins['recentPayments'] as $p)
-                        <li class="flex items-center gap-3 px-5 py-3">
+                        <li class="mc-interactive-row flex items-center gap-3 px-4 py-3.5 sm:px-5">
                             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-600">@include('components.icons.currency-rupee', ['class' => 'w-[18px] h-[18px]'])</span>
                             <div class="min-w-0 flex-1">
                                 <p class="truncate text-sm font-medium text-gray-900">{{ $p->student_name ?? ucfirst(str_replace('_', ' ', $p->payable_type ?? 'Payment')) }}</p>
@@ -140,7 +140,7 @@
         <section class="mc-card" aria-labelledby="up-title">
             <div class="mc-card-header">
                 <h3 id="up-title" class="mc-card-title">Coming up</h3>
-                <a href="{{ panel_route('events.index') }}" class="text-sm font-semibold text-primary-600 hover:text-primary-700">Events</a>
+                <a href="{{ panel_route('events.index') }}" class="mc-link text-sm">Events</a>
             </div>
             @php
                 $upcoming = collect($ins['holidays'] ?? [])->map(fn ($h) => ['kind' => 'holiday', 'title' => $h->title, 'at' => \Illuminate\Support\Carbon::parse($h->start_date), 'end' => \Illuminate\Support\Carbon::parse($h->end_date), 'meta' => ucfirst(str_replace('_', ' ', $h->type)) . ' · ' . ($h->applies_to === 'all' ? 'Everyone' : ucfirst($h->applies_to))])
@@ -150,7 +150,7 @@
             @if($upcoming->count())
                 <ul class="divide-y divide-gray-100">
                     @foreach($upcoming as $u)
-                        <li class="flex items-center gap-3 px-5 py-3">
+                        <li class="mc-interactive-row flex items-center gap-3 px-4 py-3.5 sm:px-5">
                             <div class="w-11 shrink-0 rounded-xl py-1 text-center {{ $u['kind'] === 'holiday' ? 'bg-rose-50' : 'bg-primary-50' }}">
                                 <p class="text-[10px] font-semibold uppercase {{ $u['kind'] === 'holiday' ? 'text-rose-500' : 'text-primary-500' }}">{{ $u['at']->format('M') }}</p>
                                 <p class="text-base font-bold leading-tight {{ $u['kind'] === 'holiday' ? 'text-rose-700' : 'text-primary-700' }}">{{ $u['at']->format('d') }}</p>
@@ -187,7 +187,7 @@
             @endphp
             <div class="grid grid-cols-2 gap-3 p-5 sm:grid-cols-3 xl:grid-cols-2">
                 @foreach($links as $l)
-                    <a href="{{ panel_route($l['route']) }}" class="group flex items-center gap-3 rounded-xl border border-gray-100 p-3 transition hover:border-primary-200 hover:bg-primary-50/40 focus-visible:ring-2 focus-visible:ring-primary-500">
+                    <a href="{{ panel_route($l['route']) }}" class="group flex min-h-[64px] items-center gap-3 rounded-xl border border-gray-200/70 bg-white p-3 transition duration-150 hover:-translate-y-0.5 hover:border-primary-200 hover:bg-primary-50/40 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2">
                         <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg {{ $l['tone'] }} transition-transform group-hover:scale-105">@include('components.icons.' . $l['icon'], ['class' => 'w-[18px] h-[18px]'])</span>
                         <span class="text-[13px] font-medium text-gray-700 group-hover:text-primary-700">{{ $l['label'] }}</span>
                     </a>

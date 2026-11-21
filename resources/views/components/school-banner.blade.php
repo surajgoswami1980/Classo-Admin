@@ -7,13 +7,13 @@
     $greeting = now()->hour < 12 ? 'Good morning' : (now()->hour < 17 ? 'Good afternoon' : 'Good evening');
 @endphp
 
-<div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-navy-800 via-navy-800 to-primary-700 shadow-card">
+<div class="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-navy-800 via-navy-900 to-navy-950 shadow-card">
     <div class="pointer-events-none absolute -top-24 -right-16 h-64 w-64 rounded-full bg-primary-500/25 blur-3xl" aria-hidden="true"></div>
 
-    <div class="relative flex flex-col gap-6 p-6 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
+    <div class="relative flex flex-col gap-6 p-5 sm:p-7 lg:flex-row lg:items-center lg:justify-between">
         <!-- Identity -->
         <div class="flex items-start gap-5">
-            <div class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white/15 ring-1 ring-white/25 backdrop-blur">
+            <div class="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white/15 ring-1 ring-white/25 backdrop-blur sm:h-16 sm:w-16">
                 @if(!empty($banner['logo']))
                     <img src="{{ \Illuminate\Support\Str::startsWith($banner['logo'], ['http://','https://']) ? $banner['logo'] : asset('storage/' . $banner['logo']) }}"
                          alt="{{ $banner['name'] }}" class="h-full w-full object-cover">
