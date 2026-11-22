@@ -28,6 +28,7 @@ class School extends Model
         'principal_email',
         'principal_phone',
         'subscription_plan',
+        'subscription_price',
         'subscription_start',
         'subscription_end',
         'max_students',
@@ -43,7 +44,23 @@ class School extends Model
         'subscription_end' => 'date',
         'max_students' => 'integer',
         'max_staff' => 'integer',
+        'subscription_price' => 'decimal:2',
     ];
+
+    /**
+     * Price this school actually pays: the agreed custom price if one was
+     * set, otherwise the plan's list price.
+     */
+    public function getEffectivePriceAttribute(): float
+    {
+        if ($this->subscription_price !== null) {
+            return (float) $this->subscription_price;
+        }
+
+        $plans = \App\Http\Controllers\SuperAdmin\SubscriptionController::PLANS;
+
+        return (float) ($plans[$this->subscription_plan]['price'] ?? 0);
+    }
 
     // ─── Relationships ───────────────────────────────────────
 

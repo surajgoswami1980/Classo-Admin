@@ -28,7 +28,7 @@ class SubscriptionInvoiceController extends Controller
             ->orderByDesc('si.created_at')
             ->paginate(20);
 
-        $schools = School::orderBy('name')->get(['id', 'name', 'code', 'subscription_plan']);
+        $schools = School::orderBy('name')->get(['id', 'name', 'code', 'subscription_plan', 'subscription_price']);
 
         $stats = [
             'total' => (float) DB::table('subscription_invoices')->where('status', 'paid')->sum('amount'),

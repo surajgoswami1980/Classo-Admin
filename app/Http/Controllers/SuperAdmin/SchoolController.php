@@ -49,6 +49,16 @@ class SchoolController extends Controller
             'state' => 'nullable|string|max:100',
             'pincode' => 'nullable|string|max:10',
             'max_students' => 'nullable|integer|min:10|max:99999',
+            'subscription_plan' => 'nullable|string|in:' . implode(',', array_keys(SubscriptionController::PLANS)),
+            'billing_period' => 'nullable|in:1,3,6,12,custom',
+            'subscription_price' => 'nullable|numeric|min:0|max:9999999',
+            'subscription_end' => [
+                'nullable',
+                Rule::requiredIf(fn () => $request->input('subscription_plan', 'trial') !== 'trial'
+                    && $request->input('billing_period') === 'custom'),
+                'date',
+                'after:today',
+            ],
             'admin_name' => 'required|string|max:255',
             'admin_email' => 'required|email|unique:users,email',
             'admin_phone' => 'nullable|string|max:15',
@@ -59,6 +69,18 @@ class SchoolController extends Controller
             'admin_email.unique' => 'This email is already registered in the system.',
             'admin_password.min' => 'Password must be at least 8 characters.',
         ]);
+
+        // Trial always runs 30 days. A paid plan runs for the chosen billing
+        // period (1 / 3 / 6 / 12 months) or until a custom end date.
+        $planKey = $validated['subscription_plan'] ?? 'trial';
+        $plan = SubscriptionController::PLANS[$planKey];
+        if ($planKey === 'trial') {
+            $planEnd = now()->addDays(30);
+        } elseif (($validated['billing_period'] ?? '12') === 'custom') {
+            $planEnd = \Illuminate\Support\Carbon::parse($validated['subscription_end'])->endOfDay();
+        } else {
+            $planEnd = now()->addMonthsNoOverflow((int) ($validated['billing_period'] ?? 12));
+        }
 
         DB::beginTransaction();
         try {
@@ -72,11 +94,13 @@ class SchoolController extends Controller
                 'city' => $validated['city'] ?? '',
                 'state' => $validated['state'] ?? '',
                 'pincode' => $validated['pincode'] ?? '',
-                'subscription_plan' => 'trial',
+                'subscription_plan' => $planKey,
+                // Blank = use the plan's list price; a value = agreed custom price.
+                'subscription_price' => $planKey === 'trial' ? null : ($validated['subscription_price'] ?? null),
                 'subscription_start' => now(),
-                'subscription_end' => now()->addDays(30),
-                'max_students' => $validated['max_students'] ?? 300,
-                'max_staff' => 50,
+                'subscription_end' => $planEnd,
+                'max_students' => $validated['max_students'] ?? $plan['max_students'],
+                'max_staff' => $plan['max_staff'],
                 'is_active' => true,
             ]);
 
@@ -134,7 +158,7 @@ class SchoolController extends Controller
             'state' => 'nullable|string|max:100',
             'pincode' => 'nullable|string|max:10',
             'max_students' => 'nullable|integer|min:10',
-            'subscription_plan' => 'nullable|string|in:trial,starter,growth,enterprise',
+            'subscription_plan' => 'nullable|string|in:' . implode(',', array_keys(SubscriptionController::PLANS)),
         ]);
 
         $school->update($validated);

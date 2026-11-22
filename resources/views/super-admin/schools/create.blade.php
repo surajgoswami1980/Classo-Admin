@@ -64,19 +64,43 @@
         </div>
 
         <!-- Subscription -->
-        <div class="mc-card p-6">
+        <div class="mc-card p-6"
+             x-data="{ plan: @js(old('subscription_plan', 'trial')), period: @js(old('billing_period', '12')) }">
             <h3 class="text-base font-semibold text-gray-900 mb-4">Subscription</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="form-label">Plan</label>
-                    <select name="subscription_status" class="form-input">
-                        <option value="trial">Trial (30 days)</option>
-                        <option value="active">Active</option>
+                    <label for="subscription_plan" class="form-label">Plan</label>
+                    <select id="subscription_plan" name="subscription_plan" x-model="plan" class="form-input">
+                        @foreach(\App\Http\Controllers\SuperAdmin\SubscriptionController::PLANS as $key => $plan)
+                            <option value="{{ $key }}">{{ $plan['label'] }}{{ $key === 'trial' ? ' (30 days free)' : '' }}</option>
+                        @endforeach
                     </select>
                 </div>
+                <div x-show="plan !== 'trial'" x-cloak>
+                    <label for="billing_period" class="form-label">Billing period</label>
+                    <select id="billing_period" name="billing_period" x-model="period" class="form-input">
+                        <option value="1">1 month</option>
+                        <option value="3">3 months</option>
+                        <option value="6">6 months</option>
+                        <option value="12">1 year</option>
+                        <option value="custom">Custom end date</option>
+                    </select>
+                </div>
+                <div x-show="plan !== 'trial' && period === 'custom'" x-cloak>
+                    <label for="subscription_end" class="form-label">Subscription ends on</label>
+                    <input id="subscription_end" type="date" name="subscription_end" value="{{ old('subscription_end') }}"
+                           min="{{ now()->addDay()->toDateString() }}" class="form-input"
+                           :required="plan !== 'trial' && period === 'custom'">
+                    <p class="form-help">Starts today and stays active until the end of this date.</p>
+                </div>
+                <div x-show="plan !== 'trial'" x-cloak>
+                    <label for="subscription_price" class="form-label">Agreed price (₹) <span class="text-xs text-gray-400">(optional)</span></label>
+                    <input id="subscription_price" type="number" name="subscription_price" min="0" step="0.01" value="{{ old('subscription_price') }}" placeholder="Blank = plan price" class="form-input">
+                    <p class="form-help">Custom or discounted amount, e.g. 3599.</p>
+                </div>
                 <div>
-                    <label class="form-label">Max Students</label>
-                    <input type="number" name="max_students" value="300" class="form-input">
+                    <label for="max_students" class="form-label">Max Students</label>
+                    <input id="max_students" type="number" name="max_students" value="{{ old('max_students', 300) }}" class="form-input">
                 </div>
             </div>
         </div>

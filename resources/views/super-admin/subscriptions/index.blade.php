@@ -58,6 +58,7 @@
                 <tr>
                     <th class="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">School</th>
                     <th class="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Plan</th>
+                    <th class="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Price</th>
                     <th class="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Period</th>
                     <th class="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Limits</th>
                     <th class="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-gray-500 whitespace-nowrap">Status</th>
@@ -76,6 +77,12 @@
                         </td>
                         <td class="px-4 py-3">
                             <span class="inline-block px-2 py-0.5 rounded-full text-xs bg-blue-50 text-blue-700 capitalize">{{ $school->subscription_plan ?? '—' }}</span>
+                        </td>
+                        <td class="px-4 py-3 text-xs whitespace-nowrap">
+                            <span class="font-semibold text-gray-900">₹{{ number_format($school->effective_price) }}</span>
+                            @if($school->subscription_price !== null)
+                                <span class="ml-1 rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700">Custom</span>
+                            @endif
                         </td>
                         <td class="px-4 py-3 text-gray-600 text-xs">
                             @if($school->subscription_start)
@@ -109,7 +116,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-10 text-center text-gray-400">No schools found.</td>
+                        <td colspan="7" class="px-4 py-10 text-center text-gray-400">No schools found.</td>
                     </tr>
                 @endforelse
             </tbody>

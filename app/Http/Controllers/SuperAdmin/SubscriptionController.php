@@ -71,6 +71,7 @@ class SubscriptionController extends Controller
             'subscription_end'   => 'required|date|after:subscription_start',
             'max_students'       => 'nullable|integer|min:10|max:99999',
             'max_staff'          => 'nullable|integer|min:1|max:9999',
+            'subscription_price' => 'nullable|numeric|min:0|max:9999999',
         ]);
 
         $plan = self::PLANS[$validated['subscription_plan']];
@@ -78,6 +79,7 @@ class SubscriptionController extends Controller
         $school = School::findOrFail($validated['school_id']);
         $school->update([
             'subscription_plan'  => $validated['subscription_plan'],
+            'subscription_price' => $validated['subscription_price'] ?? null,
             'subscription_start' => $validated['subscription_start'],
             'subscription_end'   => $validated['subscription_end'],
             'max_students'       => $validated['max_students'] ?? $plan['max_students'],
@@ -115,12 +117,14 @@ class SubscriptionController extends Controller
             'max_students'       => 'nullable|integer|min:10|max:99999',
             'max_staff'          => 'nullable|integer|min:1|max:9999',
             'is_active'          => 'nullable|boolean',
+            'subscription_price' => 'nullable|numeric|min:0|max:9999999',
         ]);
 
         $plan = self::PLANS[$validated['subscription_plan']];
 
         $subscription->update([
             'subscription_plan'  => $validated['subscription_plan'],
+            'subscription_price' => $validated['subscription_price'] ?? null,
             'subscription_start' => $validated['subscription_start'],
             'subscription_end'   => $validated['subscription_end'],
             'max_students'       => $validated['max_students'] ?? $plan['max_students'],

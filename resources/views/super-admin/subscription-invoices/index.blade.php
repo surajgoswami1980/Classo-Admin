@@ -67,11 +67,20 @@
     <div x-show="showCreate" x-cloak x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-[2px]" @click.self="showCreate=false">
         <div x-show="showCreate" x-transition.scale class="modal-panel max-w-md p-6">
             <h3 class="text-base font-semibold text-gray-900 mb-4">Raise Subscription Invoice</h3>
-            <form method="POST" action="{{ route('admin.subscription-invoices.store') }}" class="space-y-4">
+            @php
+                $plansList = \App\Http\Controllers\SuperAdmin\SubscriptionController::PLANS;
+                $schoolPricing = $schools->mapWithKeys(fn ($s) => [$s->id => [
+                    'price' => $s->effective_price,
+                    'plan' => $plansList[$s->subscription_plan]['label'] ?? ucfirst((string) $s->subscription_plan),
+                ]]);
+            @endphp
+            <form method="POST" action="{{ route('admin.subscription-invoices.store') }}" class="space-y-4"
+                  x-data="{ pricing: @js($schoolPricing), amount: '', plan: '',
+                            pick(id) { const p = this.pricing[id]; if (p) { this.amount = p.price || ''; this.plan = p.plan || ''; } } }">
                 @csrf
                 <div>
                     <label class="form-label">School *</label>
-                    <select name="school_id" required class="form-input">
+                    <select name="school_id" required class="form-input" @change="pick($event.target.value)">
                         <option value="">Select school</option>
                         @foreach($schools as $s)<option value="{{ $s->id }}">{{ $s->name }} ({{ $s->code }})</option>@endforeach
                     </select>
@@ -79,11 +88,12 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="form-label">Amount (₹) *</label>
-                        <input type="number" name="amount" required min="1" step="0.01" class="form-input">
+                        <input type="number" name="amount" x-model="amount" required min="1" step="0.01" class="form-input">
+                        <p class="form-help">Filled from the school's agreed price. You can change it.</p>
                     </div>
                     <div>
                         <label class="form-label">Plan</label>
-                        <input type="text" name="plan" placeholder="Growth" class="form-input">
+                        <input type="text" name="plan" x-model="plan" placeholder="Basic" class="form-input">
                     </div>
                 </div>
                 <div>

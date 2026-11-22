@@ -46,6 +46,11 @@
                     <label class="form-label">End Date *</label>
                     <input type="date" name="subscription_end" value="{{ old('subscription_end', optional($school->subscription_end)->toDateString()) }}" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
+                <div class="md:col-span-2">
+                    <label for="subscription_price" class="form-label">Agreed price (₹) <span class="text-xs text-gray-400">(optional)</span></label>
+                    <input id="subscription_price" type="number" name="subscription_price" min="0" step="0.01" value="{{ old('subscription_price', $school->subscription_price) }}" placeholder="Leave blank to use the plan price" class="form-input">
+                    <p class="form-help">Custom or discounted amount for this school. Clear it to go back to the plan price.</p>
+                </div>
                 <div>
                     <label class="form-label">Max Students</label>
                     <input type="number" name="max_students" value="{{ old('max_students', $school->max_students) }}" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
