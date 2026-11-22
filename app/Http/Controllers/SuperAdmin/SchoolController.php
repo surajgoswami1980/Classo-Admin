@@ -88,7 +88,9 @@ class SchoolController extends Controller
                 'name' => $validated['name'],
                 'code' => strtoupper($validated['code']),
                 'board_affiliation' => $validated['board_affiliation'],
-                'email' => $validated['contact_email'] ?? '',
+                // NULL (not '') when blank: the column is unique, and a second
+                // school with no email would otherwise collide on ''.
+                'email' => ($validated['contact_email'] ?? null) ?: null,
                 'phone' => $validated['contact_phone'] ?? '',
                 'address' => $validated['address'] ?? '',
                 'city' => $validated['city'] ?? '',
