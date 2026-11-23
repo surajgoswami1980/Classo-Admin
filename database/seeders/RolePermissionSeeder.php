@@ -127,5 +127,15 @@ class RolePermissionSeeder extends Seeder
             'mark-student-attendance',
             'enter-marks',
         ]);
+
+        // App-only roles. StudentController assigns 'student' when a student is
+        // added, and the API reads the role from model_has_roles to decide what
+        // the web/mobile app shows ('student', 'parent', 'staff'). These users
+        // never log in to the admin panel, so they get no admin permissions.
+        foreach (['student', 'parent', 'staff'] as $appRole) {
+            Role::firstOrCreate(['name' => $appRole, 'guard_name' => 'web']);
+        }
+
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
     }
 }
