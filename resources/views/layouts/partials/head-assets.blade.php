@@ -36,9 +36,12 @@
                     shimmer: { '100%': { transform: 'translateX(100%)' } },
                 },
                 animation: {
-                    'fade-up': 'fade-up .35s ease-out both',
-                    'fade-in': 'fade-in .25s ease-out both',
-                    'scale-in': 'scale-in .2s ease-out both',
+                    // "backwards" (not "both"): a transform kept after the animation
+                    // ends turns the element into the containing block for
+                    // position:fixed children, which breaks modals inside it.
+                    'fade-up': 'fade-up .35s ease-out backwards',
+                    'fade-in': 'fade-in .25s ease-out backwards',
+                    'scale-in': 'scale-in .2s ease-out backwards',
                 },
             }
         }
@@ -110,8 +113,11 @@
         .tab-active { @apply bg-white text-primary-700 shadow-sm; }
 
         /* ── Modals / drawers ─────────────────────────────────── */
-        .modal-backdrop { @apply fixed inset-0 z-50 bg-navy-950/50 backdrop-blur-[2px]; }
-        .modal-panel { @apply relative w-full rounded-2xl bg-white shadow-pop; }
+        /* No z-index on the backdrop: it sits inside the modal's own z-indexed
+           wrapper and must paint BELOW the panel that follows it. */
+        .modal-backdrop { @apply fixed inset-0 bg-navy-950/50 backdrop-blur-[2px]; }
+        /* Always fit the viewport; tall forms scroll inside the panel. */
+        .modal-panel { @apply relative w-full rounded-2xl bg-white shadow-pop max-h-[calc(100dvh-2rem)] overflow-y-auto; }
 
         /* ── Misc ─────────────────────────────────────────────── */
         .card-hover { @apply transition duration-200 hover:-translate-y-0.5 hover:shadow-card-hover; }
@@ -157,9 +163,9 @@
     .mc-nav-active { box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 8px 18px -14px rgba(0,0,0,.7); }
     .mc-topbar { box-shadow: 0 1px 0 rgba(16,24,40,.04), 0 8px 30px -24px rgba(7,26,51,.28); }
     .mc-menu { box-shadow: 0 22px 48px -16px rgba(7,26,51,.26), 0 8px 18px -8px rgba(7,26,51,.12); }
-    .mc-content-panel { animation: fade-up .3s ease-out both; }
+    .mc-content-panel { animation: fade-up .3s ease-out backwards; }
 
-    .stagger > * { animation: fade-up .32s ease-out both; }
+    .stagger > * { animation: fade-up .32s ease-out backwards; }
     .stagger > *:nth-child(2) { animation-delay: .04s } .stagger > *:nth-child(3) { animation-delay: .08s }
     .stagger > *:nth-child(4) { animation-delay: .12s } .stagger > *:nth-child(5) { animation-delay: .16s }
     .stagger > *:nth-child(6) { animation-delay: .20s } .stagger > *:nth-child(n+7) { animation-delay: .24s }

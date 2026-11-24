@@ -95,8 +95,8 @@
     </div>
 
     {{-- Create / Edit Modal --}}
-    <div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-navy-950/50 backdrop-blur-[2px]" @click.self="showModal = false">
-        <div class="modal-panel max-w-2xl p-6 my-8" @click.stop>
+    <div x-show="showModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/50 backdrop-blur-[2px]" @click.self="showModal = false">
+        <div class="modal-panel max-w-2xl p-6" @click.stop>
             <h3 class="text-base font-semibold text-gray-900 mb-4" x-text="editing ? 'Edit Event' : 'Create Event'"></h3>
             <form method="POST" enctype="multipart/form-data" :action="editing ? '{{ url(panel_prefix().'/events') }}/' + form.id : '{{ panel_route('events.store') }}'" class="space-y-4">
                 @csrf
